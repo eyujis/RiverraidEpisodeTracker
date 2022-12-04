@@ -1,10 +1,9 @@
 package org.example.view;
 
-import org.example.objectDetection.ContourDetector;
+import org.example.drafts.ContourDetectorPossibleObject;
 import org.example.socket.SocketImgRcvr;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -21,12 +20,12 @@ public class ButtonStartRcvImg implements ActionListener {
 
     private SocketImgRcvr socketImgRcvr;
 
-    private ContourDetector contourDetector;
+    private ContourDetectorPossibleObject contourDetector;
 
     public ButtonStartRcvImg(JLabel socketImgLbl, JLabel contourImgLbl) throws IOException {
         this.socketImgLbl = socketImgLbl;
         this.contourImgLbl = contourImgLbl;
-        contourDetector = new ContourDetector();
+        contourDetector = new ContourDetectorPossibleObject();
     }
 
     @Override
