@@ -1,16 +1,18 @@
 package org.example.objectDetection;
 
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
+
+import java.util.Random;
 
 public class PossibleObject {
     private MatOfPoint contour;
     private Rect boundRect;
 
     private Point centerPoint;
+    private Random rng = new Random();
+    private Scalar color = new Scalar(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
+
     public PossibleObject(MatOfPoint contour) {
         this.contour = contour;
 
@@ -25,7 +27,6 @@ public class PossibleObject {
     private void setCenterFromBoundRect()   {
         Point tl = boundRect.tl();
         Point br = boundRect.br();
-
         double xCenter = (tl.x + br.x)/2;
         double yCenter = (tl.y + br.y)/2;
 
@@ -42,5 +43,13 @@ public class PossibleObject {
 
     public MatOfPoint getContour() {
         return contour;
+    }
+
+    public Scalar getColor() {
+        return color;
+    }
+
+    public void setColor(Scalar color) {
+        this.color = color;
     }
 }

@@ -15,13 +15,15 @@ public class PerceptFrame extends JFrame {
 
         JLabel socketImgLbl = jLabelWithTemplateImgIcon();
         JLabel contourImgLbl = jLabelWithTemplateImgIcon();
+        JLabel contourConcatImgLbl = jLabelWithTemplateImgIcon();
 
         JButton button = new JButton("Start Capture");
-        button.addActionListener(new ButtonStartRcvImg(socketImgLbl, contourImgLbl));
+        button.addActionListener(new ButtonStartRcvImg(socketImgLbl, contourImgLbl, contourConcatImgLbl));
 
         JPanel panel = new JPanel();
         panel.add(socketImgLbl);
         panel.add(contourImgLbl);
+        panel.add(contourConcatImgLbl);
 
 
         this.getContentPane().add(button, BorderLayout.PAGE_START);
