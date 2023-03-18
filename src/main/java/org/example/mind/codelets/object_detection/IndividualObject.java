@@ -1,25 +1,29 @@
-package org.example.objectDetection;
+package org.example.mind.codelets.object_detection;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.Random;
 
-public class PossibleObject {
-    private MatOfPoint contour;
+public class IndividualObject {
     private Rect boundRect;
 
     private Point centerPoint;
     private Random rng = new Random();
     private Scalar color = new Scalar(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
 
-    public PossibleObject(MatOfPoint contour) {
-        this.contour = contour;
+    public IndividualObject(MatOfPoint contour) {
 
         MatOfPoint2f contourPoly = new MatOfPoint2f();
         Imgproc.approxPolyDP(new MatOfPoint2f(contour.toArray()), contourPoly, 3, true);
 
         boundRect = Imgproc.boundingRect(new MatOfPoint(contourPoly.toArray()));
+
+        setCenterFromBoundRect();
+    }
+
+    public IndividualObject(Rect boundRect) {
+        this.boundRect = boundRect;
 
         setCenterFromBoundRect();
     }
@@ -41,8 +45,8 @@ public class PossibleObject {
         return boundRect;
     }
 
-    public MatOfPoint getContour() {
-        return contour;
+    public void setBoundRect(Rect boundRect) {
+       this.boundRect = boundRect;
     }
 
     public Scalar getColor() {
@@ -52,4 +56,5 @@ public class PossibleObject {
     public void setColor(Scalar color) {
         this.color = color;
     }
+
 }

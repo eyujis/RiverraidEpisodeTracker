@@ -1,4 +1,4 @@
-package org.example.objectDetection;
+package org.example.mind.codelets.object_detection;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -7,7 +7,6 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class ContourDetector {
     private int threshold = 40;
@@ -21,7 +20,8 @@ public class ContourDetector {
 
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
-        Imgproc.findContours(cannyOutput, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+//        Imgproc.findContours(cannyOutput, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(cannyOutput, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
         return contours;
     }

@@ -1,4 +1,4 @@
-package org.example.socket;
+package org.example.environment.socket;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
-public class SocketImgRcvr {
+public class SocketFrameRcvr {
     int port = 1025;
     Socket socket;
 
-    public SocketImgRcvr() throws IOException {
+    public SocketFrameRcvr() throws IOException {
         socket = new Socket("localhost", port);
     }
 

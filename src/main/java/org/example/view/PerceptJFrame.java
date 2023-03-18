@@ -6,10 +6,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class PerceptFrame extends JFrame {
+public class PerceptJFrame extends JFrame {
     String path = "template_img.tiff";
 
-    public PerceptFrame() throws IOException {
+    public PerceptJFrame() throws IOException {
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 

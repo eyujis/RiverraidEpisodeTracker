@@ -1,6 +1,9 @@
 package org.example;
 
-import org.example.view.PerceptFrame;
+import org.example.environment.RiverRaidEnv;
+import org.example.mind.AgentMind;
+import org.example.view.PerceptJFrame;
+import org.example.visualization.MemoriesJFrame;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -10,8 +13,16 @@ public class Main {
     public static void main(String[] args) throws IOException {
         loadOpenCVLibraryFromCurrentPath();
 
-        PerceptFrame perceptFrame = new PerceptFrame();
-        perceptFrame.setVisible(true);
+//        PerceptJFrame perceptJFrame = new PerceptJFrame();
+//        perceptJFrame.setVisible(true);
+
+        MemoriesJFrame memoriesJFrame = new MemoriesJFrame();
+        memoriesJFrame.setVisible(true);
+        RiverRaidEnv riverRaidEnv = new RiverRaidEnv();
+        AgentMind agentMind = new AgentMind(riverRaidEnv,
+                                            memoriesJFrame.getRawDataBufferImgJLabel(),
+                                            memoriesJFrame.getObjectsImgJLabel(),
+                                            memoriesJFrame.getMergedObjectsImgJLabel());
     }
 
     public static void loadOpenCVLibraryFromCurrentPath()   {

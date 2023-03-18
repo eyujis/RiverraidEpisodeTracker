@@ -1,15 +1,11 @@
 package org.example.drafts;
 
-import org.example.objectDetection.PossibleObject;
+import org.example.mind.codelets.object_detection.IndividualObject;
 import org.example.util.MatBufferedImageConverter;
 import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,18 +33,18 @@ public class ContourDetectorPossibleObject {
         Mat hierarchy = new Mat();
         Imgproc.findContours(cannyOutput, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        List<PossibleObject> possibleObjectArrayList = new ArrayList<>();
+        List<IndividualObject> individualObjectArrayList = new ArrayList<>();
 
         for(int i = 0; i<contours.size(); i++) {
-            PossibleObject possibleObject = new PossibleObject(contours.get(i));
-            possibleObjectArrayList.add(possibleObject);
+            IndividualObject individualObject = new IndividualObject(contours.get(i));
+            individualObjectArrayList.add(individualObject);
         }
 
         Mat drawing = Mat.zeros(matImage.size(), CvType.CV_8UC3);
 
         for (int i = 0; i < contours.size(); i++) {
             Scalar color = new Scalar(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
-            Imgproc.rectangle(drawing, possibleObjectArrayList.get(i).getBoundRect().tl(), possibleObjectArrayList.get(i).getBoundRect().br(), color, 1);
+            Imgproc.rectangle(drawing, individualObjectArrayList.get(i).getBoundRect().tl(), individualObjectArrayList.get(i).getBoundRect().br(), color, 1);
         }
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(drawing);
