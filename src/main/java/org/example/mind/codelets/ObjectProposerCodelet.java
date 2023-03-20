@@ -17,6 +17,7 @@ import org.opencv.imgproc.Imgproc;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
@@ -57,12 +58,20 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             updateJLabelImg(this.objectsImgJLabel, objectsImg);
 
             List<ComposedObject> mergedObjectList = objectListProposer.getComposedObjectMergedListFromCurrentFrame();
-            BufferedImage mergedObjecImg = buffImageFromObjectList(mergedObjectList);
-            updateJLabelImg(this.mergedObjectsImgJLabel, mergedObjecImg);
+            BufferedImage mergedObjectImg = buffImageFromObjectList(mergedObjectList);
+            updateJLabelImg(this.mergedObjectsImgJLabel, mergedObjectImg);
 //          ------------------------------------
 
+            detectedObjectsMO.setI(getDetectedObjectsIdea(mergedObjectList));
 
-//            detectedObjectsMO.setI(objectIdea);
+//          ---------------Testing--------------
+            Idea detectedObjectsIdea = (Idea) detectedObjectsMO.getI();
+            List<Idea> detectedObjectsList = (List<Idea>) detectedObjectsIdea.getValue();
+            for (Idea detectedObject : detectedObjectsList) {
+                System.out.println(detectedObject.toStringFull());
+            }
+//          ------------------------------------
+
         }
         catch (Exception e) {
         }
@@ -86,5 +95,34 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(drawing);
 
         return bufferedImage;
+    }
+
+    public Idea getDetectedObjectsIdea(List<ComposedObject> mergedObjectList) {
+        Idea detectedObjectsIdea = new Idea("detectedObjects", null);
+        List<Idea> detectedObjectList = new ArrayList<Idea>();
+        detectedObjectsIdea.setValue(detectedObjectList);
+
+        for(ComposedObject composedObject: mergedObjectList) {
+            int objectId = composedObject.getObjectId();
+            double objectCenter_x = composedObject.getCurrentFrameIndividualObject().getCenterPoint().x;
+            double objectCenter_y = composedObject.getCurrentFrameIndividualObject().getCenterPoint().y;
+            int object_height = composedObject.getCurrentFrameIndividualObject().getHeight();
+            int object_width = composedObject.getCurrentFrameIndividualObject().getWidth();
+
+            Idea objectIdea = new Idea("object "+objectId, "", 0);
+
+            Idea centerPositionIdea = new Idea("center_position", "", 0);
+            centerPositionIdea.add(new Idea("x", objectCenter_x));
+            centerPositionIdea.add(new Idea("y", objectCenter_y));
+            objectIdea.add(centerPositionIdea);
+
+            Idea sizeIdea = new Idea ("shape", "", 0);
+            sizeIdea.add(new Idea("height", object_height));
+            sizeIdea.add(new Idea("width", object_width));
+            objectIdea.add(sizeIdea);
+
+            detectedObjectList.add(objectIdea);
+        }
+        return detectedObjectsIdea;
     }
 }

@@ -10,12 +10,15 @@ public class ComposedObject {
 
     public ComposedObject(IndividualObject lastFrameIndividualObject,
                           IndividualObject currentFrameIndividualObject) {
+
         this.lastFrameIndividualObject = lastFrameIndividualObject;
         this.currentFrameIndividualObject = currentFrameIndividualObject;
         this.currentFrameIndividualObject.setColor(lastFrameIndividualObject.getColor());
+        this.currentFrameIndividualObject.setObjectId(lastFrameIndividualObject.getObjectId());
     }
 
     public ComposedObject(ComposedObject composedObject1, ComposedObject composedObject2) {
+
         Rect lastFrame1Rect = composedObject1.getLastFrameIndividualObject().getBoundRect();
         Rect lastFrame2Rect = composedObject2.getLastFrameIndividualObject().getBoundRect();
         Rect lastFrameOutsideRect = createOutsideRect(lastFrame1Rect, lastFrame2Rect);
@@ -30,6 +33,7 @@ public class ComposedObject {
         this.lastFrameIndividualObject = lastFrameIndividualObject;
         this.currentFrameIndividualObject = currentFrameIndividualObject;
         this.currentFrameIndividualObject.setColor(composedObject1.getCurrentFrameIndividualObject().getColor());
+        this.currentFrameIndividualObject.setObjectId(composedObject1.getCurrentFrameIndividualObject().getObjectId());
     }
 
     public IndividualObject getCurrentFrameIndividualObject() {
@@ -84,5 +88,9 @@ public class ComposedObject {
         Point brOutsideRect = new Point(xOutsideRectEnd, yOutsideRectEnd);
 
         return new Rect(tlOutsideRect, brOutsideRect);
+    }
+
+    public int getObjectId() {
+        return currentFrameIndividualObject.getObjectId();
     }
 }

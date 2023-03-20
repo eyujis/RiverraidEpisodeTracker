@@ -7,12 +7,15 @@ import java.util.Random;
 
 public class IndividualObject {
     private Rect boundRect;
-
     private Point centerPoint;
     private Random rng = new Random();
     private Scalar color = new Scalar(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
+    private static int id = 0;
+    private int objectId;
 
     public IndividualObject(MatOfPoint contour) {
+        objectId = id;
+        incrementId();
 
         MatOfPoint2f contourPoly = new MatOfPoint2f();
         Imgproc.approxPolyDP(new MatOfPoint2f(contour.toArray()), contourPoly, 3, true);
@@ -23,8 +26,10 @@ public class IndividualObject {
     }
 
     public IndividualObject(Rect boundRect) {
-        this.boundRect = boundRect;
+        objectId = id;
+        incrementId();
 
+        this.boundRect = boundRect;
         setCenterFromBoundRect();
     }
 
@@ -57,4 +62,22 @@ public class IndividualObject {
         this.color = color;
     }
 
+    public int getWidth() {
+        return this.boundRect.width;
+    }
+    public int getHeight() {
+        return this.boundRect.height;
+    }
+
+    private void incrementId() {
+        id++;
+    }
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int newObjectId) {
+        objectId = newObjectId;
+    }
 }
