@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectListProposer {
-    private ContourDetector contourDetector = new ContourDetector();
+    private MaskedContourDectector contourDetector = new MaskedContourDectector();
     private List<ComposedObject> composedObjectListFromCurrentFrame = new ArrayList<>();
     private List<ComposedObject> composedObjectMergedListFromCurrentFrame;
     private List<IndividualObject> individualObjectListFromCurrentFrame;
@@ -32,7 +32,6 @@ public class ObjectListProposer {
 
             IndividualObject currentObject = individualObjectListFromCurrentFrame.get(i);
             Point currentObjectCenter = currentObject.getCenterPoint();
-
 
             for(int j = 0; j< individualObjectListFromLastFrame.size(); j++)  {
                 IndividualObject lastObject = individualObjectListFromLastFrame.get(j);

@@ -5,6 +5,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_detection.ComposedObject;
+import org.example.mind.codelets.object_detection.IndividualObject;
 import org.example.mind.codelets.object_detection.ObjectListProposer;
 import org.example.util.MatBufferedImageConverter;
 import org.example.visualization.JLabelImgUpdater;
@@ -53,6 +54,10 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             this.objectListProposer.update(MatBufferedImageConverter.BufferedImage2Mat(frameImg));
 
 //          -----------Visualization-----------
+//            List<IndividualObject> individualObjectList = objectListProposer.getIndividualObjectListFromFrame(MatBufferedImageConverter.BufferedImage2Mat(frameImg));
+//            BufferedImage individualObjectsImg = buffImageFromIndividualObjectList(individualObjectList);
+//            updateJLabelImg(this.objectsImgJLabel, individualObjectsImg);
+
             List<ComposedObject> composedObjectList = objectListProposer.getComposedObjectListFromCurrentFrame();
             BufferedImage objectsImg = buffImageFromObjectList(composedObjectList);
             updateJLabelImg(this.objectsImgJLabel, objectsImg);
@@ -124,5 +129,20 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             detectedObjectList.add(objectIdea);
         }
         return detectedObjectsIdea;
+    }
+
+    public BufferedImage buffImageFromIndividualObjectList(List<IndividualObject> individualObjectList) throws IOException {
+        Mat drawing = Mat.zeros(new Size(304, 322), CvType.CV_8UC3);
+
+        for (int i = 0; i < individualObjectList.size(); i++) {
+            Scalar color = individualObjectList.get(i).getColor();
+            Imgproc.rectangle(drawing,
+                    individualObjectList.get(i).getBoundRect().tl(),
+                    individualObjectList.get(i).getBoundRect().br(), color, 1);
+        }
+
+        BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(drawing);
+
+        return bufferedImage;
     }
 }

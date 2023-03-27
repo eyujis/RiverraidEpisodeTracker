@@ -14,8 +14,7 @@ public class IndividualObject {
     private int objectId;
 
     public IndividualObject(MatOfPoint contour) {
-        objectId = id;
-        incrementId();
+        initializeObjectId();
 
         MatOfPoint2f contourPoly = new MatOfPoint2f();
         Imgproc.approxPolyDP(new MatOfPoint2f(contour.toArray()), contourPoly, 3, true);
@@ -26,8 +25,8 @@ public class IndividualObject {
     }
 
     public IndividualObject(Rect boundRect) {
-        objectId = id;
-        incrementId();
+        initializeObjectId();
+
 
         this.boundRect = boundRect;
         setCenterFromBoundRect();
@@ -69,13 +68,19 @@ public class IndividualObject {
         return this.boundRect.height;
     }
 
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void initializeObjectId() {
+        this.objectId = id;
+        incrementId();
+    }
+
     private void incrementId() {
         id++;
     }
 
-    public int getObjectId() {
-        return objectId;
-    }
 
     public void setObjectId(int newObjectId) {
         objectId = newObjectId;

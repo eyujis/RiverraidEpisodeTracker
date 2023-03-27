@@ -20,7 +20,7 @@ public class ContourDetection {
 
         // Read the input image
 //        Mat image = Imgcodecs.imread("river_raid_frame.png");
-        BufferedImage imgSrc= ImageIO.read(ContourDetection.class.getClassLoader().getResource("template_img_river.tiff"));
+        BufferedImage imgSrc= ImageIO.read(ContourDetection.class.getClassLoader().getResource("rivererror.tiff"));
         Mat image = BufferedImage2Mat(imgSrc);
 
         // Define the color range for the objects of interest
@@ -28,7 +28,7 @@ public class ContourDetection {
         Scalar lowerBoundBlue = new Scalar(185-5,47-5,40-5);
         Scalar upperBoundBlue = new Scalar(185+5,47+5,40+5);
 
-        Scalar lowerBoundGreen= new Scalar(64-5,156-5,111-5);
+        Scalar lowerBoundGreen= new Scalar(24-5,95-5,53-5);
         Scalar upperBoundGreen = new Scalar(64+5,156+5,111+5);
 
         // Threshold the image to extract the regions of interest
