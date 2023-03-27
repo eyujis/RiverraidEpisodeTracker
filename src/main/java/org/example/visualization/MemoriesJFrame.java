@@ -1,7 +1,5 @@
 package org.example.visualization;
 
-import org.example.view.ButtonStartRcvImg;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;

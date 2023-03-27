@@ -2,6 +2,7 @@ package org.example.mind.codelets.object_detection;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
@@ -20,7 +21,6 @@ public class ContourDetector {
 
         List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
-//        Imgproc.findContours(cannyOutput, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
         Imgproc.findContours(cannyOutput, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
         return contours;

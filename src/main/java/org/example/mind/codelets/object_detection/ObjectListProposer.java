@@ -10,15 +10,15 @@ public class ObjectListProposer {
     private List<ComposedObject> composedObjectMergedListFromCurrentFrame;
     private List<IndividualObject> individualObjectListFromCurrentFrame;
     private List<IndividualObject> individualObjectListFromLastFrame;
-    private boolean firstUpdate = true;
+    private boolean firstFrame = true;
 
     public ObjectListProposer() {
 
     }
 
     public void update(Mat frameImage) {
-        if(firstUpdate == true) {
-            firstUpdate=false;
+        if(firstFrame == true) {
+            firstFrame=false;
             individualObjectListFromCurrentFrame = getIndividualObjectListFromFrame(frameImage);
             return;
         }
