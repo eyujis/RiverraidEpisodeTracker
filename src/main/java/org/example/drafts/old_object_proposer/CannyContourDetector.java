@@ -1,4 +1,4 @@
-package org.example.mind.codelets.object_detection;
+package org.example.drafts.old_object_proposer;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;

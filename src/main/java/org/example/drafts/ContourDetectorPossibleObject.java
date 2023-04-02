@@ -1,6 +1,6 @@
 package org.example.drafts;
 
-import org.example.mind.codelets.object_detection.IndividualObject;
+import org.example.mind.codelets.object_proposer_utils.IndividualObject;
 import org.example.util.MatBufferedImageConverter;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;

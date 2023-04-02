@@ -1,4 +1,4 @@
-package org.example.mind.codelets.object_detection;
+package org.example.mind.codelets.object_proposer_utils;
 
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;

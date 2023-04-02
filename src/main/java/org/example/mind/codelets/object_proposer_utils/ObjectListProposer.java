@@ -1,4 +1,4 @@
-package org.example.mind.codelets.object_detection;
+package org.example.mind.codelets.object_proposer_utils;
 
 import org.opencv.core.*;
 import java.util.ArrayList;
@@ -28,25 +28,38 @@ public class ObjectListProposer {
 
         for(int i = 0; i< individualObjectListFromCurrentFrame.size(); i++) {
             IndividualObject closestLastObject = null;
-            double closestObjectDistance = 15;
+//            double closestObjectDistance = 15;
+            double closestObjectDistance = 50;
 
             IndividualObject currentObject = individualObjectListFromCurrentFrame.get(i);
             Point currentObjectCenter = currentObject.getCenterPoint();
+
+            boolean[] matchedObjectsFromLastFrame = new boolean[individualObjectListFromLastFrame.size()];
+            for(int k=0; k<matchedObjectsFromLastFrame.length; k++) {
+                matchedObjectsFromLastFrame[k] = false;
+            }
+            int closestObjectFromLastFrameIdx = -1;
 
             for(int j = 0; j< individualObjectListFromLastFrame.size(); j++)  {
                 IndividualObject lastObject = individualObjectListFromLastFrame.get(j);
                 Point lastObjectCenter = lastObject.getCenterPoint();
                 double centerDistance = pointDistance(currentObjectCenter, lastObjectCenter);
 
-                if(centerDistance < 15
+//                if(centerDistance < 15
+                if(centerDistance < 100
                         && centerDistance < closestObjectDistance
-                        && hasSimilarRectDimension(currentObject, lastObject)) {
+                        && hasSimilarRectDimension(currentObject, lastObject)
+                ) {
                     closestLastObject = lastObject;
                     closestObjectDistance = centerDistance;
+                    closestObjectFromLastFrameIdx = j;
                 }
             }
 
-            if(closestLastObject!=null) {
+            if(closestLastObject!=null &&
+                    matchedObjectsFromLastFrame[closestObjectFromLastFrameIdx] == false
+            ) {
+                matchedObjectsFromLastFrame[closestObjectFromLastFrameIdx]= true;
                 ComposedObject currentComposedObject = new ComposedObject(closestLastObject, currentObject);
 //                currentObject.setColor(closestLastObject.getColor());
                 composedObjectListFromCurrentFrame.add(currentComposedObject);
@@ -88,7 +101,6 @@ public class ObjectListProposer {
             return true;
         }
         return false;
-
     }
 
     public List<ComposedObject> getComposedObjectListFromCurrentFrame() {

@@ -4,9 +4,7 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_detection.ComposedObject;
-import org.example.mind.codelets.object_detection.IndividualObject;
-import org.example.mind.codelets.object_detection.ObjectListProposer;
+import org.example.mind.codelets.object_proposer_utils.*;
 import org.example.util.MatBufferedImageConverter;
 import org.example.visualization.JLabelImgUpdater;
 import org.opencv.core.CvType;
@@ -24,7 +22,8 @@ import java.util.List;
 public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     Memory rawDataMO;
     Memory detectedObjectsMO;
-    ObjectListProposer objectListProposer = new ObjectListProposer();
+//    ObjectListProposer objectListProposer = new ObjectListProposer();
+    ObjectProposer objectProposer = new ObjectProposer();
     JLabel objectsImgJLabel;
     JLabel mergedObjectsImgJLabel;
 
@@ -51,30 +50,38 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             List<Idea> framesIdea = (List<Idea>) rawDataBufferIdea.get("frames").getValue();
             BufferedImage frameImg = (BufferedImage) (framesIdea.get(0).getValue());
 
-            this.objectListProposer.update(MatBufferedImageConverter.BufferedImage2Mat(frameImg));
+            this.objectProposer.update(MatBufferedImageConverter.BufferedImage2Mat(frameImg));
+
+//          ----------new Object proposer----
+            List<PotentialObject> potentialObjects =  objectProposer.getConfirmedObjsCF();
+            BufferedImage potentialObjectsImg = buffImageFromPotentialObjectList(potentialObjects);
+            updateJLabelImg(this.objectsImgJLabel, potentialObjectsImg);
 
 //          -----------Visualization-----------
 //            List<IndividualObject> individualObjectList = objectListProposer.getIndividualObjectListFromFrame(MatBufferedImageConverter.BufferedImage2Mat(frameImg));
 //            BufferedImage individualObjectsImg = buffImageFromIndividualObjectList(individualObjectList);
 //            updateJLabelImg(this.objectsImgJLabel, individualObjectsImg);
 
-            List<ComposedObject> composedObjectList = objectListProposer.getComposedObjectListFromCurrentFrame();
-            BufferedImage objectsImg = buffImageFromObjectList(composedObjectList);
-            updateJLabelImg(this.objectsImgJLabel, objectsImg);
-
-            List<ComposedObject> mergedObjectList = objectListProposer.getComposedObjectMergedListFromCurrentFrame();
-            BufferedImage mergedObjectImg = buffImageFromObjectList(mergedObjectList);
-            updateJLabelImg(this.mergedObjectsImgJLabel, mergedObjectImg);
+//            List<ComposedObject> composedObjectList = objectListProposer.getComposedObjectListFromCurrentFrame();
+//            BufferedImage objectsImg = buffImageFromObjectList(composedObjectList);
+//            updateJLabelImg(this.objectsImgJLabel, objectsImg);
+//
+//            List<ComposedObject> mergedObjectList = objectListProposer.getComposedObjectMergedListFromCurrentFrame();
+//            BufferedImage mergedObjectImg = buffImageFromObjectList(mergedObjectList);
+//            updateJLabelImg(this.mergedObjectsImgJLabel, mergedObjectImg);
 //          ------------------------------------
 
-            detectedObjectsMO.setI(getDetectedObjectsIdea(mergedObjectList));
+//            detectedObjectsMO.setI(getDetectedObjectsIdea(mergedObjectList));
+
 
 //          ---------------Testing--------------
-            Idea detectedObjectsIdea = (Idea) detectedObjectsMO.getI();
-            List<Idea> detectedObjectsList = (List<Idea>) detectedObjectsIdea.getValue();
-            for (Idea detectedObject : detectedObjectsList) {
-                System.out.println(detectedObject.toStringFull());
-            }
+//            System.out.println("---------------Object List--------------");
+//            Idea detectedObjectsIdea = (Idea) detectedObjectsMO.getI();
+//            List<Idea> detectedObjectsList = (List<Idea>) detectedObjectsIdea.getValue();
+//            System.out.println("n_objects:" + detectedObjectsList.size());
+//            for (Idea detectedObject : detectedObjectsList) {
+//                System.out.println(detectedObject.toStringFull());
+//            }
 //          ------------------------------------
 
         }
@@ -145,4 +152,21 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
 
         return bufferedImage;
     }
+
+    public BufferedImage buffImageFromPotentialObjectList(List<PotentialObject> potentialObjectList) throws IOException {
+        Mat drawing = Mat.zeros(new Size(304, 322), CvType.CV_8UC3);
+
+        for (int i = 0; i < potentialObjectList.size(); i++) {
+            Scalar color = potentialObjectList.get(i).getColor();
+            Imgproc.rectangle(drawing,
+                    potentialObjectList.get(i).getBoundRect().tl(),
+                    potentialObjectList.get(i).getBoundRect().br(), color, 1);
+        }
+
+        BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(drawing);
+
+        return bufferedImage;
+    }
+
+
 }

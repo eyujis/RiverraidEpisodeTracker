@@ -20,7 +20,7 @@ public class ContourDetection {
 
         // Read the input image
 //        Mat image = Imgcodecs.imread("river_raid_frame.png");
-        BufferedImage imgSrc= ImageIO.read(ContourDetection.class.getClassLoader().getResource("rivererror.tiff"));
+        BufferedImage imgSrc= ImageIO.read(ContourDetection.class.getClassLoader().getResource("template_img_river.tiff"));
         Mat image = BufferedImage2Mat(imgSrc);
 
         // Define the color range for the objects of interest

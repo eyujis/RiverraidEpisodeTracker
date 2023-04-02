@@ -1,14 +1,13 @@
 package org.example.view;
 
 import org.example.drafts.ContourDetectorPossibleObject;
-import org.example.mind.codelets.object_detection.ComposedObject;
-import org.example.mind.codelets.object_detection.ObjectListProposer;
+import org.example.mind.codelets.object_proposer_utils.ComposedObject;
+import org.example.mind.codelets.object_proposer_utils.ObjectListProposer;
 import org.example.environment.socket.SocketFrameRcvr;
 import org.example.util.MatBufferedImageConverter;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 import javax.swing.*;
