@@ -11,7 +11,10 @@ public class PotentialObject {
     private MatOfPoint contour;
 
     private Random rng = new Random();
-    private Scalar color = new Scalar(rng.nextInt(256), rng.nextInt(256), rng.nextInt(256));
+    // Random colors closer to white for avoiding dark contours with black background.
+    private Scalar color = new Scalar(rng.nextInt(231) + 25,
+                                      rng.nextInt(231) + 25,
+                                      rng.nextInt(231) + 25);
 
     private static int id = 0;
     private int objectId;

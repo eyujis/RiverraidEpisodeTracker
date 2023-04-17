@@ -7,10 +7,7 @@ import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_proposer_utils.*;
 import org.example.util.MatBufferedImageConverter;
 import org.example.visualization.JLabelImgUpdater;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import javax.swing.*;
@@ -53,9 +50,13 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             this.objectProposer.update(MatBufferedImageConverter.BufferedImage2Mat(frameImg));
 
 //          ----------new Object proposer----
+
             List<PotentialObject> potentialObjects =  objectProposer.getConfirmedObjsCF();
             BufferedImage potentialObjectsImg = buffImageFromPotentialObjectList(potentialObjects);
             updateJLabelImg(this.objectsImgJLabel, potentialObjectsImg);
+
+            BufferedImage objectsImg = buffImageContourFromPotentialObjectList(potentialObjects);
+            updateJLabelImg(this.mergedObjectsImgJLabel, objectsImg);
 
 //          -----------Visualization-----------
 //            List<IndividualObject> individualObjectList = objectListProposer.getIndividualObjectListFromFrame(MatBufferedImageConverter.BufferedImage2Mat(frameImg));
@@ -153,6 +154,7 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         return bufferedImage;
     }
 
+
     public BufferedImage buffImageFromPotentialObjectList(List<PotentialObject> potentialObjectList) throws IOException {
         Mat drawing = Mat.zeros(new Size(304, 322), CvType.CV_8UC3);
 
@@ -168,5 +170,30 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         return bufferedImage;
     }
 
+    public BufferedImage buffImageContourFromPotentialObjectList(List<PotentialObject> potentialObjectList) throws IOException {
+        Mat drawing = Mat.zeros(new Size(304, 322), CvType.CV_8UC3);
+
+        for (int i = 0; i < potentialObjectList.size(); i++) {
+            Scalar color = potentialObjectList.get(i).getColor();
+            Imgproc.rectangle(drawing,
+                    potentialObjectList.get(i).getBoundRect().tl(),
+                    potentialObjectList.get(i).getBoundRect().br(), color, 1);
+        }
+        for (int i = 0; i < potentialObjectList.size(); i++) {
+            List<MatOfPoint> listOfOneContour = new ArrayList<MatOfPoint>();
+            listOfOneContour.add(potentialObjectList.get(i).getContour());
+            Imgproc.drawContours(drawing, listOfOneContour, 0, potentialObjectList.get(i).getColor(), -1);
+        }
+
+        BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(drawing);
+
+        return bufferedImage;
+    }
+
 
 }
+//    // Draw the contours on the original image
+//    Mat contourImage = image.clone();
+//        for (int i = 0; i < resultContours.size(); i++) {
+//        Imgproc.drawContours(contourImage, resultContours, i, new Scalar(0, 0, 255), 2);
+//        }

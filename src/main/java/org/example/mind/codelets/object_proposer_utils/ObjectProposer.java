@@ -11,6 +11,8 @@ import java.util.List;
 
 public class ObjectProposer {
     static final int NO_MATCH = -1;
+    //min distance 50 instead of 15 causes the tree to disappear.
+    //min distance 15 instead of 50 causes missiles to disappear.
     static final double MIN_DISTANCE = 15;
     static final int MIN_SHAPE_DIFF = 15;
     static final double MIN_HUE_DIFF = 0.7;
@@ -80,7 +82,7 @@ public class ObjectProposer {
             double hueDistance =Imgproc.matchShapes(obj1.getContour(), objs.get(i).getContour(), Imgproc.CV_CONTOURS_MATCH_I1, 0.0);
 
             if(true
-                    && haveMinimumRectDistance(obj1, objs.get(i))
+//                    && haveMinimumRectDistance(obj1, objs.get(i))
                     && haveSimilarRectShape(obj1, objs.get(i))
                     && centerDistance<MIN_DISTANCE
                     && hueDistance<MIN_HUE_DIFF
