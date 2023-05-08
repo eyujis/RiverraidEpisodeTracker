@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.AgentMind;
-import org.example.view.PerceptJFrame;
 import org.example.visualization.MemoriesJFrame;
 
 import java.io.IOException;

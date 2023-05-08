@@ -1,20 +1,16 @@
-package org.example.drafts.random_saccades;
+package org.example.mind.codelets.object_proposer_utils;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
-import org.opencv.highgui.HighGui;
-import org.opencv.imgproc.Imgproc;
-
-import java.util.Iterator;
-import java.util.Random;
-
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
-public class RandomForegroundPosition {
+public class FGPositionSampler {
     private Scalar lowerBoundBlue = new Scalar(185-5,47-5,40-5);
     private Scalar upperBoundBlue = new Scalar(185+5,47+5,40+5);
 
@@ -26,7 +22,7 @@ public class RandomForegroundPosition {
     Mat maskBackgroundGreen = new Mat();
     List<Point> samplePositions;
 
-    public RandomForegroundPosition(Mat image) {
+    public FGPositionSampler(Mat image) {
         Core.inRange(image, lowerBoundBlue, upperBoundBlue, maskBackgroundBlue);
         Core.inRange(image, lowerBoundGreen, upperBoundGreen, maskBackgroundGreen);
         Core.add(maskBackgroundGreen, maskBackgroundBlue, maskForeground);
@@ -47,11 +43,9 @@ public class RandomForegroundPosition {
                 }
             }
         }
-
     }
 
-
-    public Point getRandomForegroundPosition() {
+    public Point getRandomFGPosition() {
         // Pick a random white pixel position
         Random random = new Random();
         Point randomWhitePixelPosition = samplePositions.get(random.nextInt(samplePositions.size()));
@@ -77,15 +71,6 @@ public class RandomForegroundPosition {
                 }
             }
         }
-
-    }
-
-    public Mat getSampleAsMat(Mat image) {
-        Mat mask = Mat.zeros(image.rows(), image.cols(), 0);
-        for(Point randomSamplePosition : samplePositions) {
-            mask.put((int) randomSamplePosition.y, (int) randomSamplePosition.x, 255);
-        }
-        return mask;
     }
 
     public boolean isEmpty() {
