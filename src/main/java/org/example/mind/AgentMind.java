@@ -67,7 +67,7 @@ public class AgentMind extends Mind {
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())
-            c.setTimeStep(1);
+            c.setTimeStep(50);
 
         // Start Cognitive Cycle
         start();

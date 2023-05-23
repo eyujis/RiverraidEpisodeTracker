@@ -17,7 +17,7 @@ public class ObjectProposer {
     private ObjectTracker objTracker;
     private ObjectComparator objectComparator;
 
-    private double MIN_CLUSTER_DISTANCE = 0;
+    private double MIN_CLUSTER_DISTANCE = 2;
 
     private ArrayList<UnidentifiedRRObject> unObjsCF = new ArrayList<UnidentifiedRRObject>();
     private ArrayList<IdentifiedRRObject> idObjsCF = new ArrayList<IdentifiedRRObject>();
@@ -82,7 +82,7 @@ public class ObjectProposer {
                 RRObject obj1 = objectInstances.get(i);
                 RRObject obj2 = objectInstances.get(j);
 
-                if(i!=j && objectComparator.rectDistance(obj1, obj2)<=MIN_CLUSTER_DISTANCE) {
+                if(i!=j && Math.abs(objectComparator.rectDistance(obj1, obj2))<=MIN_CLUSTER_DISTANCE) {
                     borderMatrix[i][j] = true;
                 }
             }

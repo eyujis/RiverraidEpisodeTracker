@@ -11,7 +11,7 @@ public class WObjectCategoryLearner {
     ArrayList<WObjectCategory> objCategoryList;
     ObjectComparator objectComparator = new ObjectComparator();
 
-    double MIN_CLUSTER_DISTANCE = 0;
+    double MIN_CLUSTER_DISTANCE = 2;
 
     double RELEVANCE_THRESHOLD = 5;
     double INIT_RELEVANCE = 1;
@@ -65,7 +65,7 @@ public class WObjectCategoryLearner {
                 RRObject obj1 = objectInstances.get(i);
                 RRObject obj2 = objectInstances.get(j);
 
-                if(i!=j && objectComparator.rectDistance(obj1, obj2)<=MIN_CLUSTER_DISTANCE
+                if(i!=j && Math.abs(objectComparator.rectDistance(obj1, obj2))<=MIN_CLUSTER_DISTANCE
                   && obj1.getAssignedCategory() != null
                   && obj2.getAssignedCategory() !=null) {
                     borderMatrix[i][j] = true;
@@ -88,11 +88,11 @@ public class WObjectCategoryLearner {
             }
         }
 
-
         ArrayList<WObjectCategory> wObjectCategories = new ArrayList<>();
 
         for(ArrayList<PObjectCategory> categoryCluster : categoryClusters) {
             if(categoryCluster.size()>1) {
+                System.out.println(categoryCluster.size());
                 WObjectCategory wObjectCategory = new WObjectCategory(categoryCluster, INIT_RELEVANCE);
                 wObjectCategories.add(wObjectCategory);
             }
@@ -112,18 +112,6 @@ public class WObjectCategoryLearner {
         }
     }
 
-
-
-//    public int belongsToClusterIdx(ArrayList<ArrayList<RRObject>> objectClusters, RRObject objectInstance) {
-//        for(int i=0; i<objectClusters.size(); i++) {
-//            for(RRObject objFromCluster : objectClusters.get(i)) {
-//                if(objectComparator.rectDistance(objectInstance, objFromCluster) <= MIN_CLUSTER_DISTANCE) {
-//                    return i;
-//                }
-//            }
-//        }
-//        return -1;
-//    }
 
     public void removeIrrelevantCategories() {
         for(Iterator<WObjectCategory> iter = objCategoryList.iterator(); iter.hasNext(); ) {
@@ -151,10 +139,10 @@ public class WObjectCategoryLearner {
                 relevantCategories.add(objectCategory);
             }
         }
-        System.out.println("O1 P1:" + relevantCategories.get(0).getCatParts().get(0).getColorIdScalar());
-        System.out.println("O1 P2:" + relevantCategories.get(0).getCatParts().get(1).getColorIdScalar());
-        System.out.println("O2 P1:" + relevantCategories.get(1).getCatParts().get(0).getColorIdScalar());
-        System.out.println("O2 P2:" + relevantCategories.get(1).getCatParts().get(1).getColorIdScalar());
+//        System.out.println("O1 P1:" + relevantCategories.get(0).getCatParts().get(0).getColorIdScalar());
+//        System.out.println("O1 P2:" + relevantCategories.get(0).getCatParts().get(1).getColorIdScalar());
+//        System.out.println("O2 P1:" + relevantCategories.get(1).getCatParts().get(0).getColorIdScalar());
+//        System.out.println("O2 P2:" + relevantCategories.get(1).getCatParts().get(1).getColorIdScalar());
         return relevantCategories;
     }
 
