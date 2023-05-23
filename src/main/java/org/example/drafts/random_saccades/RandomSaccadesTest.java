@@ -39,7 +39,7 @@ public class RandomSaccadesTest {
             HighGui.imshow("Before", mask1);
             HighGui.imshow("After", mask2);
             HighGui.waitKey(1);
-            Thread.sleep(500);
+            Thread.sleep(2000);
         }
         HighGui.destroyAllWindows();
         System.out.println("Finished");

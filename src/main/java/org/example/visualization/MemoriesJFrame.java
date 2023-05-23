@@ -11,6 +11,7 @@ public class MemoriesJFrame extends JFrame {
     JLabel rawDataBufferImgJLabel;
     JLabel objectsImgJLabel;
     JLabel mergedObjectsImgJLabel;
+    JLabel categoriesImgJLabel;
 
     public MemoriesJFrame() throws IOException {
 
@@ -19,11 +20,13 @@ public class MemoriesJFrame extends JFrame {
         rawDataBufferImgJLabel = jLabelWithTemplateImgIcon();
         objectsImgJLabel = jLabelWithTemplateImgIcon();
         mergedObjectsImgJLabel = jLabelWithTemplateImgIcon();
+        categoriesImgJLabel = jLabelWithTemplateImgIcon();
 
         JPanel panel = new JPanel();
         panel.add(rawDataBufferImgJLabel);
         panel.add(objectsImgJLabel);
         panel.add(mergedObjectsImgJLabel);
+        panel.add(categoriesImgJLabel);
 
         this.getContentPane().add(panel, BorderLayout.PAGE_END);
 
@@ -55,5 +58,9 @@ public class MemoriesJFrame extends JFrame {
 
     public JLabel getMergedObjectsImgJLabel() {
         return mergedObjectsImgJLabel;
+    }
+
+    public JLabel getCategoriesImgJLabel() {
+        return categoriesImgJLabel;
     }
 }

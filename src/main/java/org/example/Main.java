@@ -21,7 +21,8 @@ public class Main {
         AgentMind agentMind = new AgentMind(riverRaidEnv,
                                             memoriesJFrame.getRawDataBufferImgJLabel(),
                                             memoriesJFrame.getObjectsImgJLabel(),
-                                            memoriesJFrame.getMergedObjectsImgJLabel());
+                                            memoriesJFrame.getMergedObjectsImgJLabel(),
+                                            memoriesJFrame.getCategoriesImgJLabel());
     }
 
     public static void loadOpenCVLibraryFromCurrentPath()   {
