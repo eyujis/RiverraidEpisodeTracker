@@ -59,12 +59,10 @@ public class ObjectProposer {
 
         ArrayList<ArrayList<IdentifiedRRObject>> objectClusters = extractObjectClusters(idObjsCF);
         for(ArrayList<IdentifiedRRObject> objectCluster : objectClusters) {
-//            System.out.println(objectCategories.size());
             for(WObjectCategory objectCategory : objectCategories) {
                 if(objectCategory.membership(objectCluster) == 1) {
                     for(IdentifiedRRObject obj: objectCluster) {
                         obj.getAssignedCategory().setColorIdScalar(objectCategory.getColorIdScalar());
-//                        System.out.println("AAAAAAAAAAAA");
                     }
                 }
             }

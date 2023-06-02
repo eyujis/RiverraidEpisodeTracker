@@ -67,10 +67,9 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             objectProposer.assignPCategories(pObjectCategories);
 
             ArrayList<WObjectCategory> wObjectCategories = (ArrayList<WObjectCategory>) objectWCategoriesMO.getI();
-//            System.out.println(wObjectCategories.size());
             objectProposer.assignWCategories(wObjectCategories);
 
-//          ----------new Object proposer----
+//          ----------visualization----------
 
             List<UnidentifiedRRObject> unObjs =  objectProposer.getUnObjs();
             BufferedImage unObjsBuffImg = buffImageFromUnObjectList(unObjs);
@@ -80,20 +79,8 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             BufferedImage idObjsBuffImg = buffImageFromIdObjectList(idObjs);
             updateJLabelImg(this.mergedObjectsImgJLabel, idObjsBuffImg);
 
-
             BufferedImage objectsImg = buffImageFromCatObjectList(idObjs);
             updateJLabelImg(this.categoriesImgJLabel, objectsImg);
-
-//          ---------------Testing--------------
-//            System.out.println("---------------Object List--------------");
-//            Idea detectedObjectsIdea = (Idea) detectedObjectsMO.getI();
-//            List<Idea> detectedObjectsList = (List<Idea>) detectedObjectsIdea.getValue();
-//            System.out.println("n_objects:" + detectedObjectsList.size());
-//            for (Idea detectedObject : detectedObjectsList) {
-//                System.out.println(detectedObject.toStringFull());
-//            }
-//          ------------------------------------
-
         }
         catch (Exception e) {
         }
