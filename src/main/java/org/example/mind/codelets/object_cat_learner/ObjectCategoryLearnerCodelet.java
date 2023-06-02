@@ -3,6 +3,7 @@ package org.example.mind.codelets.object_cat_learner;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
 
 import java.util.ArrayList;
@@ -33,12 +34,12 @@ public class ObjectCategoryLearnerCodelet extends Codelet {
         if(detectedObjectsMO.getI() == "") {
             return;
         }
-        ArrayList<RRObject> idObjs = (ArrayList<RRObject>) detectedObjectsMO.getI();
+        Idea detectedObjects = (Idea) detectedObjectsMO.getI();
 
-        pObjectCategoryLearner.updateCategories(idObjs);
+        pObjectCategoryLearner.updateCategories(detectedObjects);
         objectPCategoriesMO.setI(pObjectCategoryLearner.getRelevantCategories());
 
-        wObjectCategoryLearner.updateCategories(idObjs);
+        wObjectCategoryLearner.updateCategories(detectedObjects);
         objectWCategoriesMO.setI(wObjectCategoryLearner.getRelevantCategories());
 
     }

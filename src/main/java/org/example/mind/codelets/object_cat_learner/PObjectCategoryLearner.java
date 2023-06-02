@@ -1,5 +1,6 @@
 package org.example.mind.codelets.object_cat_learner;
 
+import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
 
@@ -20,16 +21,14 @@ public class PObjectCategoryLearner {
         objCategoryList = new ArrayList<PObjectCategory>();
     }
 
-    public void updateCategories(ArrayList<RRObject> objectInstances) {
+    public void updateCategories(Idea detectedObjects) {
 
         // find categories and increment relevance of existing categories
-        for(RRObject objectInstance : objectInstances) {
+        for(Idea objectInstance : detectedObjects.getL()) {
             int assignedCatIdx = this.belongToCatIdx(objectInstance);
 
             if(assignedCatIdx == -1) {
-                PObjectCategory newObjCategory = new PObjectCategory(objectInstance.getExternalContour(),
-                                                                   objectInstance.getBoundRect(),
-                                                                   objectInstance.getColor(), INIT_RELEVANCE);
+                PObjectCategory newObjCategory = new PObjectCategory(objectInstance, INIT_RELEVANCE);
                 this.objCategoryList.add(newObjCategory);
             } else {
                 if(this.objCategoryList.get(assignedCatIdx).getRelevance()<RELEVANCE_THRESHOLD) {
@@ -59,7 +58,7 @@ public class PObjectCategoryLearner {
         }
     }
 
-    public int belongToCatIdx(RRObject obj) {
+    public int belongToCatIdx(Idea obj) {
         int idx = -1;
 
         for(int i=0; i<objCategoryList.size(); i++) {

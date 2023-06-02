@@ -1,14 +1,16 @@
 package org.example.mind.codelets.object_cat_learner.entities;
 
+import br.unicamp.cst.representation.idea.Category;
 import org.opencv.core.Scalar;
 
 import java.util.Random;
 
-public abstract class ObjectCategory {
+public abstract class ObjectCategory implements Category {
     static int id = 0;
     int categoryId;
     Scalar colorIdScalar;
     double relevance;
+
 
     void initializeColorId() {
         Random rng = new Random();

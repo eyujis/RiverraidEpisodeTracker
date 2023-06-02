@@ -61,7 +61,7 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
 
             this.objectProposer.update(frame);
 
-            detectedObjectsMO.setI(this.objectProposer.getIdObjsCF());
+            detectedObjectsMO.setI(this.objectProposer.getDetectedObjectsCF());
 
             ArrayList<PObjectCategory> pObjectCategories = (ArrayList<PObjectCategory>) objectPCategoriesMO.getI();
             objectProposer.assignPCategories(pObjectCategories);

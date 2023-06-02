@@ -1,11 +1,13 @@
 package org.example.mind.codelets.object_cat_learner.entities;
 
+import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.WObjectCategoryLearner;
 import org.example.mind.codelets.object_proposer_codelet.entities.IdentifiedRRObject;
 import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
 import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class WObjectCategory extends  ObjectCategory{
@@ -19,17 +21,33 @@ public class WObjectCategory extends  ObjectCategory{
         super.initializeColorId();
     }
 
-    public double membership(ArrayList<IdentifiedRRObject> objectCluster) {
+    public boolean allObjectsHaveCategoriesAssigned(Idea objectCluster) {
+        for(Idea object : objectCluster.getL()) {
+            if(object.get("category").getValue() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Idea getInstance(List<Idea> constraints) {
+        return null;
+    }
+
+    @Override
+    public double membership(Idea objectCluster) {
         if(!allObjectsHaveCategoriesAssigned(objectCluster)) {
             return 0;
         }
 
-        if(objectCluster.size() == catParts.size()) {
+        if(objectCluster.getL().size() == catParts.size()) {
             ArrayList<Integer> objectCatIds = new ArrayList<>();
             ArrayList<Integer> partCatIds = new ArrayList<>();
 
-            for(IdentifiedRRObject object : objectCluster) {
-                objectCatIds.add((Integer) object.getAssignedCategory().getCategoryId());
+            for(Idea obj : objectCluster.getL()) {
+                ObjectCategory objCat = (ObjectCategory) obj.get("category").getValue();
+                objectCatIds.add((Integer) objCat.getCategoryId());
             }
 
             for(PObjectCategory catPart: catParts) {
@@ -42,15 +60,6 @@ public class WObjectCategory extends  ObjectCategory{
         }
 
         return 0;
-    }
-
-    public boolean allObjectsHaveCategoriesAssigned(ArrayList<IdentifiedRRObject> objectCluster) {
-        for(IdentifiedRRObject object : objectCluster) {
-            if(object.getAssignedCategory() == null) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public ArrayList<PObjectCategory> getCatParts() {
@@ -77,7 +86,7 @@ public class WObjectCategory extends  ObjectCategory{
                 return true;
             }
         }
-
         return false;
     }
 }
+

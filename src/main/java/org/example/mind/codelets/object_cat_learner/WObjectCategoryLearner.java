@@ -1,5 +1,6 @@
 package org.example.mind.codelets.object_cat_learner;
 
+import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
 import org.example.mind.codelets.object_proposer_codelet.ObjectComparator;
@@ -23,9 +24,9 @@ public class WObjectCategoryLearner {
         objCategoryList = new ArrayList<WObjectCategory>();
     }
 
-    public void updateCategories(ArrayList<RRObject> objectInstances) {
-        ArrayList<WObjectCategory> rcvCategories = extractWCategories(objectInstances);
-//        System.out.println(rcvCategories.size());
+    public void updateCategories(Idea detectedObjects) {
+        ArrayList<WObjectCategory> rcvCategories = extractWCategories(detectedObjects);
+
         for(WObjectCategory rcvCat : rcvCategories) {
             int equalCatIdx = this.equalCategoryIdx(rcvCat);
 
@@ -53,37 +54,34 @@ public class WObjectCategoryLearner {
         return idx;
     }
 
-    public ArrayList<WObjectCategory> extractWCategories(ArrayList<RRObject> objectInstances) {
+    public ArrayList<WObjectCategory> extractWCategories(Idea detectedObjects) {
 
-        ArrayList<ArrayList<RRObject>> objectClusters = new ArrayList<>();
+        boolean[][] borderMatrix = initializeBooleanMatrix(detectedObjects.getL().size());
 
-
-        boolean[][] borderMatrix = initializeBooleanMatrix(objectInstances.size());
-
-        for(int i=0; i<objectInstances.size(); i++) {
-            for(int j=0; j<objectInstances.size(); j++) {
-                RRObject obj1 = objectInstances.get(i);
-                RRObject obj2 = objectInstances.get(j);
+        for(int i=0; i<detectedObjects.getL().size(); i++) {
+            for(int j=0; j<detectedObjects.getL().size(); j++) {
+                Idea obj1 = detectedObjects.getL().get(i);
+                Idea obj2 = detectedObjects.getL().get(j);
 
                 if(i!=j && Math.abs(objectComparator.rectDistance(obj1, obj2))<=MIN_CLUSTER_DISTANCE
-                  && obj1.getAssignedCategory() != null
-                  && obj2.getAssignedCategory() !=null) {
+                  && obj1.get("category").getValue() != null
+                  && obj2.get("category").getValue() != null) {
                     borderMatrix[i][j] = true;
                 }
             }
         }
 
-        boolean[] visited = new boolean[objectInstances.size()];
+        boolean[] visited = new boolean[detectedObjects.getL().size()];
         for (int i = 0; i < visited.length; i++) {
             visited[i] = false;
         }
 
         ArrayList<ArrayList<PObjectCategory>> categoryClusters = new ArrayList<>();
 
-        for (int i = 0; i < objectInstances.size(); i++) {
+        for (int i = 0; i < detectedObjects.getL().size(); i++) {
             if (!visited[i]) {
                 ArrayList<PObjectCategory> group = new ArrayList<>();
-                exploreBorders(i, borderMatrix, visited, group, objectInstances);
+                exploreBorders(i, borderMatrix, visited, group, detectedObjects);
                 categoryClusters.add(group);
             }
         }
@@ -92,7 +90,6 @@ public class WObjectCategoryLearner {
 
         for(ArrayList<PObjectCategory> categoryCluster : categoryClusters) {
             if(categoryCluster.size()>1) {
-                System.out.println(categoryCluster.size());
                 WObjectCategory wObjectCategory = new WObjectCategory(categoryCluster, INIT_RELEVANCE);
                 wObjectCategories.add(wObjectCategory);
             }
@@ -101,9 +98,9 @@ public class WObjectCategoryLearner {
         return wObjectCategories;
     }
 
-    private static void exploreBorders(int obj, boolean[][] borderMatrix, boolean[] visited, ArrayList<PObjectCategory> group, ArrayList<RRObject> objects) {
+    private static void exploreBorders(int obj, boolean[][] borderMatrix, boolean[] visited, ArrayList<PObjectCategory> group, Idea objects) {
         visited[obj] = true;
-        group.add(objects.get(obj).getAssignedCategory());
+        group.add((PObjectCategory) objects.getL().get(obj).get("category").getValue());
 
         for (int i = 0; i < borderMatrix[obj].length; i++) {
             if (borderMatrix[obj][i] && !visited[i]) {
@@ -139,10 +136,6 @@ public class WObjectCategoryLearner {
                 relevantCategories.add(objectCategory);
             }
         }
-//        System.out.println("O1 P1:" + relevantCategories.get(0).getCatParts().get(0).getColorIdScalar());
-//        System.out.println("O1 P2:" + relevantCategories.get(0).getCatParts().get(1).getColorIdScalar());
-//        System.out.println("O2 P1:" + relevantCategories.get(1).getCatParts().get(0).getColorIdScalar());
-//        System.out.println("O2 P2:" + relevantCategories.get(1).getCatParts().get(1).getColorIdScalar());
         return relevantCategories;
     }
 

@@ -1,5 +1,6 @@
 package org.example.mind.codelets.object_proposer_codelet;
 
+import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
@@ -91,6 +92,44 @@ public class ObjectComparator {
         double y2tl = rect2.tl().y;
         double x2br = rect2.br().x;
         double y2br = rect2.br().y;
+
+        boolean left = x2br < x1tl;
+        boolean right = x1br < x2tl;
+        boolean bottom = y2br < y1tl;
+        boolean top = y1br < y2tl;
+
+        if(top && left) {
+            return pointDistance(new Point(x1tl, y1br), new Point(x2br, y2tl));
+        } else if(left && bottom) {
+            return pointDistance(new Point(x1tl, y1tl), new Point(x2br, y2br));
+        } else if(bottom && right) {
+            return pointDistance(new Point(x1br, y1tl), new Point(x2tl, y2br));
+        } else if(right && top) {
+            return pointDistance(new Point(x1br, y1br), new Point(x2tl, y2tl));
+        } else if(left) {
+            return x1tl - x2br;
+        } else if(right) {
+            return x2tl - x1br;
+        } else if(bottom) {
+            return y1tl - y2br;
+        } else if(top) {
+            return y2tl - y1br;
+        } else {
+            return 0;
+        }
+    }
+
+    public double rectDistance(Idea obj1, Idea obj2) {
+
+        // based on https://stackoverflow.com/a/26178015
+        double x1tl = (double) obj1.get("boundRect.tl.x").getValue();
+        double y1tl = (double) obj1.get("boundRect.tl.y").getValue();
+        double x1br = (double) obj1.get("boundRect.br.x").getValue();
+        double y1br = (double) obj1.get("boundRect.br.y").getValue();
+        double x2tl = (double) obj2.get("boundRect.tl.x").getValue();
+        double y2tl = (double) obj2.get("boundRect.tl.y").getValue();
+        double x2br = (double) obj2.get("boundRect.br.x").getValue();
+        double y2br = (double) obj2.get("boundRect.br.y").getValue();
 
         boolean left = x2br < x1tl;
         boolean right = x1br < x2tl;

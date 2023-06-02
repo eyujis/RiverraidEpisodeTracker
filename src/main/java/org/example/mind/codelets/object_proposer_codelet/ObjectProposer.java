@@ -1,5 +1,7 @@
 package org.example.mind.codelets.object_proposer_codelet;
 
+import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
 import org.example.mind.codelets.object_proposer_codelet.entities.IdentifiedRRObject;
@@ -44,7 +46,7 @@ public class ObjectProposer {
 
         for(PObjectCategory objCat : objectCategories) {
             for (IdentifiedRRObject idObj : idObjsCF) {
-                if (objCat.membership(idObj) == 1) {
+                if (objCat.membership(idObj.getObjectIdea()) == 1) {
                     idObj.setAssignedObjCategory(objCat);
                 }
             }
@@ -57,28 +59,27 @@ public class ObjectProposer {
 //            idObj.getAssignedCategory().setColorIdScalar(new Scalar(255,255,255));
 //        }
 
-        ArrayList<ArrayList<IdentifiedRRObject>> objectClusters = extractObjectClusters(idObjsCF);
-        for(ArrayList<IdentifiedRRObject> objectCluster : objectClusters) {
+        Idea objectClusters = extractObjectClusters(getDetectedObjectsCF());
+        for(Idea objectCluster : objectClusters.getL()) {
             for(WObjectCategory objectCategory : objectCategories) {
                 if(objectCategory.membership(objectCluster) == 1) {
-                    for(IdentifiedRRObject obj: objectCluster) {
-                        obj.getAssignedCategory().setColorIdScalar(objectCategory.getColorIdScalar());
+                    for(Idea obj: objectCluster.getL()) {
+                        ObjectCategory objCat = (ObjectCategory) obj.get("category").getValue();
+                        objCat.setColorIdScalar(objectCategory.getColorIdScalar());
                     }
                 }
             }
         }
-
-
     }
 
-    public ArrayList<ArrayList<IdentifiedRRObject>> extractObjectClusters(ArrayList<IdentifiedRRObject> objectInstances) {
+    public Idea extractObjectClusters(Idea objectInstances) {
 
-        boolean[][] borderMatrix = initializeBooleanMatrix(objectInstances.size());
+        boolean[][] borderMatrix = initializeBooleanMatrix(objectInstances.getL().size());
 
-        for(int i=0; i<objectInstances.size(); i++) {
-            for(int j=0; j<objectInstances.size(); j++) {
-                RRObject obj1 = objectInstances.get(i);
-                RRObject obj2 = objectInstances.get(j);
+        for(int i=0; i<objectInstances.getL().size(); i++) {
+            for(int j=0; j<objectInstances.getL().size(); j++) {
+                Idea obj1 = objectInstances.getL().get(i);
+                Idea obj2 = objectInstances.getL().get(j);
 
                 if(i!=j && Math.abs(objectComparator.rectDistance(obj1, obj2))<=MIN_CLUSTER_DISTANCE) {
                     borderMatrix[i][j] = true;
@@ -86,16 +87,16 @@ public class ObjectProposer {
             }
         }
 
-        boolean[] visited = new boolean[objectInstances.size()];
+        boolean[] visited = new boolean[objectInstances.getL().size()];
         for (int i = 0; i < visited.length; i++) {
             visited[i] = false;
         }
 
-        ArrayList<ArrayList<IdentifiedRRObject>> objectClusters = new ArrayList<>();
+        Idea objectClusters = new Idea("objectClusters", "", 0);
 
-        for (int i = 0; i < objectInstances.size(); i++) {
+        for (int i = 0; i < objectInstances.getL().size(); i++) {
             if (!visited[i]) {
-                ArrayList<IdentifiedRRObject> group = new ArrayList<>();
+                Idea group = new Idea("group", "", 0);
                 exploreBorders(i, borderMatrix, visited, group, objectInstances);
                 objectClusters.add(group);
             }
@@ -105,9 +106,9 @@ public class ObjectProposer {
         return objectClusters;
     }
 
-    private static void exploreBorders(int obj, boolean[][] borderMatrix, boolean[] visited, ArrayList<IdentifiedRRObject> group, ArrayList<IdentifiedRRObject> objects) {
+    private static void exploreBorders(int obj, boolean[][] borderMatrix, boolean[] visited, Idea group, Idea objects) {
         visited[obj] = true;
-        group.add(objects.get(obj));
+        group.add(objects.getL().get(obj));
 
         for (int i = 0; i < borderMatrix[obj].length; i++) {
             if (borderMatrix[obj][i] && !visited[i]) {
@@ -122,6 +123,14 @@ public class ObjectProposer {
 
     public ArrayList<IdentifiedRRObject> getIdObjsCF() {
         return idObjsCF;
+    }
+
+    public Idea getDetectedObjectsCF() {
+        Idea detectedObject = new Idea("detectedObjects", "", 0);
+        for(IdentifiedRRObject idObj : idObjsCF) {
+            detectedObject.add(idObj.getObjectIdea());
+        }
+        return detectedObject;
     }
 
     public boolean[][] initializeBooleanMatrix(int size) {

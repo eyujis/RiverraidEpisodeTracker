@@ -1,5 +1,6 @@
 package org.example.mind.codelets.object_proposer_codelet.entities;
 
+import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 import org.opencv.core.*;
@@ -64,5 +65,37 @@ public class RRObject {
 
     public void setAssignedObjCategory(PObjectCategory assignedObjCategory) {
         this.assignedObjCategory = assignedObjCategory;
+    }
+
+    public Idea getObjectIdea() {
+        Idea objectIdea = new Idea("object","",0);
+        Idea colorIdea = new Idea("color", "", 0);
+        colorIdea.add(new Idea("R", color[2]));
+        colorIdea.add(new Idea("B", color[1]));
+        colorIdea.add(new Idea("G", color[0]));
+        objectIdea.add(colorIdea);
+
+        Idea boundRectIdea = new Idea("boundRect", "", 0);
+        boundRectIdea.add(new Idea("height", boundRect.height));
+        boundRectIdea.add(new Idea("width", boundRect.width));
+
+        Idea tlIdea = new Idea("tl", "", 0);
+        tlIdea.add(new Idea("x", boundRect.tl().x));
+        tlIdea.add(new Idea("y", boundRect.tl().y));
+        boundRectIdea.add(tlIdea);
+
+        Idea brIdea = new Idea("br", "", 0);
+        brIdea.add(new Idea("x", boundRect.br().x));
+        brIdea.add(new Idea("y", boundRect.br().y));
+        boundRectIdea.add(brIdea);
+
+        objectIdea.add(boundRectIdea);
+
+        Idea catIdea = new Idea("category", assignedObjCategory);
+        objectIdea.add(catIdea);
+
+        objectIdea.add(new Idea("externalContour", externalContour));
+
+        return objectIdea;
     }
 }
