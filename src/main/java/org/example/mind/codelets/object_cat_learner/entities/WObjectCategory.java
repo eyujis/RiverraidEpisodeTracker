@@ -18,7 +18,7 @@ public class WObjectCategory extends  ObjectCategory{
 
     public boolean allObjectsHaveCategoriesAssigned(Idea objectCluster) {
         for(Idea object : objectCluster.getL()) {
-            if(object.get("category").getValue() == null) {
+            if(object.get("category").getValue() == "null") {
                 return false;
             }
         }

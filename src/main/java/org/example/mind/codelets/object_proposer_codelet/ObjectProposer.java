@@ -17,12 +17,8 @@ public class ObjectProposer {
 
     private double MIN_CLUSTER_DISTANCE = 2;
 
-//    private ArrayList<UnidentifiedRRObject> unObjsCF = new ArrayList<UnidentifiedRRObject>();
     private Idea unObjsCF;
-//    private ArrayList<IdentifiedRRObject> idObjsCF = new ArrayList<IdentifiedRRObject>();
     private Idea idObjsCF;
-
-    private boolean firstFrame = true;
 
     public ObjectProposer() {
         vsSketchpad = new VSSketchpad();
@@ -114,11 +110,6 @@ public class ObjectProposer {
     }
 
     public Idea getDetectedObjectsCF() {
-//        Idea detectedObject = new Idea("detectedObjects", "", 0);
-//        for(Idea idObj : idObjsCF.getL()) {
-//            detectedObject.add(idObj.clone());
-//        }
-//        return detectedObject;
         return idObjsCF;
     }
 

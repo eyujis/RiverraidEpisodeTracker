@@ -78,7 +78,7 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             Idea idObjs = objectProposer.getIdObjsCF();
             BufferedImage idObjsBuffImg = buffImageFromIdObjectList(idObjs);
             updateJLabelImg(this.mergedObjectsImgJLabel, idObjsBuffImg);
-
+//
             BufferedImage objectsImg = buffImageFromCatObjectList(idObjs);
             updateJLabelImg(this.categoriesImgJLabel, objectsImg);
         }

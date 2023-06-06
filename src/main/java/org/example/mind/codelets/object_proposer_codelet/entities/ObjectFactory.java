@@ -83,7 +83,7 @@ public class ObjectFactory {
 
         objectIdea.add(boundRectIdea);
 
-//        // category
+        // category
         Idea catIdea = new Idea("category", null);
         objectIdea.add(catIdea);
 
