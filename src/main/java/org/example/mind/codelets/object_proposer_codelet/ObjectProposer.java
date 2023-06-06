@@ -4,12 +4,8 @@ import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.entities.IdentifiedRRObject;
-import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
-import org.example.mind.codelets.object_proposer_codelet.entities.UnidentifiedRRObject;
 import org.example.mind.codelets.object_proposer_codelet.object_tracker.ObjectTracker;
 import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
 
@@ -21,8 +17,10 @@ public class ObjectProposer {
 
     private double MIN_CLUSTER_DISTANCE = 2;
 
-    private ArrayList<UnidentifiedRRObject> unObjsCF = new ArrayList<UnidentifiedRRObject>();
-    private ArrayList<IdentifiedRRObject> idObjsCF = new ArrayList<IdentifiedRRObject>();
+//    private ArrayList<UnidentifiedRRObject> unObjsCF = new ArrayList<UnidentifiedRRObject>();
+    private Idea unObjsCF;
+//    private ArrayList<IdentifiedRRObject> idObjsCF = new ArrayList<IdentifiedRRObject>();
+    private Idea idObjsCF;
 
     private boolean firstFrame = true;
 
@@ -33,21 +31,16 @@ public class ObjectProposer {
     }
 
     public void update(Mat frame) {
-
         unObjsCF = vsSketchpad.getUnObjectsFromFrame(frame);
         idObjsCF = objTracker.identifyBetweenFrames(unObjsCF);
 
     }
     public void assignPCategories(ArrayList<PObjectCategory> objectCategories) {
-        // why missile appears when this is commented?
-        for(IdentifiedRRObject idObj : idObjsCF) {
-            idObj.setAssignedObjCategory(null);
-        }
 
         for(PObjectCategory objCat : objectCategories) {
-            for (IdentifiedRRObject idObj : idObjsCF) {
-                if (objCat.membership(idObj.getObjectIdea()) == 1) {
-                    idObj.setAssignedObjCategory(objCat);
+            for (Idea idObj : idObjsCF.getL()) {
+                if (objCat.membership(idObj) == 1) {
+                    idObj.get("category").setValue(objCat);
                 }
             }
         }
@@ -112,20 +105,21 @@ public class ObjectProposer {
         }
     }
 
-    public ArrayList<UnidentifiedRRObject> getUnObjs() {
+    public Idea getUnObjs() {
         return unObjsCF;
     }
 
-    public ArrayList<IdentifiedRRObject> getIdObjsCF() {
+    public Idea getIdObjsCF() {
         return idObjsCF;
     }
 
     public Idea getDetectedObjectsCF() {
-        Idea detectedObject = new Idea("detectedObjects", "", 0);
-        for(IdentifiedRRObject idObj : idObjsCF) {
-            detectedObject.add(idObj.getObjectIdea());
-        }
-        return detectedObject;
+//        Idea detectedObject = new Idea("detectedObjects", "", 0);
+//        for(Idea idObj : idObjsCF.getL()) {
+//            detectedObject.add(idObj.clone());
+//        }
+//        return detectedObject;
+        return idObjsCF;
     }
 
     public boolean[][] initializeBooleanMatrix(int size) {

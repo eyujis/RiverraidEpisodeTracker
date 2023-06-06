@@ -4,10 +4,9 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.entities.IdentifiedRRObject;
-import org.example.mind.codelets.object_proposer_codelet.entities.UnidentifiedRRObject;
 import org.example.util.MatBufferedImageConverter;
 import org.example.visualization.JLabelImgUpdater;
 import org.opencv.core.*;
@@ -61,6 +60,8 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
 
             this.objectProposer.update(frame);
 
+//             clone the detected objects later maybe here or within the bufferizer
+
             detectedObjectsMO.setI(this.objectProposer.getDetectedObjectsCF());
 
             ArrayList<PObjectCategory> pObjectCategories = (ArrayList<PObjectCategory>) objectPCategoriesMO.getI();
@@ -70,12 +71,11 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             objectProposer.assignWCategories(wObjectCategories);
 
 //          ----------visualization----------
-
-            List<UnidentifiedRRObject> unObjs =  objectProposer.getUnObjs();
+            Idea unObjs =  objectProposer.getUnObjs();
             BufferedImage unObjsBuffImg = buffImageFromUnObjectList(unObjs);
             updateJLabelImg(this.objectsImgJLabel, unObjsBuffImg);
 
-            List<IdentifiedRRObject> idObjs = objectProposer.getIdObjsCF();
+            Idea idObjs = objectProposer.getIdObjsCF();
             BufferedImage idObjsBuffImg = buffImageFromIdObjectList(idObjs);
             updateJLabelImg(this.mergedObjectsImgJLabel, idObjsBuffImg);
 
@@ -93,15 +93,18 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
 
 
 
-    public BufferedImage buffImageFromUnObjectList(List<UnidentifiedRRObject> unObjs) throws IOException {
+    public BufferedImage buffImageFromUnObjectList(Idea unObjs) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(100,100,100));
 
-        for (int i = 0; i < unObjs.size(); i++) {
-            UnidentifiedRRObject unObj = unObjs.get(i);
+        for (int i = 0; i < unObjs.getL().size(); i++) {
+            Idea unObj = unObjs.getL().get(i);
             Imgproc.drawContours(frame,
-                    unObj.getContours(),
+                    (List<MatOfPoint>) unObj.get("contours").getValue(),
                     -1,
-                    unObj.getScalarColor(),
+                    new Scalar((double) unObj.get("color.B").getValue(),
+                            (double) unObj.get("color.G").getValue(),
+                            (double) unObj.get("color.R").getValue()
+                    ),
                     -1);
         }
 
@@ -110,15 +113,15 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         return bufferedImage;
     }
 
-    public BufferedImage buffImageFromIdObjectList(List<IdentifiedRRObject> idObjs) throws IOException {
+    public BufferedImage buffImageFromIdObjectList(Idea idObjs) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
-        for (int i = 0; i < idObjs.size(); i++) {
-            IdentifiedRRObject idObj = idObjs.get(i);
+        for (int i = 0; i < idObjs.getL().size(); i++) {
+            Idea idObj = idObjs.getL().get(i);
             Imgproc.drawContours(frame,
-                    idObj.getContours(),
+                    (List<MatOfPoint>) idObj.get("contours").getValue(),
                     -1,
-                    idObj.getColorIdScalar(),
+                    (Scalar) idObj.get("colorId").getValue(),
                     -1);
         }
 
@@ -127,17 +130,21 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         return bufferedImage;
     }
 
-    public BufferedImage buffImageFromCatObjectList(List<IdentifiedRRObject> idObjs) throws IOException {
+    public BufferedImage buffImageFromCatObjectList(Idea idObjs) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
-        for (int i = 0; i < idObjs.size(); i++) {
-            IdentifiedRRObject idObj = idObjs.get(i);
-            if(idObj.getAssignedCategory()!=null) {
-                Imgproc.drawContours(frame,
-                        idObj.getContours(),
-                        -1,
-                        idObj.getAssignedCategory().getColorIdScalar(),
-                        -1);
+        for (int i = 0; i < idObjs.getL().size(); i++) {
+            Idea idObj = idObjs.getL().get(i);
+
+            if(idObj.get("category").getValue()!="null") {
+                ObjectCategory objCat = (ObjectCategory) idObj.get("category").getValue();
+                if(objCat!=null) {
+                    Imgproc.drawContours(frame,
+                            (List<MatOfPoint>) idObj.get("contours").getValue(),
+                            -1,
+                            objCat.getColorIdScalar(),
+                            -1);
+                }
             }
         }
 

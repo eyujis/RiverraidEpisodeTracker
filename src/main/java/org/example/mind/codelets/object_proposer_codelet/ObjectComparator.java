@@ -1,27 +1,14 @@
 package org.example.mind.codelets.object_proposer_codelet;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
 public class ObjectComparator {
     static final double MIN_CENTER_DISTANCE = 50;
     static final double MIN_SHAPE_DIFF_RATIO= 0.3;
     static final double MIN_HUE_DIFF = 2;
-
-    public boolean similarPolygonShape(RRObject o1, RRObject o2) {
-        double hueDistance = Imgproc.matchShapes(o1.getExternalContour(),
-                o2.getExternalContour(),
-                Imgproc.CV_CONTOURS_MATCH_I1,
-                0.0);
-        if(hueDistance<=MIN_HUE_DIFF) {
-            return true;
-        }
-        return false;
-    }
 
     public double getHueDistance(Idea o1, Idea o2) {
         MatOfPoint contour1 = (MatOfPoint) o1.get("externalContour").getValue();

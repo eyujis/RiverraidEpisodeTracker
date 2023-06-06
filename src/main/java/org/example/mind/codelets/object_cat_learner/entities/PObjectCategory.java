@@ -1,14 +1,10 @@
 package org.example.mind.codelets.object_cat_learner.entities;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.List;
-import java.util.Random;
 
 public class PObjectCategory extends ObjectCategory {
     static final double MIN_SHAPE_DIFF_RATIO= 0.1;

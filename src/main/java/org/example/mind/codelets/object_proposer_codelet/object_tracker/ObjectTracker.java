@@ -1,50 +1,56 @@
 package org.example.mind.codelets.object_proposer_codelet.object_tracker;
 
+import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_proposer_codelet.ObjectComparator;
-import org.example.mind.codelets.object_proposer_codelet.entities.IdentifiedRRObject;
-import org.example.mind.codelets.object_proposer_codelet.entities.UnidentifiedRRObject;
-
-import java.util.ArrayList;
+import org.example.mind.codelets.object_proposer_codelet.entities.ObjectFactory;
 
 public class ObjectTracker {
 
-    private ArrayList<IdentifiedRRObject> objsPF = new ArrayList<IdentifiedRRObject>();
-    private ArrayList<UnidentifiedRRObject> unObjsCF = new ArrayList<UnidentifiedRRObject>();
-    private ArrayList<UnidentifiedRRObject> newUnObjsCF = new ArrayList<UnidentifiedRRObject>();
-    private ArrayList<IdentifiedRRObject> idObjsCF = new ArrayList<IdentifiedRRObject>();
+    private Idea objsPF = new Idea("objsPF", "", 0);
+    private Idea unObjsCF = new Idea("unObjects", "", 0);
+    private Idea newUnObjsCF = new Idea("newUnObjsCF", "", 0);
+    private Idea idObjsCF = new Idea("idObjsCF", "", 0);
 
     private ObjectComparator objComparator = new ObjectComparator();
+    private ObjectFactory objFactory = new ObjectFactory();
 
     private boolean firstFrame = true;
 
-    public ArrayList<IdentifiedRRObject> identifyBetweenFrames(ArrayList<UnidentifiedRRObject> detectedObjs) {
+    public Idea identifyBetweenFrames(Idea detectedObjs) {
         if(firstFrame == true) {
             firstFrame = false;
-            idObjsCF = createIdObjsFromUnObjs(detectedObjs);
+            idObjsCF = objFactory.createIdObjsFromUnObjs(detectedObjs);
             return idObjsCF;
         }
 
-        objsPF = new ArrayList<IdentifiedRRObject>();
-        objsPF.addAll(idObjsCF);
-        objsPF.addAll(createIdObjsFromUnObjs(newUnObjsCF));
+        objsPF = new Idea("objsPF", "", 0);
+        for(Idea idObjCF : idObjsCF.getL()) {
+            objsPF.add(idObjCF);
+        }
 
-        idObjsCF = new ArrayList<IdentifiedRRObject>();
-        newUnObjsCF = new ArrayList<UnidentifiedRRObject>();
+        if(newUnObjsCF.getL().size()>0) {
+            for(Idea newUnObjCF : objFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
+                objsPF.add(newUnObjCF);
+            }
+        }
+
+        idObjsCF = new Idea("idObjsCF", "", 0);
+        newUnObjsCF = new Idea("newUnObjsCF", "", 0);
 
         unObjsCF = detectedObjs;
 
-        int n_objects = Math.max(unObjsCF.size(), objsPF.size());
+        int n_objects = Math.max(unObjsCF.getL().size(), objsPF.getL().size());
         double[][] dataMatrix = new double[n_objects][n_objects];
         setToMaxValue(dataMatrix);
 
         // Assign objects between frames
-        for(int i=0; i<unObjsCF.size(); i++) {
-            for(int j=0; j<objsPF.size(); j++) {
-                boolean closeCenterDistance = objComparator.closeCenterDistance(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
-                double centerDistance = objComparator.getCenterDistance(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
-                double hueDistance = objComparator.getHueDistance(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
-                boolean sameColor = objComparator.areSameColor(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
-                boolean similarRectShape = objComparator.haveSimilarRectShape(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
+        for(int i=0; i<unObjsCF.getL().size(); i++) {
+            for(int j=0; j<objsPF.getL().size(); j++) {
+                boolean closeCenterDistance = objComparator.closeCenterDistance(unObjsCF.getL().get(i), objsPF.getL().get(j));
+                double centerDistance = objComparator.getCenterDistance(unObjsCF.getL().get(i), objsPF.getL().get(j));
+                double hueDistance = objComparator.getHueDistance(unObjsCF.getL().get(i), objsPF.getL().get(j));
+                boolean sameColor = objComparator.areSameColor(unObjsCF.getL().get(i), objsPF.getL().get(j));
+                boolean similarRectShape = objComparator.haveSimilarRectShape(unObjsCF.getL().get(i), objsPF.getL().get(j));
 
                 if(closeCenterDistance
 //                        && hueDistance<=MIN_HUE_DIFF
@@ -61,14 +67,15 @@ public class ObjectTracker {
         for(int i=0; i<assignment.length; i++) {
 
             //remove objects from last frame that disappeared in the current frame
-            if(assignment[i][1] <= unObjsCF.size()-1) {
+            if(assignment[i][1] <= unObjsCF.getL().size()-1) {
                 //new objects in the current frame that where not present in the previous frame
-                if(assignment[i][0] > objsPF.size()-1) {
-                    newUnObjsCF.add(unObjsCF.get(assignment[i][1]));
+                if(assignment[i][0] > objsPF.getL().size()-1) {
+                    newUnObjsCF.getL().add(unObjsCF.getL().get(assignment[i][1]));
                     //assigns objects in the previous frame to objects in the current frame
                 } else {
-                    objsPF.get(assignment[i][0]).updateProperties(unObjsCF.get(assignment[i][1]));
-                    idObjsCF.add(objsPF.get(assignment[i][0]));
+                    objFactory.transferPropertyValues(objsPF.getL().get(assignment[i][0]), unObjsCF.getL().get(assignment[i][1]));
+//                    objsPF.getL().get(assignment[i][0]).updateProperties(unObjsCF.getL().get(assignment[i][1]));
+                    idObjsCF.getL().add(objsPF.getL().get(assignment[i][0]));
                 }
             }
         }
@@ -82,14 +89,6 @@ public class ObjectTracker {
                 matrix[i][j] = Double.MAX_VALUE;
             }
         }
-    }
-
-    public ArrayList<IdentifiedRRObject> createIdObjsFromUnObjs(ArrayList<UnidentifiedRRObject> unObjs) {
-        ArrayList<IdentifiedRRObject> idObjs = new ArrayList<IdentifiedRRObject>();
-        for(UnidentifiedRRObject unObj: unObjs) {
-            idObjs.add(new IdentifiedRRObject(unObj));
-        }
-        return idObjs;
     }
 
 }

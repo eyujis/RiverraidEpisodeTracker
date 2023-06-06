@@ -2,7 +2,6 @@ package org.example.mind.codelets.object_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -22,7 +21,6 @@ public class PObjectCategoryLearner {
     }
 
     public void updateCategories(Idea detectedObjects) {
-
         // find categories and increment relevance of existing categories
         for(Idea objectInstance : detectedObjects.getL()) {
             int assignedCatIdx = this.belongToCatIdx(objectInstance);

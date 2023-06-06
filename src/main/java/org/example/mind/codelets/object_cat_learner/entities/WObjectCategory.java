@@ -1,14 +1,9 @@
 package org.example.mind.codelets.object_cat_learner.entities;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_cat_learner.WObjectCategoryLearner;
-import org.example.mind.codelets.object_proposer_codelet.entities.IdentifiedRRObject;
-import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
-import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class WObjectCategory extends  ObjectCategory{
     ArrayList<PObjectCategory> catParts;

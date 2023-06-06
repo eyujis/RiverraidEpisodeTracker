@@ -4,7 +4,6 @@ import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
 import org.example.mind.codelets.object_proposer_codelet.ObjectComparator;
-import org.example.mind.codelets.object_proposer_codelet.entities.RRObject;
 
 import java.util.*;
 
@@ -100,11 +99,13 @@ public class WObjectCategoryLearner {
 
     private static void exploreBorders(int obj, boolean[][] borderMatrix, boolean[] visited, ArrayList<PObjectCategory> group, Idea objects) {
         visited[obj] = true;
-        group.add((PObjectCategory) objects.getL().get(obj).get("category").getValue());
 
-        for (int i = 0; i < borderMatrix[obj].length; i++) {
-            if (borderMatrix[obj][i] && !visited[i]) {
-                exploreBorders(i, borderMatrix, visited, group, objects);
+        if(objects.getL().get(obj).get("category").getValue() != "null") {
+            group.add((PObjectCategory) objects.getL().get(obj).get("category").getValue());
+            for (int i = 0; i < borderMatrix[obj].length; i++) {
+                if (borderMatrix[obj][i] && !visited[i]) {
+                    exploreBorders(i, borderMatrix, visited, group, objects);
+                }
             }
         }
     }

@@ -1,7 +1,8 @@
 package org.example.mind.codelets.object_proposer_codelet;
 
+import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_proposer_codelet.entities.ObjectFactory;
 import org.example.mind.codelets.object_proposer_codelet.fg_samplers.FGPositionSequentialSampler;
-import org.example.mind.codelets.object_proposer_codelet.entities.UnidentifiedRRObject;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
@@ -9,11 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RandomSaccadesAlgorithm {
-        private ArrayList<UnidentifiedRRObject> unObjects;
-        private FGPositionSequentialSampler fGPositionSampler;
+    private Idea unObjects;
+    private FGPositionSequentialSampler fGPositionSampler;
+    private ObjectFactory objectFactory = new ObjectFactory();
 
-        public ArrayList<UnidentifiedRRObject> getAllUnObjects(Mat frame) {
-        unObjects = new ArrayList<UnidentifiedRRObject>();
+    public Idea getAllUnObjects(Mat frame) {
+        Idea unObjects = new Idea("unObjects", "", 0);
         fGPositionSampler = new FGPositionSequentialSampler(frame);
 
         while(!fGPositionSampler.isEmpty()) {
@@ -24,14 +26,33 @@ public class RandomSaccadesAlgorithm {
             Mat mask = getFloodFillMask(frameClone, randomPoint);
             List<MatOfPoint> objContour = getMaskContour(mask);
 
-            UnidentifiedRRObject unObj = new UnidentifiedRRObject(objColorBRG, objContour);
+            Idea unObj = objectFactory.createUnObject(objColorBRG, objContour);
             unObjects.add(unObj);
 
             fGPositionSampler.removeMaskFromSample(mask);
-
         }
         return unObjects;
     }
+
+//    public ArrayList<UnidentifiedRRObject> getAllUnObjects(Mat frame) {
+//        unObjects = new ArrayList<UnidentifiedRRObject>();
+//        fGPositionSampler = new FGPositionSequentialSampler(frame);
+//
+//        while(!fGPositionSampler.isEmpty()) {
+//            Mat frameClone = frame.clone();
+//            Point randomPoint = fGPositionSampler.getFGPosition();
+//
+//            double[] objColorBRG = frameClone.get((int) randomPoint.y, (int) randomPoint.x);
+//            Mat mask = getFloodFillMask(frameClone, randomPoint);
+//            List<MatOfPoint> objContour = getMaskContour(mask);
+//
+//            UnidentifiedRRObject unObj = new UnidentifiedRRObject(objColorBRG, objContour);
+//            unObjects.add(unObj);
+//
+//            fGPositionSampler.removeMaskFromSample(mask);
+//        }
+//        return unObjects;
+//    }
 
     private Mat getFloodFillMask(Mat frame, Point seedPoint) {
         Mat mask = Mat.zeros(frame.rows() + 2, frame.cols() + 2, 0);
