@@ -54,11 +54,6 @@ public class ObjectProposer {
     }
 
     public void assignWCategories(ArrayList<WObjectCategory> objectCategories) {
-//         why missile appears when this is commented?
-//        for(IdentifiedRRObject idObj : idObjsCF) {
-//            idObj.getAssignedCategory().setColorIdScalar(new Scalar(255,255,255));
-//        }
-
         Idea objectClusters = extractObjectClusters(getDetectedObjectsCF());
         for(Idea objectCluster : objectClusters.getL()) {
             for(WObjectCategory objectCategory : objectCategories) {

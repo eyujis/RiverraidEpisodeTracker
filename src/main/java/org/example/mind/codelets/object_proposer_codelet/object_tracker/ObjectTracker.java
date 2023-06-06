@@ -40,11 +40,11 @@ public class ObjectTracker {
         // Assign objects between frames
         for(int i=0; i<unObjsCF.size(); i++) {
             for(int j=0; j<objsPF.size(); j++) {
-                boolean closeCenterDistance = objComparator.closeCenterDistance(unObjsCF.get(i), objsPF.get(j));
-                double centerDistance = objComparator.getCenterDistance(unObjsCF.get(i), objsPF.get(j));
-                double hueDistance = objComparator.getHueDistance(unObjsCF.get(i), objsPF.get(j));
-                boolean sameColor = objComparator.areSameColor(unObjsCF.get(i), objsPF.get(j));
-                boolean similarRectShape = objComparator.haveSimilarRectShape(unObjsCF.get(i), objsPF.get(j));
+                boolean closeCenterDistance = objComparator.closeCenterDistance(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
+                double centerDistance = objComparator.getCenterDistance(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
+                double hueDistance = objComparator.getHueDistance(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
+                boolean sameColor = objComparator.areSameColor(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
+                boolean similarRectShape = objComparator.haveSimilarRectShape(unObjsCF.get(i).getObjectIdea(), objsPF.get(j).getObjectIdea());
 
                 if(closeCenterDistance
 //                        && hueDistance<=MIN_HUE_DIFF

@@ -69,12 +69,21 @@ public class RRObject {
 
     public Idea getObjectIdea() {
         Idea objectIdea = new Idea("object","",0);
+
+        // color
         Idea colorIdea = new Idea("color", "", 0);
         colorIdea.add(new Idea("R", color[2]));
         colorIdea.add(new Idea("B", color[1]));
         colorIdea.add(new Idea("G", color[0]));
         objectIdea.add(colorIdea);
 
+        // center
+        Idea centerIdea = new Idea("center", "", 0);
+        centerIdea.add(new Idea("x", centerPoint.x));
+        centerIdea.add(new Idea("y", centerPoint.y));
+        objectIdea.add(centerIdea);
+
+        // bounding box
         Idea boundRectIdea = new Idea("boundRect", "", 0);
         boundRectIdea.add(new Idea("height", boundRect.height));
         boundRectIdea.add(new Idea("width", boundRect.width));
@@ -91,9 +100,11 @@ public class RRObject {
 
         objectIdea.add(boundRectIdea);
 
+        // category
         Idea catIdea = new Idea("category", assignedObjCategory);
         objectIdea.add(catIdea);
 
+        // external contour
         objectIdea.add(new Idea("externalContour", externalContour));
 
         return objectIdea;
