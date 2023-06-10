@@ -5,6 +5,8 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
+
 public class ObjectCategoryLearnerCodelet extends Codelet {
 
     Memory detectedObjectsMO;

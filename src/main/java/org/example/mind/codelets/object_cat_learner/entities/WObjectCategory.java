@@ -6,19 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WObjectCategory extends  ObjectCategory{
-    ArrayList<PObjectCategory> catParts;
+    ArrayList<String> catParts;
 
-    public WObjectCategory(ArrayList<PObjectCategory> catParts, double relevance) {
+    public WObjectCategory(ArrayList<String> catParts, double relevance) {
         this.catParts = catParts;
         super.relevance = relevance;
-
-        super.initializeCategoryId();
-        super.initializeColorId();
     }
 
     public boolean allObjectsHaveCategoriesAssigned(Idea objectCluster) {
         for(Idea object : objectCluster.getL()) {
-            if(object.get("category").getValue() == "null") {
+            if(object.get("pCategory").getValue() == "null") {
                 return false;
             }
         }
@@ -37,16 +34,16 @@ public class WObjectCategory extends  ObjectCategory{
         }
 
         if(objectCluster.getL().size() == catParts.size()) {
-            ArrayList<Integer> objectCatIds = new ArrayList<>();
-            ArrayList<Integer> partCatIds = new ArrayList<>();
+            ArrayList<String> objectCatIds = new ArrayList<>();
+            ArrayList<String> partCatIds = new ArrayList<>();
 
             for(Idea obj : objectCluster.getL()) {
-                ObjectCategory objCat = (ObjectCategory) obj.get("category").getValue();
-                objectCatIds.add((Integer) objCat.getCategoryId());
+                String objCat = (String) obj.get("pCategory").getValue();
+                objectCatIds.add(objCat);
             }
 
-            for(PObjectCategory catPart: catParts) {
-                partCatIds.add((Integer) catPart.getCategoryId());
+            for(String catPart: catParts) {
+                partCatIds.add(catPart);
             }
 
             if(objectCatIds.containsAll(partCatIds) && partCatIds.containsAll(objectCatIds)) {
@@ -57,24 +54,24 @@ public class WObjectCategory extends  ObjectCategory{
         return 0;
     }
 
-    public ArrayList<PObjectCategory> getCatParts() {
+    public ArrayList<String> getCatParts() {
         return catParts;
     }
 
     public boolean equals(WObjectCategory compWCat) {
 
-        ArrayList<PObjectCategory> compWCatParts = compWCat.getCatParts();
+        ArrayList<String> compWCatParts = compWCat.getCatParts();
 
         if(compWCatParts.size() == catParts.size()) {
-            ArrayList<Integer> compPartCatIds = new ArrayList<>();
-            ArrayList<Integer> partCatIds = new ArrayList<>();
+            ArrayList<String> compPartCatIds = new ArrayList<>();
+            ArrayList<String> partCatIds = new ArrayList<>();
 
-            for(PObjectCategory compCatPart : compWCatParts) {
-                compPartCatIds.add(compCatPart.getCategoryId());
+            for(String compCatPart : compWCatParts) {
+                compPartCatIds.add(compCatPart);
             }
 
-            for(PObjectCategory catPart: catParts) {
-                partCatIds.add(catPart.getCategoryId());
+            for(String catPart: catParts) {
+                partCatIds.add(catPart);
             }
 
             if(compPartCatIds.containsAll(partCatIds) && partCatIds.containsAll(compPartCatIds)) {

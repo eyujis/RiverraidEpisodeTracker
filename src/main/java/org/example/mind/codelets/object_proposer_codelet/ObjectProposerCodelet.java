@@ -8,6 +8,7 @@ import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
 import org.example.util.MatBufferedImageConverter;
+import org.example.visualization.Category2Color;
 import org.example.visualization.JLabelImgUpdater;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -28,6 +29,7 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     JLabel objectsImgJLabel;
     JLabel mergedObjectsImgJLabel;
     JLabel categoriesImgJLabel;
+    Category2Color category2Color = new Category2Color();
 
     public ObjectProposerCodelet(JLabel objectsImgJLabel,
                                  JLabel mergedObjectsImgJLabel,
@@ -52,25 +54,30 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
 
     @Override
     public void proc() {
-        try {
-            Idea rawDataBufferIdea = (Idea) rawDataMO.getI();
-            List<Idea> framesIdea = (List<Idea>) rawDataBufferIdea.get("frames").getValue();
-            BufferedImage buffImgFrame = (BufferedImage) (framesIdea.get(0).getValue());
-            Mat frame = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
 
-            this.objectProposer.update(frame);
+        Idea rawDataBufferIdea = (Idea) rawDataMO.getI();
+        List<Idea> framesIdea = (List<Idea>) rawDataBufferIdea.get("frames").getValue();
+        BufferedImage buffImgFrame = (BufferedImage) (framesIdea.get(0).getValue());
+        Mat frame = null;
 
-//             clone the detected objects later maybe here or within the bufferizer
+        frame = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
 
-            detectedObjectsMO.setI(this.objectProposer.getDetectedObjectsCF());
+        this.objectProposer.update(frame);
 
-            ArrayList<PObjectCategory> pObjectCategories = (ArrayList<PObjectCategory>) objectPCategoriesMO.getI();
+//      clone the detected objects later maybe here or within the bufferizer
+        detectedObjectsMO.setI(this.objectProposer.getDetectedObjectsCF());
+
+        if(objectPCategoriesMO.getI() != "") {
+            Idea pObjectCategories = (Idea) objectPCategoriesMO.getI();
             objectProposer.assignPCategories(pObjectCategories);
+        }
 
-            ArrayList<WObjectCategory> wObjectCategories = (ArrayList<WObjectCategory>) objectWCategoriesMO.getI();
+
+            Idea wObjectCategories = (Idea) objectWCategoriesMO.getI();
             objectProposer.assignWCategories(wObjectCategories);
 
 //          ----------visualization----------
+        try {
             Idea unObjs =  objectProposer.getUnObjs();
             BufferedImage unObjsBuffImg = buffImageFromUnObjectList(unObjs);
             updateJLabelImg(this.objectsImgJLabel, unObjsBuffImg);
@@ -78,11 +85,12 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             Idea idObjs = objectProposer.getIdObjsCF();
             BufferedImage idObjsBuffImg = buffImageFromIdObjectList(idObjs);
             updateJLabelImg(this.mergedObjectsImgJLabel, idObjsBuffImg);
-//
+
             BufferedImage objectsImg = buffImageFromCatObjectList(idObjs);
             updateJLabelImg(this.categoriesImgJLabel, objectsImg);
-        }
-        catch (Exception e) {
+
+        } catch (Exception err) {
+            System.out.println(err.getMessage());
         }
     }
 
@@ -135,14 +143,22 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
 
         for (int i = 0; i < idObjs.getL().size(); i++) {
             Idea idObj = idObjs.getL().get(i);
-
-            if(idObj.get("category").getValue()!="null") {
-                ObjectCategory objCat = (ObjectCategory) idObj.get("category").getValue();
-                if(objCat!=null) {
+            if(idObj.get("wCategory").getValue()!="null") {
+                String objCatName = (String) idObj.get("wCategory").getValue();
+                if(objCatName!=null) {
                     Imgproc.drawContours(frame,
                             (List<MatOfPoint>) idObj.get("contours").getValue(),
                             -1,
-                            objCat.getColorIdScalar(),
+                            category2Color.getColor(objCatName),
+                            -1);
+                }
+            } else if(idObj.get("pCategory").getValue()!="null") {
+                String objCatName = (String) idObj.get("pCategory").getValue();
+                if(objCatName!=null) {
+                    Imgproc.drawContours(frame,
+                            (List<MatOfPoint>) idObj.get("contours").getValue(),
+                            -1,
+                            category2Color.getColor(objCatName),
                             -1);
                 }
             }

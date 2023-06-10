@@ -14,11 +14,8 @@ public class PObjectCategory extends ObjectCategory {
 
     public PObjectCategory(Idea obj, double relevance) {
         this.objPrototype = obj.clone();
-        this.objPrototype.setName("category");
+        this.objPrototype.setName("pCategory");
         super.relevance = relevance;
-
-        super.initializeCategoryId();
-        super.initializeColorId();
     }
 
     @Override

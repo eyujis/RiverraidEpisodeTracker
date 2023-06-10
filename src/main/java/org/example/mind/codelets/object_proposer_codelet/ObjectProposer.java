@@ -31,25 +31,26 @@ public class ObjectProposer {
         idObjsCF = objTracker.identifyBetweenFrames(unObjsCF);
 
     }
-    public void assignPCategories(ArrayList<PObjectCategory> objectCategories) {
-
-        for(PObjectCategory objCat : objectCategories) {
+    public void assignPCategories(Idea objectCategories) {
+        for(Idea objCatIdea : objectCategories.getL()) {
+            PObjectCategory objCat = (PObjectCategory) objCatIdea.getValue();
             for (Idea idObj : idObjsCF.getL()) {
                 if (objCat.membership(idObj) == 1) {
-                    idObj.get("category").setValue(objCat);
+                    idObj.get("pCategory").setValue(objCatIdea.getName());
                 }
             }
         }
     }
 
-    public void assignWCategories(ArrayList<WObjectCategory> objectCategories) {
+    public void assignWCategories(Idea objectCategories) {
         Idea objectClusters = extractObjectClusters(getDetectedObjectsCF());
         for(Idea objectCluster : objectClusters.getL()) {
-            for(WObjectCategory objectCategory : objectCategories) {
-                if(objectCategory.membership(objectCluster) == 1) {
+            for(Idea objCatIdea : objectCategories.getL()) {
+                WObjectCategory objCat = (WObjectCategory) objCatIdea.getValue();
+                if(objCat.membership(objectCluster) == 1) {
                     for(Idea obj: objectCluster.getL()) {
-                        ObjectCategory objCat = (ObjectCategory) obj.get("category").getValue();
-                        objCat.setColorIdScalar(objectCategory.getColorIdScalar());
+                        Idea wObjCat = obj.get("wCategory");
+                        wObjCat.setValue(objCatIdea.getName());
                     }
                 }
             }

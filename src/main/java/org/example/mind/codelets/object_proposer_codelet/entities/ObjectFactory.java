@@ -1,12 +1,9 @@
 package org.example.mind.codelets.object_proposer_codelet.entities;
 
-import br.unicamp.cst.representation.idea.Category;
 import br.unicamp.cst.representation.idea.Idea;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
-import javax.sound.midi.SysexMessage;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -84,8 +81,11 @@ public class ObjectFactory {
         objectIdea.add(boundRectIdea);
 
         // category
-        Idea catIdea = new Idea("category", null);
-        objectIdea.add(catIdea);
+        Idea pCatIdea = new Idea("pCategory", null);
+        objectIdea.add(pCatIdea);
+
+        Idea wCatIdea = new Idea("wCategory", null);
+        objectIdea.add(wCatIdea);
 
         objectIdea.add(new Idea("contours", contours));
 

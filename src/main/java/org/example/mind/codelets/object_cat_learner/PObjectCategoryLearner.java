@@ -1,13 +1,18 @@
 package org.example.mind.codelets.object_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_cat_learner.entities.CategoryFactory;
+import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 public class PObjectCategoryLearner {
-    private ArrayList<PObjectCategory> objCategoryList;
+    private Idea objCategoryList;
+    private CategoryFactory catFactory;
 
     double RELEVANCE_THRESHOLD = 5;
     double INIT_RELEVANCE = 1;
@@ -16,8 +21,8 @@ public class PObjectCategoryLearner {
     double MINIMUM_RELEVANCE = 0.5;
 
     public PObjectCategoryLearner() {
-
-        objCategoryList = new ArrayList<PObjectCategory>();
+        catFactory = new CategoryFactory();
+        objCategoryList = new Idea("pCategories", "", 0);
     }
 
     public void updateCategories(Idea detectedObjects) {
@@ -26,11 +31,12 @@ public class PObjectCategoryLearner {
             int assignedCatIdx = this.belongToCatIdx(objectInstance);
 
             if(assignedCatIdx == -1) {
-                PObjectCategory newObjCategory = new PObjectCategory(objectInstance, INIT_RELEVANCE);
+                Idea newObjCategory = catFactory.createPCategory(objectInstance, INIT_RELEVANCE);
                 this.objCategoryList.add(newObjCategory);
             } else {
-                if(this.objCategoryList.get(assignedCatIdx).getRelevance()<RELEVANCE_THRESHOLD) {
-                    this.objCategoryList.get(assignedCatIdx).incrementRelevance(INCREMENT_FACTOR);
+                ObjectCategory cat = (ObjectCategory) this.objCategoryList.getL().get(assignedCatIdx).getValue();
+                if(cat.getRelevance()<RELEVANCE_THRESHOLD) {
+                    cat.incrementRelevance(INCREMENT_FACTOR);
                 }
             }
         }
@@ -40,18 +46,31 @@ public class PObjectCategoryLearner {
     }
 
     public void removeIrrelevantCategories() {
-        for(Iterator<PObjectCategory> iter = objCategoryList.iterator(); iter.hasNext(); ) {
-            PObjectCategory objectCategory = iter.next();
-            if(objectCategory.getRelevance() < MINIMUM_RELEVANCE) {
-                iter.remove();
+        ArrayList<Integer> idxsToRemove = new ArrayList();
+
+        for(int i=0; i<objCategoryList.getL().size(); i++) {
+            Idea objCatIdea = objCategoryList.getL().get(i);
+            ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
+            if(objCat.getRelevance() < MINIMUM_RELEVANCE) {
+                idxsToRemove.add(i);
             }
         }
+
+        Collections.sort(idxsToRemove, Collections.reverseOrder());
+
+        for (int index : idxsToRemove) {
+            if (index >= 0 && index < objCategoryList.getL().size()) {
+                objCategoryList.getL().remove(index);
+            }
+        }
+
     }
 
     public void decrementCategoriesRelevance() {
-        for(PObjectCategory objectCategory : objCategoryList) {
-            if(objectCategory.getRelevance() < RELEVANCE_THRESHOLD) {
-                objectCategory.decrementRelevance(DECREMENT_FACTOR);
+        for(Idea objectCategory : objCategoryList.getL()) {
+            PObjectCategory cat = (PObjectCategory) objectCategory.getValue();
+            if(cat.getRelevance() < RELEVANCE_THRESHOLD) {
+                cat.decrementRelevance(DECREMENT_FACTOR);
             }
         }
     }
@@ -59,19 +78,21 @@ public class PObjectCategoryLearner {
     public int belongToCatIdx(Idea obj) {
         int idx = -1;
 
-        for(int i=0; i<objCategoryList.size(); i++) {
-            if(objCategoryList.get(i).membership(obj) == 1) {
+        for(int i=0; i<objCategoryList.getL().size(); i++) {
+            ObjectCategory cat = (ObjectCategory) objCategoryList.getL().get(i).getValue();
+            if(cat.membership(obj) == 1) {
                 idx = i;
             }
         }
         return idx;
     }
 
-    public ArrayList<PObjectCategory> getRelevantCategories() {
-        ArrayList<PObjectCategory> relevantCategories = new ArrayList<>();
+    public Idea getRelevantCategories() {
+        Idea relevantCategories = new Idea("pRelCategories", "", 0);
 
-        for(PObjectCategory objectCategory : objCategoryList) {
-            if(objectCategory.getRelevance()>=RELEVANCE_THRESHOLD) {
+        for(Idea objectCategory : objCategoryList.getL()) {
+            ObjectCategory cat = (ObjectCategory) objectCategory.getValue();
+            if(cat.getRelevance()>=RELEVANCE_THRESHOLD) {
                 relevantCategories.add(objectCategory);
             }
         }

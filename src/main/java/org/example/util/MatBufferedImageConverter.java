@@ -11,15 +11,25 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class MatBufferedImageConverter {
-    public static Mat BufferedImage2Mat(BufferedImage image) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "tiff", byteArrayOutputStream);
-        byteArrayOutputStream.flush();
-        return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.IMREAD_UNCHANGED);
+    public static Mat BufferedImage2Mat(BufferedImage image) {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(image, "tiff", byteArrayOutputStream);
+            byteArrayOutputStream.flush();
+            return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.IMREAD_UNCHANGED);
+        } catch(Exception err) {
+            System.out.println(err.getMessage());
+        }
+        return null;
     }
     public static BufferedImage Mat2BufferedImage(Mat matrix)throws IOException {
-        MatOfByte mob=new MatOfByte();
-        Imgcodecs.imencode(".tiff", matrix, mob);
-        return ImageIO.read(new ByteArrayInputStream(mob.toArray()));
+        try {
+            MatOfByte mob=new MatOfByte();
+            Imgcodecs.imencode(".tiff", matrix, mob);
+            return ImageIO.read(new ByteArrayInputStream(mob.toArray()));
+        } catch(Exception err) {
+            System.out.println(err.getMessage());
+        }
+        return null;
     }
 }

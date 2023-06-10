@@ -1,9 +1,11 @@
 package org.example;
 
+import br.unicamp.cst.representation.idea.Idea;
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.AgentMind;
 import org.example.visualization.MemoriesJFrame;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
