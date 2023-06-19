@@ -5,14 +5,14 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
 
-public class ObjectComparator {
+public class FragmentComparator {
     static final double MIN_CENTER_DISTANCE = 50;
     static final double MIN_SHAPE_DIFF_RATIO= 0.3;
     static final double MIN_HUE_DIFF = 2;
 
-    public double getHueDistance(Idea o1, Idea o2) {
-        MatOfPoint contour1 = (MatOfPoint) o1.get("externalContour").getValue();
-        MatOfPoint contour2 = (MatOfPoint) o2.get("externalContour").getValue();
+    public double getHueDistance(Idea f1, Idea f2) {
+        MatOfPoint contour1 = (MatOfPoint) f1.get("externalContour").getValue();
+        MatOfPoint contour2 = (MatOfPoint) f2.get("externalContour").getValue();
 
         return Imgproc.matchShapes(contour1,
                                    contour2,
@@ -21,22 +21,22 @@ public class ObjectComparator {
     }
 
 
-    public boolean closeCenterDistance(Idea o1, Idea o2) {
-        double centerDistance = getCenterDistance(o1, o2);
+    public boolean closeCenterDistance(Idea f1, Idea f2) {
+        double centerDistance = getCenterDistance(f1, f2);
         if(centerDistance<=MIN_CENTER_DISTANCE) {
             return true;
         }
         return false;
     }
 
-    public boolean areSameColor(Idea o1, Idea o2) {
-        double R1 = (double) o1.get("color.R").getValue();
-        double B1 = (double) o1.get("color.B").getValue();
-        double G1 = (double) o1.get("color.G").getValue();
+    public boolean areSameColor(Idea f1, Idea f2) {
+        double R1 = (double) f1.get("color.R").getValue();
+        double B1 = (double) f1.get("color.B").getValue();
+        double G1 = (double) f1.get("color.G").getValue();
 
-        double R2 = (double) o2.get("color.R").getValue();
-        double B2 = (double) o2.get("color.B").getValue();
-        double G2 = (double) o2.get("color.G").getValue();
+        double R2 = (double) f2.get("color.R").getValue();
+        double B2 = (double) f2.get("color.B").getValue();
+        double G2 = (double) f2.get("color.G").getValue();
 
         if(R1==R2 && B1==B2 && G1==G2) {
             return true;
@@ -44,11 +44,11 @@ public class ObjectComparator {
         return false;
     }
 
-    public double getCenterDistance(Idea obj1, Idea obj2) {
-        double x1 = (double) obj1.get("center.x").getValue();
-        double x2 = (double) obj2.get("center.x").getValue();
-        double y1 = (double) obj1.get("center.y").getValue();
-        double y2 = (double) obj2.get("center.y").getValue();
+    public double getCenterDistance(Idea f1, Idea f2) {
+        double x1 = (double) f1.get("center.x").getValue();
+        double x2 = (double) f2.get("center.x").getValue();
+        double y1 = (double) f1.get("center.y").getValue();
+        double y2 = (double) f2.get("center.y").getValue();
 
         return pointDistance(new Point(x1, y1), new Point(x2, y2));
     }
@@ -59,15 +59,15 @@ public class ObjectComparator {
         return (Math.sqrt(xSquared+ySquared));
     }
 
-    public boolean haveSimilarRectShape(Idea obj1, Idea obj2) {
-        double obj1Height = (int) obj1.get("boundRect.height").getValue();
-        double obj2Height = (int) obj2.get("boundRect.height").getValue();
+    public boolean haveSimilarRectShape(Idea f1, Idea f2) {
+        double f1Height = (int) f1.get("boundRect.height").getValue();
+        double f2Height = (int) f2.get("boundRect.height").getValue();
 
-        double obj1Width = (int) obj1.get("boundRect.width").getValue();
-        double obj2Width = (int) obj2.get("boundRect.width").getValue();
+        double f1Width = (int) f1.get("boundRect.width").getValue();
+        double f2Width = (int) f2.get("boundRect.width").getValue();
 
-        if(hasSimilarLength(obj1Height, obj2Height)
-                && hasSimilarLength(obj1Width, obj2Width)) {
+        if(hasSimilarLength(f1Height, f2Height)
+                && hasSimilarLength(f1Width, f2Width)) {
             return true;
         }
         return false;
@@ -79,17 +79,17 @@ public class ObjectComparator {
         return false;
     }
 
-    public double rectDistance(Idea obj1, Idea obj2) {
+    public double rectDistance(Idea f1, Idea f2) {
 
         // based on https://stackoverflow.com/a/26178015
-        double x1tl = (double) obj1.get("boundRect.tl.x").getValue();
-        double y1tl = (double) obj1.get("boundRect.tl.y").getValue();
-        double x1br = (double) obj1.get("boundRect.br.x").getValue();
-        double y1br = (double) obj1.get("boundRect.br.y").getValue();
-        double x2tl = (double) obj2.get("boundRect.tl.x").getValue();
-        double y2tl = (double) obj2.get("boundRect.tl.y").getValue();
-        double x2br = (double) obj2.get("boundRect.br.x").getValue();
-        double y2br = (double) obj2.get("boundRect.br.y").getValue();
+        double x1tl = (double) f1.get("boundRect.tl.x").getValue();
+        double y1tl = (double) f1.get("boundRect.tl.y").getValue();
+        double x1br = (double) f1.get("boundRect.br.x").getValue();
+        double y1br = (double) f1.get("boundRect.br.y").getValue();
+        double x2tl = (double) f2.get("boundRect.tl.x").getValue();
+        double y2tl = (double) f2.get("boundRect.tl.y").getValue();
+        double x2br = (double) f2.get("boundRect.br.x").getValue();
+        double y2br = (double) f2.get("boundRect.br.y").getValue();
 
         boolean left = x2br < x1tl;
         boolean right = x1br < x2tl;

@@ -2,17 +2,16 @@ package org.example.mind.codelets.object_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.CategoryFactory;
+import org.example.mind.codelets.object_cat_learner.entities.EntityCategory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
-import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
-import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.ObjectComparator;
+import org.example.mind.codelets.object_proposer_codelet.FragmentComparator;
 
 import java.util.*;
 
-public class WObjectCategoryLearner {
+public class ObjectCategoryLearner {
     private CategoryFactory catFactory;
     Idea objCategoryList;
-    ObjectComparator objectComparator = new ObjectComparator();
+    FragmentComparator fragmentComparator = new FragmentComparator();
 
     double MIN_CLUSTER_DISTANCE = 2;
     double RELEVANCE_THRESHOLD = 5;
@@ -21,13 +20,13 @@ public class WObjectCategoryLearner {
     double DECREMENT_FACTOR = 0.5;
     double MINIMUM_RELEVANCE = 0.5;
 
-    public WObjectCategoryLearner() {
+    public ObjectCategoryLearner() {
         catFactory = new CategoryFactory();
-        objCategoryList = new Idea("wCategories", "", 0);
+        objCategoryList = new Idea("ObjectCategories", "", 0);
     }
 
-    public void updateCategories(Idea detectedObjects) {
-        Idea rcvCategories = extractWCategories(detectedObjects);
+    public void updateCategories(Idea detectedFragments) {
+        Idea rcvCategories = extractObjectCategories(detectedFragments);
 
         for(Idea rcvCat : rcvCategories.getL()) {
             int equalCatIdx = this.equalCategoryIdx(rcvCat);
@@ -35,7 +34,7 @@ public class WObjectCategoryLearner {
             if(equalCatIdx == -1) {
                 objCategoryList.add(rcvCat);
             } else {
-                ObjectCategory objCat = (ObjectCategory) objCategoryList.getL().get(equalCatIdx).getValue();
+                EntityCategory objCat = (EntityCategory) objCategoryList.getL().get(equalCatIdx).getValue();
                 if(objCat.getRelevance()<RELEVANCE_THRESHOLD) {
                     objCat.incrementRelevance(INCREMENT_FACTOR);
                 }
@@ -50,69 +49,68 @@ public class WObjectCategoryLearner {
         int idx = -1;
 
         for(int i=0; i<objCategoryList.getL().size(); i++) {
-            WObjectCategory wObjCatListElem = (WObjectCategory) objCategoryList.getL().get(i).getValue();
-            WObjectCategory wObjCatComp = (WObjectCategory) cat.getValue();
-            if(wObjCatListElem.equals(wObjCatComp) == true) {
+            ObjectCategory objCatListElem = (ObjectCategory) objCategoryList.getL().get(i).getValue();
+            ObjectCategory objCatComp = (ObjectCategory) cat.getValue();
+            if(objCatListElem.equals(objCatComp) == true) {
                 idx = i;
             }
         }
-        System.out.println(idx);
         return idx;
     }
 
-    public Idea extractWCategories(Idea detectedObjects) {
+    public Idea extractObjectCategories(Idea detectedFragments) {
 
-        boolean[][] borderMatrix = initializeBooleanMatrix(detectedObjects.getL().size());
+        boolean[][] borderMatrix = initializeBooleanMatrix(detectedFragments.getL().size());
 
-        for(int i=0; i<detectedObjects.getL().size(); i++) {
-            for(int j=0; j<detectedObjects.getL().size(); j++) {
-                Idea obj1 = detectedObjects.getL().get(i);
-                Idea obj2 = detectedObjects.getL().get(j);
+        for(int i=0; i<detectedFragments.getL().size(); i++) {
+            for(int j=0; j<detectedFragments.getL().size(); j++) {
+                Idea f1 = detectedFragments.getL().get(i);
+                Idea f2 = detectedFragments.getL().get(j);
 
                 if(i!=j
-                  && Math.abs(objectComparator.rectDistance(obj1, obj2))<=MIN_CLUSTER_DISTANCE
-                  && obj1.get("pCategory").getValue() != null
-                  && obj2.get("pCategory").getValue() != null) {
+                  && Math.abs(fragmentComparator.rectDistance(f1, f2))<=MIN_CLUSTER_DISTANCE
+                  && f1.get("FragmentCategory").getValue() != null
+                  && f2.get("FragmentCategory").getValue() != null) {
                     borderMatrix[i][j] = true;
                 }
             }
         }
 
-        boolean[] visited = new boolean[detectedObjects.getL().size()];
+        boolean[] visited = new boolean[detectedFragments.getL().size()];
         for (int i = 0; i < visited.length; i++) {
             visited[i] = false;
         }
 
-        ArrayList<ArrayList<String>> categoryClusters = new ArrayList<>();
+        ArrayList<ArrayList<String>> fragCatClusters = new ArrayList<>();
 
-        for (int i = 0; i < detectedObjects.getL().size(); i++) {
+        for (int i = 0; i < detectedFragments.getL().size(); i++) {
             if (!visited[i]) {
                 ArrayList<String> group = new ArrayList<>();
-                exploreBorders(i, borderMatrix, visited, group, detectedObjects);
-                categoryClusters.add(group);
+                exploreBorders(i, borderMatrix, visited, group, detectedFragments);
+                fragCatClusters.add(group);
             }
         }
 
-        Idea wObjectCategories = new Idea("wExtractedCategories", "", 0);
+        Idea objectCategories = new Idea("extractedObjectCategories", "", 0);
 
-        for(ArrayList<String> categoryCluster : categoryClusters) {
-            if(categoryCluster.size()>1) {
-                Idea wObjectCategory = catFactory.createWCategory(categoryCluster, INIT_RELEVANCE);
-                wObjectCategories.add(wObjectCategory);
+        for(ArrayList<String> fragCatCluster : fragCatClusters) {
+            if(fragCatCluster.size()>1) {
+                Idea objectCategory = catFactory.createObjectCategory(fragCatCluster, INIT_RELEVANCE);
+                objectCategories.add(objectCategory);
             }
         }
 
-        return wObjectCategories;
+        return objectCategories;
     }
 
-    private static void exploreBorders(int obj, boolean[][] borderMatrix, boolean[] visited, ArrayList<String> group, Idea objects) {
-        visited[obj] = true;
+    private static void exploreBorders(int fragIdx, boolean[][] borderMatrix, boolean[] visited, ArrayList<String> fragCluster, Idea fragments) {
+        visited[fragIdx] = true;
 
-        if(objects.getL().get(obj).get("pCategory").getValue() != "null") {
-            group.add((String) objects.getL().get(obj).get("pCategory").getValue());
-            for (int i = 0; i < borderMatrix[obj].length; i++) {
-                if (borderMatrix[obj][i] && !visited[i]) {
-                    exploreBorders(i, borderMatrix, visited, group, objects);
+        if(fragments.getL().get(fragIdx).get("FragmentCategory").getValue() != "null") {
+            fragCluster.add((String) fragments.getL().get(fragIdx).get("FragmentCategory").getValue());
+            for (int i = 0; i < borderMatrix[fragIdx].length; i++) {
+                if (borderMatrix[fragIdx][i] && !visited[i]) {
+                    exploreBorders(i, borderMatrix, visited, fragCluster, fragments);
                 }
             }
         }
@@ -124,7 +122,7 @@ public class WObjectCategoryLearner {
 
         for(int i=0; i<objCategoryList.getL().size(); i++) {
             Idea objCatIdea = objCategoryList.getL().get(i);
-            ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
+            EntityCategory objCat = (EntityCategory) objCatIdea.getValue();
             if(objCat.getRelevance() < MINIMUM_RELEVANCE) {
                 idxsToRemove.add(i);
             }
@@ -141,7 +139,7 @@ public class WObjectCategoryLearner {
 
     public void decrementCategoriesRelevance() {
         for(Idea objCatIdea: objCategoryList.getL()) {
-            ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
+            EntityCategory objCat = (EntityCategory) objCatIdea.getValue();
             if(objCat.getRelevance() < RELEVANCE_THRESHOLD) {
                 objCat.decrementRelevance(DECREMENT_FACTOR);
             }
@@ -152,7 +150,7 @@ public class WObjectCategoryLearner {
         Idea relevantCategories = new Idea("wRelCategories", "", 0);;
 
         for(Idea objCatIdea : objCategoryList.getL()) {
-            ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
+            EntityCategory objCat = (EntityCategory) objCatIdea.getValue();
             if(objCat.getRelevance()>=RELEVANCE_THRESHOLD) {
                 relevantCategories.add(objCatIdea);
             }

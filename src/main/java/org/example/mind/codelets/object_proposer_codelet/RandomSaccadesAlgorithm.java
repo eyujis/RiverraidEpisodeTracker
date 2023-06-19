@@ -1,7 +1,7 @@
 package org.example.mind.codelets.object_proposer_codelet;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_proposer_codelet.entities.ObjectFactory;
+import org.example.mind.codelets.object_proposer_codelet.entities.FragmentFactory;
 import org.example.mind.codelets.object_proposer_codelet.fg_samplers.FGPositionSequentialSampler;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
@@ -12,7 +12,7 @@ import java.util.List;
 public class RandomSaccadesAlgorithm {
     private Idea unObjects;
     private FGPositionSequentialSampler fGPositionSampler;
-    private ObjectFactory objectFactory = new ObjectFactory();
+    private FragmentFactory fragmentFactory = new FragmentFactory();
 
     public Idea getAllUnObjects(Mat frame) {
         Idea unObjects = new Idea("unObjects", "", 0);
@@ -26,7 +26,7 @@ public class RandomSaccadesAlgorithm {
             Mat mask = getFloodFillMask(frameClone, randomPoint);
             List<MatOfPoint> objContour = getMaskContour(mask);
 
-            Idea unObj = objectFactory.createUnObject(objColorBRG, objContour);
+            Idea unObj = fragmentFactory.createUnFragment(objColorBRG, objContour);
             unObjects.add(unObj);
 
             fGPositionSampler.removeMaskFromSample(mask);

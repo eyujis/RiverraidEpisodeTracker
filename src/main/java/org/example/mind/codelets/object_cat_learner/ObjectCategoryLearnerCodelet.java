@@ -5,22 +5,20 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
-
 public class ObjectCategoryLearnerCodelet extends Codelet {
 
     Memory detectedObjectsMO;
-    Memory objectPCategoriesMO;
-    Memory objectWCategoriesMO;
+    Memory fragmentCategoriesMO;
+    Memory objectCategoriesMO;
 
-    PObjectCategoryLearner pObjectCategoryLearner = new PObjectCategoryLearner();
-    WObjectCategoryLearner wObjectCategoryLearner = new WObjectCategoryLearner();
+    FragmentCategoryLearner fragmentCategoryLearner = new FragmentCategoryLearner();
+    ObjectCategoryLearner objectCategoryLearner = new ObjectCategoryLearner();
 
     @Override
     public void accessMemoryObjects() {
         detectedObjectsMO=(MemoryObject)this.getInput("DETECTED_OBJECTS");
-        objectPCategoriesMO=(MemoryObject)this.getOutput("OBJECT_PCATEGORIES");
-        objectWCategoriesMO=(MemoryObject)this.getOutput("OBJECT_WCATEGORIES");
+        fragmentCategoriesMO =(MemoryObject)this.getOutput("FRAGMENT_CATEGORIES");
+        objectCategoriesMO =(MemoryObject)this.getOutput("OBJECT_CATEGORIES");
     }
 
     @Override
@@ -35,11 +33,11 @@ public class ObjectCategoryLearnerCodelet extends Codelet {
         }
         Idea detectedObjects = (Idea) detectedObjectsMO.getI();
 
-        pObjectCategoryLearner.updateCategories(detectedObjects);
-        objectPCategoriesMO.setI(pObjectCategoryLearner.getRelevantCategories());
+        fragmentCategoryLearner.updateCategories(detectedObjects);
+        fragmentCategoriesMO.setI(fragmentCategoryLearner.getRelevantCategories());
 
-        wObjectCategoryLearner.updateCategories(detectedObjects);
-        objectWCategoriesMO.setI(wObjectCategoryLearner.getRelevantCategories());
+        objectCategoryLearner.updateCategories(detectedObjects);
+        objectCategoriesMO.setI(objectCategoryLearner.getRelevantCategories());
 
     }
 }

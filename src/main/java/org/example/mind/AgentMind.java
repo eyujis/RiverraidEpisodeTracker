@@ -20,8 +20,8 @@ public class AgentMind extends Mind {
 
         Memory rawDataBufferMO;
         Memory detectedObjectsMO;
-        Memory objectPCategoriesMO;
-        Memory objectWCategoriesMO;
+        Memory FragmentCategoriesMO;
+        Memory objectCategoriesMO;
 
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
@@ -29,13 +29,13 @@ public class AgentMind extends Mind {
 
         rawDataBufferMO = createMemoryObject("RAW_DATA_BUFFER", "");
         detectedObjectsMO = createMemoryObject("DETECTED_OBJECTS", "");
-        objectPCategoriesMO = createMemoryObject("OBJECT_PCATEGORIES", "");
-        objectWCategoriesMO = createMemoryObject("OBJECT_WCATEGORIES", "");
+        FragmentCategoriesMO = createMemoryObject("FRAGMENT_CATEGORIES", "");
+        objectCategoriesMO = createMemoryObject("OBJECT_CATEGORIES", "");
 
         registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedObjectsMO, "EpisodeTrackerMemoryGroup");
-        registerMemory(objectPCategoriesMO, "EpisodeTrackerMemoryGroup");
-        registerMemory(objectWCategoriesMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(FragmentCategoriesMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(objectCategoriesMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
         rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
@@ -44,8 +44,8 @@ public class AgentMind extends Mind {
 
         Codelet objectProposerCodelet = new ObjectProposerCodelet(objectsImgJLabel, mergedObjectsImgJLabel, categoriesImgJLabel);
         objectProposerCodelet.addInput(rawDataBufferMO);
-        objectProposerCodelet.addInput(objectPCategoriesMO);
-        objectProposerCodelet.addInput(objectWCategoriesMO);
+        objectProposerCodelet.addInput(FragmentCategoriesMO);
+        objectProposerCodelet.addInput(objectCategoriesMO);
         objectProposerCodelet.addOutput(detectedObjectsMO);
         objectProposerCodelet.setIsMemoryObserver(true);
         rawDataBufferMO.addMemoryObserver(objectProposerCodelet);
@@ -54,8 +54,8 @@ public class AgentMind extends Mind {
 
         Codelet objectCategoryLearnerCodelet = new ObjectCategoryLearnerCodelet();
         objectCategoryLearnerCodelet.addInput(detectedObjectsMO);
-        objectCategoryLearnerCodelet.addOutput(objectPCategoriesMO);
-        objectCategoryLearnerCodelet.addOutput(objectWCategoriesMO);
+        objectCategoryLearnerCodelet.addOutput(FragmentCategoriesMO);
+        objectCategoryLearnerCodelet.addOutput(objectCategoriesMO);
         objectCategoryLearnerCodelet.setIsMemoryObserver(true);
         detectedObjectsMO.addMemoryObserver(objectCategoryLearnerCodelet);
         objectCategoryLearnerCodelet.setName("ObjectCategoryLearner");

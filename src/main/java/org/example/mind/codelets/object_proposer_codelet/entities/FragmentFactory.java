@@ -7,28 +7,28 @@ import org.opencv.imgproc.Imgproc;
 import java.util.List;
 import java.util.Random;
 
-public class ObjectFactory {
+public class FragmentFactory {
     private static int factoryId = 0;
 
-    public Idea createIdObjsFromUnObjs(Idea unObjs) {
-        Idea idObjs = new Idea("idObjects", "", 0);
-        for(Idea unObj: unObjs.getL()) {
-            idObjs.add(createIdObjFromUnObj(unObj));
+    public Idea createIdFragsFromUnFrags(Idea unFrags) {
+        Idea idFrags = new Idea("idFragments", "", 0);
+        for(Idea unFrag: unFrags.getL()) {
+            idFrags.add(createIdFragFromUnFrag(unFrag));
         }
-        return idObjs;
+        return idFrags;
     }
 
-    public Idea createIdObjFromUnObj(Idea unObj) {
-        Idea idObject = unObj.clone();
-        Idea idIdea = new Idea("id", generateObjId());
-        idObject.add(idIdea);
+    public Idea createIdFragFromUnFrag(Idea unFrag) {
+        Idea idFrag = unFrag.clone();
+        Idea idIdea = new Idea("id", generateFragId());
+        idFrag.add(idIdea);
         Idea colorIdIdea = new Idea("colorId", generateColorId());
-        idObject.add(colorIdIdea);
+        idFrag.add(colorIdIdea);
 
-        return idObject;
+        return idFrag;
     }
 
-    public int generateObjId() {
+    public int generateFragId() {
         factoryId++;
         return factoryId;
     }
@@ -42,26 +42,26 @@ public class ObjectFactory {
     }
 
 
-    public Idea createUnObject(double[] colorBGR, List<MatOfPoint> contours) {
+    public Idea createUnFragment(double[] colorBGR, List<MatOfPoint> contours) {
 
         MatOfPoint externalContour = contours.get(0);
         Rect boundRect = getBoundRectFromContour(externalContour);
         Point centerPoint = getCenterFromBoundRect(boundRect);
 
-        Idea objectIdea = new Idea("object","",0);
+        Idea fragmentIdea = new Idea("unFragment","",0);
 
         // color
         Idea colorIdea = new Idea("color", "", 0);
         colorIdea.add(new Idea("R", colorBGR[2]));
         colorIdea.add(new Idea("G", colorBGR[1]));
         colorIdea.add(new Idea("B", colorBGR[0]));
-        objectIdea.add(colorIdea);
+        fragmentIdea.add(colorIdea);
 
         // center
         Idea centerIdea = new Idea("center", "", 0);
         centerIdea.add(new Idea("x", centerPoint.x));
         centerIdea.add(new Idea("y", centerPoint.y));
-        objectIdea.add(centerIdea);
+        fragmentIdea.add(centerIdea);
 
         // bounding box
         Idea boundRectIdea = new Idea("boundRect", "", 0);
@@ -78,21 +78,21 @@ public class ObjectFactory {
         brIdea.add(new Idea("y", boundRect.br().y));
         boundRectIdea.add(brIdea);
 
-        objectIdea.add(boundRectIdea);
+        fragmentIdea.add(boundRectIdea);
 
         // category
-        Idea pCatIdea = new Idea("pCategory", null);
-        objectIdea.add(pCatIdea);
+        Idea pCatIdea = new Idea("FragmentCategory", null);
+        fragmentIdea.add(pCatIdea);
 
-        Idea wCatIdea = new Idea("wCategory", null);
-        objectIdea.add(wCatIdea);
+        Idea wCatIdea = new Idea("ObjectCategory", null);
+        fragmentIdea.add(wCatIdea);
 
-        objectIdea.add(new Idea("contours", contours));
+        fragmentIdea.add(new Idea("contours", contours));
 
         // external contour
-        objectIdea.add(new Idea("externalContour", externalContour));
+        fragmentIdea.add(new Idea("externalContour", externalContour));
 
-        return objectIdea;
+        return fragmentIdea;
     }
 
     private Point getCenterFromBoundRect(Rect rect)   {
@@ -112,24 +112,24 @@ public class ObjectFactory {
         return boundRect;
     }
 
-    public void transferPropertyValues(Idea obj1, Idea obj2) {
-        obj1.get("color.R").setValue((double)obj2.get("color.R").getValue());
-        obj1.get("color.B").setValue((double)obj2.get("color.B").getValue());
-        obj1.get("color.G").setValue((double)obj2.get("color.G").getValue());
+    public void transferPropertyValues(Idea f1, Idea f2) {
+        f1.get("color.R").setValue((double)f2.get("color.R").getValue());
+        f1.get("color.B").setValue((double)f2.get("color.B").getValue());
+        f1.get("color.G").setValue((double)f2.get("color.G").getValue());
 
-        obj1.get("boundRect.height").setValue(obj2.get("boundRect.height").getValue());
-        obj1.get("boundRect.width").setValue(obj2.get("boundRect.width").getValue());
-        obj1.get("boundRect.tl.x").setValue(obj2.get("boundRect.tl.x").getValue());
-        obj1.get("boundRect.tl.y").setValue(obj2.get("boundRect.tl.y").getValue());
-        obj1.get("boundRect.br.x").setValue(obj2.get("boundRect.br.x").getValue());
-        obj1.get("boundRect.br.y").setValue(obj2.get("boundRect.br.y").getValue());
+        f1.get("boundRect.height").setValue(f2.get("boundRect.height").getValue());
+        f1.get("boundRect.width").setValue(f2.get("boundRect.width").getValue());
+        f1.get("boundRect.tl.x").setValue(f2.get("boundRect.tl.x").getValue());
+        f1.get("boundRect.tl.y").setValue(f2.get("boundRect.tl.y").getValue());
+        f1.get("boundRect.br.x").setValue(f2.get("boundRect.br.x").getValue());
+        f1.get("boundRect.br.y").setValue(f2.get("boundRect.br.y").getValue());
 
-        obj1.get("center.x").setValue(obj2.get("center.x").getValue());
-        obj1.get("center.y").setValue(obj2.get("center.y").getValue());
+        f1.get("center.x").setValue(f2.get("center.x").getValue());
+        f1.get("center.y").setValue(f2.get("center.y").getValue());
 
-        obj1.get("contours").setValue(obj2.get("contours").getValue());
+        f1.get("contours").setValue(f2.get("contours").getValue());
 
-        obj1.get("externalContour").setValue(obj2.get("externalContour").getValue());
+        f1.get("externalContour").setValue(f2.get("externalContour").getValue());
     }
 
 }

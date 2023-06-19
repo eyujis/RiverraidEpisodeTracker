@@ -1,117 +1,114 @@
 package org.example.mind.codelets.object_proposer_codelet;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_cat_learner.entities.FragmentCategory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
-import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
-import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.object_tracker.ObjectTracker;
+import org.example.mind.codelets.object_proposer_codelet.object_tracker.FragmentTracker;
 import org.opencv.core.Mat;
-
-import java.util.ArrayList;
 
 public class ObjectProposer {
 
     private VSSketchpad vsSketchpad;
-    private ObjectTracker objTracker;
-    private ObjectComparator objectComparator;
+    private FragmentTracker fragmentTracker;
+    private FragmentComparator fragmentComparator;
 
     private double MIN_CLUSTER_DISTANCE = 2;
 
-    private Idea unObjsCF;
-    private Idea idObjsCF;
+    private Idea unFragsCF;
+    private Idea idFragsCF;
 
     public ObjectProposer() {
         vsSketchpad = new VSSketchpad();
-        objTracker = new ObjectTracker();
-        objectComparator = new ObjectComparator();
+        fragmentTracker = new FragmentTracker();
+        fragmentComparator = new FragmentComparator();
     }
 
     public void update(Mat frame) {
-        unObjsCF = vsSketchpad.getUnObjectsFromFrame(frame);
-        idObjsCF = objTracker.identifyBetweenFrames(unObjsCF);
+        unFragsCF = vsSketchpad.getUnFragmentsFromFrame(frame);
+        idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
 
     }
-    public void assignPCategories(Idea objectCategories) {
-        for(Idea objCatIdea : objectCategories.getL()) {
-            PObjectCategory objCat = (PObjectCategory) objCatIdea.getValue();
-            for (Idea idObj : idObjsCF.getL()) {
-                if (objCat.membership(idObj) == 1) {
-                    idObj.get("pCategory").setValue(objCatIdea.getName());
+    public void assignFragmentCategories(Idea fragmentCategories) {
+        for(Idea fragCatIdea : fragmentCategories.getL()) {
+            FragmentCategory fragCat = (FragmentCategory) fragCatIdea.getValue();
+            for (Idea idFrag : idFragsCF.getL()) {
+                if (fragCat.membership(idFrag) == 1) {
+                    idFrag.get("FragmentCategory").setValue(fragCatIdea.getName());
                 }
             }
         }
     }
 
-    public void assignWCategories(Idea objectCategories) {
-        Idea objectClusters = extractObjectClusters(getDetectedObjectsCF());
-        for(Idea objectCluster : objectClusters.getL()) {
+    public void assignObjectCategories(Idea objectCategories) {
+        Idea fragmentClusters = extractFragmentClusters(getDetectedFragmentsCF());
+        for(Idea fragmentCluster : fragmentClusters.getL()) {
             for(Idea objCatIdea : objectCategories.getL()) {
-                WObjectCategory objCat = (WObjectCategory) objCatIdea.getValue();
-                if(objCat.membership(objectCluster) == 1) {
-                    for(Idea obj: objectCluster.getL()) {
-                        Idea wObjCat = obj.get("wCategory");
-                        wObjCat.setValue(objCatIdea.getName());
+                ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
+                if(objCat.membership(fragmentCluster) == 1) {
+                    for(Idea obj: fragmentCluster.getL()) {
+                        Idea ObjCat = obj.get("ObjectCategory");
+                        ObjCat.setValue(objCatIdea.getName());
                     }
                 }
             }
         }
     }
 
-    public Idea extractObjectClusters(Idea objectInstances) {
+    public Idea extractFragmentClusters(Idea fragmentInstances) {
 
-        boolean[][] borderMatrix = initializeBooleanMatrix(objectInstances.getL().size());
+        boolean[][] borderMatrix = initializeBooleanMatrix(fragmentInstances.getL().size());
 
-        for(int i=0; i<objectInstances.getL().size(); i++) {
-            for(int j=0; j<objectInstances.getL().size(); j++) {
-                Idea obj1 = objectInstances.getL().get(i);
-                Idea obj2 = objectInstances.getL().get(j);
+        for(int i=0; i<fragmentInstances.getL().size(); i++) {
+            for(int j=0; j<fragmentInstances.getL().size(); j++) {
+                Idea f1 = fragmentInstances.getL().get(i);
+                Idea f2 = fragmentInstances.getL().get(j);
 
-                if(i!=j && Math.abs(objectComparator.rectDistance(obj1, obj2))<=MIN_CLUSTER_DISTANCE) {
+                if(i!=j && Math.abs(fragmentComparator.rectDistance(f1, f2))<=MIN_CLUSTER_DISTANCE) {
                     borderMatrix[i][j] = true;
                 }
             }
         }
 
-        boolean[] visited = new boolean[objectInstances.getL().size()];
+        boolean[] visited = new boolean[fragmentInstances.getL().size()];
         for (int i = 0; i < visited.length; i++) {
             visited[i] = false;
         }
 
-        Idea objectClusters = new Idea("objectClusters", "", 0);
+        Idea fragmentClusters = new Idea("fragmentClusters", "", 0);
 
-        for (int i = 0; i < objectInstances.getL().size(); i++) {
+        for (int i = 0; i < fragmentInstances.getL().size(); i++) {
             if (!visited[i]) {
-                Idea group = new Idea("group", "", 0);
-                exploreBorders(i, borderMatrix, visited, group, objectInstances);
-                objectClusters.add(group);
+                Idea fragmentCluster = new Idea("fragmentCluster", "", 0);
+                exploreFragmentBorders(i, borderMatrix, visited, fragmentCluster, fragmentInstances);
+                fragmentClusters.add(fragmentCluster);
             }
         }
 
 
-        return objectClusters;
+        return fragmentClusters;
     }
 
-    private static void exploreBorders(int obj, boolean[][] borderMatrix, boolean[] visited, Idea group, Idea objects) {
-        visited[obj] = true;
-        group.add(objects.getL().get(obj));
+    private static void exploreFragmentBorders(int fragIdx, boolean[][] borderMatrix, boolean[] visited, Idea fragmentCluster, Idea fragments) {
+        visited[fragIdx] = true;
+        fragmentCluster.add(fragments.getL().get(fragIdx));
 
-        for (int i = 0; i < borderMatrix[obj].length; i++) {
-            if (borderMatrix[obj][i] && !visited[i]) {
-                exploreBorders(i, borderMatrix, visited, group, objects);
+        for (int i = 0; i < borderMatrix[fragIdx].length; i++) {
+            if (borderMatrix[fragIdx][i] && !visited[i]) {
+                exploreFragmentBorders(i, borderMatrix, visited, fragmentCluster, fragments);
             }
         }
     }
 
-    public Idea getUnObjs() {
-        return unObjsCF;
+    public Idea getUnFrags() {
+        return unFragsCF;
     }
 
-    public Idea getIdObjsCF() {
-        return idObjsCF;
+    public Idea getIdFragsCF() {
+        return idFragsCF;
     }
 
-    public Idea getDetectedObjectsCF() {
-        return idObjsCF;
+    public Idea getDetectedFragmentsCF() {
+        return idFragsCF;
     }
 
     public boolean[][] initializeBooleanMatrix(int size) {

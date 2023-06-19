@@ -4,9 +4,6 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
-import org.example.mind.codelets.object_cat_learner.entities.PObjectCategory;
-import org.example.mind.codelets.object_cat_learner.entities.WObjectCategory;
 import org.example.util.MatBufferedImageConverter;
 import org.example.visualization.Category2Color;
 import org.example.visualization.JLabelImgUpdater;
@@ -16,14 +13,13 @@ import org.opencv.imgproc.Imgproc;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     Memory rawDataMO;
     Memory detectedObjectsMO;
-    Memory objectPCategoriesMO;
-    Memory objectWCategoriesMO;
+    Memory fragmentCategoriesMO;
+    Memory objectCategoriesMO;
 
     ObjectProposer objectProposer = new ObjectProposer();
     JLabel objectsImgJLabel;
@@ -42,8 +38,8 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     @Override
     public void accessMemoryObjects() {
         rawDataMO=(MemoryObject)this.getInput("RAW_DATA_BUFFER");
-        objectPCategoriesMO=(MemoryObject)this.getInput("OBJECT_PCATEGORIES");
-        objectWCategoriesMO=(MemoryObject)this.getInput("OBJECT_WCATEGORIES");
+        fragmentCategoriesMO =(MemoryObject)this.getInput("FRAGMENT_CATEGORIES");
+        objectCategoriesMO=(MemoryObject)this.getInput("OBJECT_CATEGORIES");
         detectedObjectsMO=(MemoryObject)this.getOutput("DETECTED_OBJECTS");
     }
 
@@ -61,28 +57,29 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         Mat frame = null;
 
         frame = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
-
         this.objectProposer.update(frame);
 
-//      clone the detected objects later maybe here or within the bufferizer
-        detectedObjectsMO.setI(this.objectProposer.getDetectedObjectsCF());
-
-        if(objectPCategoriesMO.getI() != "") {
-            Idea pObjectCategories = (Idea) objectPCategoriesMO.getI();
-            objectProposer.assignPCategories(pObjectCategories);
+        if(fragmentCategoriesMO.getI() != "") {
+            Idea fragmentCategories = (Idea) fragmentCategoriesMO.getI();
+            objectProposer.assignFragmentCategories(fragmentCategories);
         }
 
+        if(objectCategoriesMO.getI() != "") {
+            Idea objectCategories = (Idea) objectCategoriesMO.getI();
+            objectProposer.assignObjectCategories(objectCategories);
+        }
 
-            Idea wObjectCategories = (Idea) objectWCategoriesMO.getI();
-            objectProposer.assignWCategories(wObjectCategories);
+//      clone the detected objects later maybe here or within the bufferizer
+        detectedObjectsMO.setI(this.objectProposer.getDetectedFragmentsCF());
+
 
 //          ----------visualization----------
         try {
-            Idea unObjs =  objectProposer.getUnObjs();
+            Idea unObjs =  objectProposer.getUnFrags();
             BufferedImage unObjsBuffImg = buffImageFromUnObjectList(unObjs);
             updateJLabelImg(this.objectsImgJLabel, unObjsBuffImg);
 
-            Idea idObjs = objectProposer.getIdObjsCF();
+            Idea idObjs = objectProposer.getIdFragsCF();
             BufferedImage idObjsBuffImg = buffImageFromIdObjectList(idObjs);
             updateJLabelImg(this.mergedObjectsImgJLabel, idObjsBuffImg);
 
@@ -143,8 +140,8 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
 
         for (int i = 0; i < idObjs.getL().size(); i++) {
             Idea idObj = idObjs.getL().get(i);
-            if(idObj.get("wCategory").getValue()!="null") {
-                String objCatName = (String) idObj.get("wCategory").getValue();
+            if(idObj.get("ObjectCategory").getValue()!="null") {
+                String objCatName = (String) idObj.get("ObjectCategory").getValue();
                 if(objCatName!=null) {
                     Imgproc.drawContours(frame,
                             (List<MatOfPoint>) idObj.get("contours").getValue(),
@@ -152,8 +149,8 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
                             category2Color.getColor(objCatName),
                             -1);
                 }
-            } else if(idObj.get("pCategory").getValue()!="null") {
-                String objCatName = (String) idObj.get("pCategory").getValue();
+            } else if(idObj.get("FragmentCategory").getValue()!="null") {
+                String objCatName = (String) idObj.get("FragmentCategory").getValue();
                 if(objCatName!=null) {
                     Imgproc.drawContours(frame,
                             (List<MatOfPoint>) idObj.get("contours").getValue(),
