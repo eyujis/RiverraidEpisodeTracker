@@ -42,6 +42,7 @@ public class ObjectCategoryLearner {
         }
 
         decrementCategoriesRelevance();
+        removeSubsetCategories();
         removeIrrelevantCategories();
     }
 
@@ -94,10 +95,10 @@ public class ObjectCategoryLearner {
         Idea objectCategories = new Idea("extractedObjectCategories", "", 0);
 
         for(ArrayList<String> fragCatCluster : fragCatClusters) {
-            if(fragCatCluster.size()>1) {
+//            if(fragCatCluster.size()>=1) {
                 Idea objectCategory = catFactory.createObjectCategory(fragCatCluster, INIT_RELEVANCE);
                 objectCategories.add(objectCategory);
-            }
+//            }
         }
 
         return objectCategories;
@@ -128,6 +129,31 @@ public class ObjectCategoryLearner {
             }
         }
 
+        removeIdxFromObjectCategoryList(idxsToRemove);
+    }
+
+    public void removeSubsetCategories() {
+        ArrayList<Integer> idxsToRemove = new ArrayList();
+
+        for(int i=0; i<objCategoryList.getL().size(); i++) {
+            for(int j=0; j<objCategoryList.getL().size(); j++) {
+                if(i!=j) {
+                    ObjectCategory objCat1 = (ObjectCategory) objCategoryList.getL().get(i).getValue();
+                    ObjectCategory objCat2 = (ObjectCategory) objCategoryList.getL().get(j).getValue();
+
+                    if(objCat1.getRelevance()>RELEVANCE_THRESHOLD
+                       && objCat2.getRelevance()>RELEVANCE_THRESHOLD
+                       && objCat1.getFragsCategories().containsAll(objCat2.getFragsCategories())) {
+                        idxsToRemove.add(j);
+                    }
+                }
+            }
+        }
+
+        removeIdxFromObjectCategoryList(idxsToRemove);
+    }
+
+    private void removeIdxFromObjectCategoryList(ArrayList<Integer> idxsToRemove) {
         Collections.sort(idxsToRemove, Collections.reverseOrder());
 
         for (int index : idxsToRemove) {
@@ -147,7 +173,7 @@ public class ObjectCategoryLearner {
     }
 
     public Idea getRelevantCategories() {
-        Idea relevantCategories = new Idea("wRelCategories", "", 0);;
+        Idea relevantCategories = new Idea("RelevantCategories", "", 0);;
 
         for(Idea objCatIdea : objCategoryList.getL()) {
             EntityCategory objCat = (EntityCategory) objCatIdea.getValue();

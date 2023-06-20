@@ -21,7 +21,7 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     Memory fragmentCategoriesMO;
     Memory objectCategoriesMO;
 
-    ObjectProposer objectProposer = new ObjectProposer();
+    FragmentProposer fragmentProposer = new FragmentProposer();
     JLabel objectsImgJLabel;
     JLabel mergedObjectsImgJLabel;
     JLabel categoriesImgJLabel;
@@ -57,29 +57,31 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         Mat frame = null;
 
         frame = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
-        this.objectProposer.update(frame);
+        this.fragmentProposer.update(frame);
 
         if(fragmentCategoriesMO.getI() != "") {
             Idea fragmentCategories = (Idea) fragmentCategoriesMO.getI();
-            objectProposer.assignFragmentCategories(fragmentCategories);
+            fragmentProposer.assignFragmentCategories(fragmentCategories);
         }
 
         if(objectCategoriesMO.getI() != "") {
             Idea objectCategories = (Idea) objectCategoriesMO.getI();
-            objectProposer.assignObjectCategories(objectCategories);
+            fragmentProposer.assignObjectCategories(objectCategories);
         }
 
+
+
 //      clone the detected objects later maybe here or within the bufferizer
-        detectedObjectsMO.setI(this.objectProposer.getDetectedFragmentsCF());
+        detectedObjectsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
 
 
 //          ----------visualization----------
         try {
-            Idea unObjs =  objectProposer.getUnFrags();
+            Idea unObjs =  fragmentProposer.getUnFrags();
             BufferedImage unObjsBuffImg = buffImageFromUnObjectList(unObjs);
             updateJLabelImg(this.objectsImgJLabel, unObjsBuffImg);
 
-            Idea idObjs = objectProposer.getIdFragsCF();
+            Idea idObjs = fragmentProposer.getIdFragsCF();
             BufferedImage idObjsBuffImg = buffImageFromIdObjectList(idObjs);
             updateJLabelImg(this.mergedObjectsImgJLabel, idObjsBuffImg);
 
