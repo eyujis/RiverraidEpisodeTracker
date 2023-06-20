@@ -22,6 +22,8 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     Memory objectCategoriesMO;
 
     FragmentProposer fragmentProposer = new FragmentProposer();
+    ObjectProposer objectProposer = new ObjectProposer();
+
     JLabel objectsImgJLabel;
     JLabel mergedObjectsImgJLabel;
     JLabel categoriesImgJLabel;
@@ -67,25 +69,26 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         if(objectCategoriesMO.getI() != "") {
             Idea objectCategories = (Idea) objectCategoriesMO.getI();
             fragmentProposer.assignObjectCategories(objectCategories);
-        }
 
+            objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
+        }
 
 
 //      clone the detected objects later maybe here or within the bufferizer
         detectedObjectsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
 
-
 //          ----------visualization----------
         try {
-            Idea unObjs =  fragmentProposer.getUnFrags();
-            BufferedImage unObjsBuffImg = buffImageFromUnObjectList(unObjs);
-            updateJLabelImg(this.objectsImgJLabel, unObjsBuffImg);
+            Idea unFrags =  fragmentProposer.getUnFrags();
+            BufferedImage unFragsBuffImg = buffImageFromUnObjectList(unFrags);
+            updateJLabelImg(this.objectsImgJLabel, unFragsBuffImg);
 
-            Idea idObjs = fragmentProposer.getIdFragsCF();
-            BufferedImage idObjsBuffImg = buffImageFromIdObjectList(idObjs);
-            updateJLabelImg(this.mergedObjectsImgJLabel, idObjsBuffImg);
+            Idea idFrags = fragmentProposer.getIdFragsCF();
+            BufferedImage idFragsBuffImg = buffImageFromIdObjectList(idFrags);
+            updateJLabelImg(this.mergedObjectsImgJLabel, idFragsBuffImg);
 
-            BufferedImage objectsImg = buffImageFromCatObjectList(idObjs);
+            Idea idObjs = objectProposer.getIdObjectsCF();
+            BufferedImage objectsImg = buffImageFromCatObjectList(idFrags, idObjs);
             updateJLabelImg(this.categoriesImgJLabel, objectsImg);
 
         } catch (Exception err) {
@@ -97,8 +100,6 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToSet) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToSet));
     }
-
-
 
     public BufferedImage buffImageFromUnObjectList(Idea unObjs) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(100,100,100));
@@ -137,11 +138,11 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         return bufferedImage;
     }
 
-    public BufferedImage buffImageFromCatObjectList(Idea idObjs) throws IOException {
+    public BufferedImage buffImageFromCatObjectList(Idea idFrags, Idea idObjs) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
-        for (int i = 0; i < idObjs.getL().size(); i++) {
-            Idea idObj = idObjs.getL().get(i);
+        for (int i = 0; i < idFrags.getL().size(); i++) {
+            Idea idObj = idFrags.getL().get(i);
             if(idObj.get("ObjectCategory").getValue()!="null") {
                 String objCatName = (String) idObj.get("ObjectCategory").getValue();
                 if(objCatName!=null) {
@@ -160,6 +161,20 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
                             category2Color.getColor(objCatName),
                             -1);
                 }
+            }
+        }
+        if (idObjs!=null && idObjs.getL().size()>0) {
+            for(int i = 0; i < idObjs.getL().size(); i++) {
+                Idea boundRectIdea = idObjs.getL().get(i).get("boundRect");
+
+                double tl_x = (double) boundRectIdea.get("tl.x").getValue();
+                double tl_y = (double) boundRectIdea.get("tl.y").getValue();
+                double br_x = (double) boundRectIdea.get("br.x").getValue();
+                double br_y = (double) boundRectIdea.get("br.y").getValue();
+
+                Scalar colorId = (Scalar) idObjs.getL().get(i).get("colorId").getValue();
+
+                Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 2);
             }
         }
 

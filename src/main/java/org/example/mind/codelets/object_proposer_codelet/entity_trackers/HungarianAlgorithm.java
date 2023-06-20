@@ -1,4 +1,4 @@
-package org.example.mind.codelets.object_proposer_codelet.object_tracker;
+package org.example.mind.codelets.object_proposer_codelet.entity_trackers;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;

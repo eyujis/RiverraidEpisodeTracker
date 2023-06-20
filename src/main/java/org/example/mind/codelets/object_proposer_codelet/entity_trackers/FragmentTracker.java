@@ -1,4 +1,4 @@
-package org.example.mind.codelets.object_proposer_codelet.object_tracker;
+package org.example.mind.codelets.object_proposer_codelet.entity_trackers;
 
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_proposer_codelet.FragmentComparator;

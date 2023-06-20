@@ -25,6 +25,8 @@ public class FragmentFactory {
         Idea colorIdIdea = new Idea("colorId", generateColorId());
         idFrag.add(colorIdIdea);
 
+        idFrag.setName("idFragment");
+
         return idFrag;
     }
 
@@ -65,8 +67,8 @@ public class FragmentFactory {
 
         // bounding box
         Idea boundRectIdea = new Idea("boundRect", "", 0);
-        boundRectIdea.add(new Idea("height", boundRect.height));
-        boundRectIdea.add(new Idea("width", boundRect.width));
+        boundRectIdea.add(new Idea("height", (double) boundRect.height));
+        boundRectIdea.add(new Idea("width", (double) boundRect.width));
 
         Idea tlIdea = new Idea("tl", "", 0);
         tlIdea.add(new Idea("x", boundRect.tl().x));

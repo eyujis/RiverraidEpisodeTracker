@@ -3,7 +3,7 @@ package org.example.mind.codelets.object_proposer_codelet;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.FragmentCategory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.object_tracker.FragmentTracker;
+import org.example.mind.codelets.object_proposer_codelet.entity_trackers.FragmentTracker;
 import org.opencv.core.Mat;
 
 public class FragmentProposer {
@@ -26,7 +26,6 @@ public class FragmentProposer {
     public void update(Mat frame) {
         unFragsCF = vsSketchpad.getUnFragmentsFromFrame(frame);
         idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
-
     }
     public void assignFragmentCategories(Idea fragmentCategories) {
         for(Idea fragCatIdea : fragmentCategories.getL()) {

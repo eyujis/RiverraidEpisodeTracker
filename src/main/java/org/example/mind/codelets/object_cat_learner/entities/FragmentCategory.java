@@ -32,11 +32,11 @@ public class FragmentCategory extends EntityCategory {
     }
 
     private boolean haveSimilarRectShape(Idea frag) {
-        double catHeight = (int) this.fragmentPrototype.get("boundRect.height").getValue();
-        double fragHeight = (int) frag.get("boundRect.height").getValue();
+        double catHeight = (double) this.fragmentPrototype.get("boundRect.height").getValue();
+        double fragHeight = (double) frag.get("boundRect.height").getValue();
 
-        double catWidth = (int) this.fragmentPrototype.get("boundRect.width").getValue();
-        double fragWidth = (int) frag.get("boundRect.width").getValue();
+        double catWidth = (double) this.fragmentPrototype.get("boundRect.width").getValue();
+        double fragWidth = (double) frag.get("boundRect.width").getValue();
 
         if(isSimilarLength(catHeight, fragHeight)
                 && isSimilarLength(catWidth, fragWidth)) {

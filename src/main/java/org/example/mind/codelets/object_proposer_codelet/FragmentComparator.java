@@ -60,11 +60,11 @@ public class FragmentComparator {
     }
 
     public boolean haveSimilarRectShape(Idea f1, Idea f2) {
-        double f1Height = (int) f1.get("boundRect.height").getValue();
-        double f2Height = (int) f2.get("boundRect.height").getValue();
+        double f1Height = (double) f1.get("boundRect.height").getValue();
+        double f2Height = (double) f2.get("boundRect.height").getValue();
 
-        double f1Width = (int) f1.get("boundRect.width").getValue();
-        double f2Width = (int) f2.get("boundRect.width").getValue();
+        double f1Width = (double) f1.get("boundRect.width").getValue();
+        double f2Width = (double) f2.get("boundRect.width").getValue();
 
         if(hasSimilarLength(f1Height, f2Height)
                 && hasSimilarLength(f1Width, f2Width)) {
