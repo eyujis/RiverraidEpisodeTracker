@@ -7,7 +7,7 @@ import org.opencv.imgproc.Imgproc;
 
 public class FragmentComparator {
     static final double MIN_CENTER_DISTANCE = 50;
-    static final double MIN_SHAPE_DIFF_RATIO= 0.3;
+    static final double MIN_SHAPE_DIFF_RATIO= 0.30;
     static final double MIN_HUE_DIFF = 2;
 
     public double getHueDistance(Idea f1, Idea f2) {
@@ -74,7 +74,8 @@ public class FragmentComparator {
     }
 
     private boolean hasSimilarLength(double len1, double len2) {
-        double lenDiffRatio = Math.abs(len1-len2)/Math.max(len1, len2);
+        double meanLen = (len1+len2)/2;
+        double lenDiffRatio = Math.abs(len1-len2)/meanLen;
         if(lenDiffRatio<MIN_SHAPE_DIFF_RATIO) {return true;}
         return false;
     }

@@ -175,8 +175,18 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
                 Scalar colorId = (Scalar) idObjs.getL().get(i).get("colorId").getValue();
 
                 Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 2);
+
+                String text = "UP";
+                Point textOrg = new Point(tl_x, tl_y);
+                int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+                double fontScale = 0.5;
+                Scalar textColor = colorId;
+                int textThickness = 2;
+
+                Imgproc.putText(frame, text, textOrg, fontFace, fontScale, textColor, textThickness);
             }
         }
+
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
 

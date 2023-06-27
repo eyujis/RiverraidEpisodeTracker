@@ -7,7 +7,7 @@ import org.opencv.imgproc.Imgproc;
 
 public class ObjectComparator {
     static final double MIN_CENTER_DISTANCE = 50;
-    static final double MIN_SHAPE_DIFF_RATIO= 0.3;
+    static final double MIN_SHAPE_DIFF_RATIO= 0.30;
 
     public boolean closeCenterDistance(Idea f1, Idea f2) {
         double centerDistance = getCenterDistance(f1, f2);
@@ -48,7 +48,8 @@ public class ObjectComparator {
     }
 
     private boolean hasSimilarLength(double len1, double len2) {
-        double lenDiffRatio = Math.abs(len1-len2)/Math.max(len1, len2);
+        double meanLen = (len1+len2)/2;
+        double lenDiffRatio = Math.abs(len1-len2)/meanLen;
         if(lenDiffRatio<MIN_SHAPE_DIFF_RATIO) {return true;}
         return false;
     }
