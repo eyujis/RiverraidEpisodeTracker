@@ -1,9 +1,9 @@
-package org.example.mind.codelets.object_proposer_codelet;
+package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.entities.ObjectFactory;
-import org.example.mind.codelets.object_proposer_codelet.entity_trackers.ObjectTracker;
+import org.example.mind.codelets.object_proposer.entities.ObjectFactory;
+import org.example.mind.codelets.object_proposer.entity_trackers.ObjectTracker;
 
 public class ObjectProposer {
     private Idea unObjectsCF;
@@ -108,7 +108,7 @@ public class ObjectProposer {
         return unObjectsCF;
     }
 
-    public Idea getIdObjectsCF() {
+    public Idea getDetectedObjectsCF() {
         return idObjectsCF;
     }
 }

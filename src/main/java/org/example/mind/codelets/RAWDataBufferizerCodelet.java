@@ -8,7 +8,6 @@ import org.example.environment.RiverRaidEnv;
 import org.example.visualization.JLabelImgUpdater;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,9 +16,10 @@ import java.util.List;
 public class RAWDataBufferizerCodelet extends Codelet implements JLabelImgUpdater {
     private RiverRaidEnv env;
     private Memory rawDataBufferMO;
-    private final int bufferSize = 2;
-    private Idea ideaBuffer = initializeIdeaBuffer(bufferSize);
+    private final int BUFFER_SIZE = 2;
+//    private Idea ideaBuffer = initializeIdeaBuffer();
     private JLabel rawDataBufferImgJLabel;
+    Idea rawDataBuffer = new Idea("rawDataBuffer", "", 0);
 
 
     public RAWDataBufferizerCodelet(RiverRaidEnv env, JLabel rawDataBufferImgJLabel) {
@@ -34,24 +34,28 @@ public class RAWDataBufferizerCodelet extends Codelet implements JLabelImgUpdate
 
     @Override
     public void proc() {
-        BufferedImage frame = null;
+        BufferedImage image = null;
         try {
-            frame = this.env.step();
+            image = this.env.step();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        List<Idea> frames = (List<Idea>) ideaBuffer.get("frames").getValue();
+        int timestamp = this.env.getNStep();
 
-        addFrame(frames, frame, bufferSize);
+        addElement(image, timestamp);
 
-        rawDataBufferMO.setI((Idea) ideaBuffer);
+        if(rawDataBuffer.getL().size()>=BUFFER_SIZE) {
+            rawDataBufferMO.setI(rawDataBuffer);
+        }
+
 
 //        Visualization
-        Idea rawDataBufferIdea = (Idea) rawDataBufferMO.getI();
-        List<Idea> framesIdea = (List<Idea>) rawDataBufferIdea.get("frames").getValue();
-        BufferedImage imageToUpdate = (BufferedImage) (framesIdea.get(0).getValue());
-        updateJLabelImg(this.rawDataBufferImgJLabel, imageToUpdate);
+        if(rawDataBufferMO.getI() instanceof Idea) {
+            Idea rawDataBufferIdea = (Idea) rawDataBufferMO.getI();
+            BufferedImage imageToUpdate = (BufferedImage) rawDataBufferIdea.getL().get(0).get("image").getValue();;
+            updateJLabelImg(this.rawDataBufferImgJLabel, imageToUpdate);
+        }
     }
 
     @Override
@@ -59,32 +63,16 @@ public class RAWDataBufferizerCodelet extends Codelet implements JLabelImgUpdate
 
     }
 
-    public Idea initializeIdeaBuffer(int bufferSize) {
-        Idea ideaBuffer = new Idea("buffer","",0);
-
-        List<Idea> frames = new ArrayList<Idea>();
-        for(int i=0; i<bufferSize; i++)    {
-            Idea frame = new Idea("frame", null);
-            frames.add(frame);
+    public void addElement(BufferedImage image, int timestamp) {
+        if(rawDataBuffer.getL().size()>=BUFFER_SIZE) {
+            rawDataBuffer.getL().remove(0);
         }
 
-        ideaBuffer.add(new Idea("frames",frames));
-        ideaBuffer.add(new Idea("bufferSize", bufferSize));
+        Idea rawData = new Idea("rawData", "", 0);
+        rawData.add(new Idea("image", image));
+        rawData.add(new Idea("timestamp", timestamp));
 
-        return ideaBuffer;
-    }
-
-    private void addFrame(List<Idea> frames, BufferedImage currentFrame, int bufferSize) {
-
-        // shift right position from frames i=buffer_size-1 to i=0
-        for(int i=bufferSize-2; i>=0; i--)    {
-            // get ith values
-            BufferedImage ithTimestampFrame = (BufferedImage) frames.get(i).getValue();
-            // set i+1th values
-            frames.get(i+1).setValue(ithTimestampFrame);
-        }
-        frames.get(0).setValue(currentFrame);
-
+        rawDataBuffer.getL().add(rawData);
     }
 
     @Override

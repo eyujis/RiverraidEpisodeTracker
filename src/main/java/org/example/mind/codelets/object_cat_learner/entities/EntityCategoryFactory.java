@@ -4,7 +4,7 @@ import br.unicamp.cst.representation.idea.Idea;
 
 import java.util.ArrayList;
 
-public class CategoryFactory {
+public class EntityCategoryFactory {
     static int factoryId = 0;
 
     public Idea createFragmentCategory(Idea obj, double relevance) {

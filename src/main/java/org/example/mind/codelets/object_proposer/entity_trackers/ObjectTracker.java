@@ -1,8 +1,8 @@
-package org.example.mind.codelets.object_proposer_codelet.entity_trackers;
+package org.example.mind.codelets.object_proposer.entity_trackers;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_proposer_codelet.ObjectComparator;
-import org.example.mind.codelets.object_proposer_codelet.entities.ObjectFactory;
+import org.example.mind.codelets.object_proposer.ObjectComparator;
+import org.example.mind.codelets.object_proposer.entities.ObjectFactory;
 
 public class ObjectTracker {
 

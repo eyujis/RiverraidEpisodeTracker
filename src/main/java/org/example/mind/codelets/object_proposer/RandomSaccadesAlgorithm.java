@@ -1,8 +1,8 @@
-package org.example.mind.codelets.object_proposer_codelet;
+package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_proposer_codelet.entities.FragmentFactory;
-import org.example.mind.codelets.object_proposer_codelet.fg_samplers.FGPositionSequentialSampler;
+import org.example.mind.codelets.object_proposer.entities.FragmentFactory;
+import org.example.mind.codelets.object_proposer.fg_samplers.FGPositionSequentialSampler;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 

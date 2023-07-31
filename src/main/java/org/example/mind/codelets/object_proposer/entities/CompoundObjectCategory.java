@@ -1,9 +1,7 @@
-package org.example.mind.codelets.object_proposer_codelet.entities;
+package org.example.mind.codelets.object_proposer.entities;
 
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
-
-import java.util.ArrayList;
 
 public class CompoundObjectCategory {
 

@@ -1,4 +1,4 @@
-package org.example.mind.codelets.object_proposer_codelet.fg_samplers;
+package org.example.mind.codelets.object_proposer.fg_samplers;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;

@@ -1,17 +1,15 @@
-package org.example.mind.codelets.object_proposer_codelet.entities;
+package org.example.mind.codelets.object_proposer.entities;
 
 import br.unicamp.cst.representation.idea.Idea;
 import org.opencv.core.*;
-import org.opencv.imgproc.Imgproc;
 
-import java.util.List;
 import java.util.Random;
 
 public class ObjectFactory {
     private static int factoryId = 0;
 
     public Idea createIdObjsFromUnObjs(Idea unObjs) {
-        Idea idObjs = new Idea("idObjects", "", 0);
+        Idea idObjs = new Idea("idObjsCF", "", 0);
         for(Idea unObj: unObjs.getL()) {
             idObjs.add(createIdObjFromUnObj(unObj));
         }

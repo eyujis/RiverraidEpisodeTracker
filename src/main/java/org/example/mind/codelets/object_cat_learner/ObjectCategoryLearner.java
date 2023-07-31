@@ -1,15 +1,15 @@
 package org.example.mind.codelets.object_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_cat_learner.entities.CategoryFactory;
+import org.example.mind.codelets.object_cat_learner.entities.EntityCategoryFactory;
 import org.example.mind.codelets.object_cat_learner.entities.EntityCategory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.FragmentComparator;
+import org.example.mind.codelets.object_proposer.FragmentComparator;
 
 import java.util.*;
 
 public class ObjectCategoryLearner {
-    private CategoryFactory catFactory;
+    private EntityCategoryFactory catFactory;
     Idea objCategoryList;
     FragmentComparator fragmentComparator = new FragmentComparator();
 
@@ -21,7 +21,7 @@ public class ObjectCategoryLearner {
     double MINIMUM_RELEVANCE = 0.5;
 
     public ObjectCategoryLearner() {
-        catFactory = new CategoryFactory();
+        catFactory = new EntityCategoryFactory();
         objCategoryList = new Idea("ObjectCategories", "", 0);
     }
 

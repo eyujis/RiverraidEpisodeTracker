@@ -1,9 +1,9 @@
-package org.example.mind.codelets.object_proposer_codelet;
+package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_cat_learner.entities.FragmentCategory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
-import org.example.mind.codelets.object_proposer_codelet.entity_trackers.FragmentTracker;
+import org.example.mind.codelets.object_proposer.entity_trackers.FragmentTracker;
 import org.opencv.core.Mat;
 
 public class FragmentProposer {
@@ -102,13 +102,10 @@ public class FragmentProposer {
         return unFragsCF;
     }
 
-    public Idea getIdFragsCF() {
-        return idFragsCF;
-    }
-
     public Idea getDetectedFragmentsCF() {
         return idFragsCF;
     }
+
 
     public boolean[][] initializeBooleanMatrix(int size) {
         boolean[][] matrix = new boolean[size][size];

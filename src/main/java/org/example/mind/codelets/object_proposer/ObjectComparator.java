@@ -1,9 +1,7 @@
-package org.example.mind.codelets.object_proposer_codelet;
+package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
-import org.opencv.imgproc.Imgproc;
 
 public class ObjectComparator {
     static final double MIN_CENTER_DISTANCE = 50;

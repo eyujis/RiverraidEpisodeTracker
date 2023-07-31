@@ -1,4 +1,4 @@
-package org.example.mind.codelets.object_proposer_codelet;
+package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
 import org.opencv.core.Mat;

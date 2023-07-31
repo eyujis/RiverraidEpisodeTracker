@@ -1,7 +1,7 @@
 package org.example.mind.codelets.object_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_cat_learner.entities.CategoryFactory;
+import org.example.mind.codelets.object_cat_learner.entities.EntityCategoryFactory;
 import org.example.mind.codelets.object_cat_learner.entities.EntityCategory;
 import org.example.mind.codelets.object_cat_learner.entities.FragmentCategory;
 
@@ -10,7 +10,7 @@ import java.util.Collections;
 
 public class FragmentCategoryLearner {
     private Idea fragCategoryList;
-    private CategoryFactory catFactory;
+    private EntityCategoryFactory catFactory;
 
     double RELEVANCE_THRESHOLD = 5;
     double INIT_RELEVANCE = 1;
@@ -19,7 +19,7 @@ public class FragmentCategoryLearner {
     double MINIMUM_RELEVANCE = 0.5;
 
     public FragmentCategoryLearner() {
-        catFactory = new CategoryFactory();
+        catFactory = new EntityCategoryFactory();
         fragCategoryList = new Idea("FragmentCategories", "", 0);
     }
 

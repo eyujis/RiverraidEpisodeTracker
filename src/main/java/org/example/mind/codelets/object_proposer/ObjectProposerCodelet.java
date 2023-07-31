@@ -1,4 +1,4 @@
-package org.example.mind.codelets.object_proposer_codelet;
+package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
@@ -17,6 +17,7 @@ import java.util.List;
 
 public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     Memory rawDataMO;
+    Memory detectedFragmentsMO;
     Memory detectedObjectsMO;
     Memory fragmentCategoriesMO;
     Memory objectCategoriesMO;
@@ -42,6 +43,7 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         rawDataMO=(MemoryObject)this.getInput("RAW_DATA_BUFFER");
         fragmentCategoriesMO =(MemoryObject)this.getInput("FRAGMENT_CATEGORIES");
         objectCategoriesMO=(MemoryObject)this.getInput("OBJECT_CATEGORIES");
+        detectedFragmentsMO =(MemoryObject)this.getOutput("DETECTED_FRAGMENTS");
         detectedObjectsMO=(MemoryObject)this.getOutput("DETECTED_OBJECTS");
     }
 
@@ -54,12 +56,12 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
     public void proc() {
 
         Idea rawDataBufferIdea = (Idea) rawDataMO.getI();
-        List<Idea> framesIdea = (List<Idea>) rawDataBufferIdea.get("frames").getValue();
-        BufferedImage buffImgFrame = (BufferedImage) (framesIdea.get(0).getValue());
-        Mat frame = null;
+        int buffSize = rawDataBufferIdea.getL().size();
+        BufferedImage buffImgFrame = (BufferedImage) rawDataBufferIdea.getL().get(buffSize-1).get("image").getValue();
 
-        frame = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
-        this.fragmentProposer.update(frame);
+        Mat image = null;
+        image = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
+        this.fragmentProposer.update(image);
 
         if(fragmentCategoriesMO.getI() != "") {
             Idea fragmentCategories = (Idea) fragmentCategoriesMO.getI();
@@ -74,8 +76,15 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         }
 
 
-//      clone the detected objects later maybe here or within the bufferizer
-        detectedObjectsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
+        detectedFragmentsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
+
+        Idea detectedObjects = new Idea("detectedObjects", "", 0);
+        detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
+        detectedObjects.add(rawDataBufferIdea.getL().get(buffSize-1).get("timestamp"));
+        detectedObjects.get("idObjsCF").setName("objects");
+        detectedObjectsMO.setI(detectedObjects);
+
+//        System.out.println(((Idea) detectedObjectsMO.getI()).toStringFull());
 
 //          ----------visualization----------
         try {
@@ -83,11 +92,11 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
             BufferedImage unFragsBuffImg = buffImageFromUnObjectList(unFrags);
             updateJLabelImg(this.objectsImgJLabel, unFragsBuffImg);
 
-            Idea idFrags = fragmentProposer.getIdFragsCF();
+            Idea idFrags = fragmentProposer.getDetectedFragmentsCF();
             BufferedImage idFragsBuffImg = buffImageFromIdObjectList(idFrags);
             updateJLabelImg(this.mergedObjectsImgJLabel, idFragsBuffImg);
 
-            Idea idObjs = objectProposer.getIdObjectsCF();
+            Idea idObjs = objectProposer.getDetectedObjectsCF();
             BufferedImage objectsImg = buffImageFromCatObjectList(idFrags, idObjs);
             updateJLabelImg(this.categoriesImgJLabel, objectsImg);
 

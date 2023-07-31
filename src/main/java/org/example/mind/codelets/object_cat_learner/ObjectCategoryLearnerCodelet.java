@@ -7,7 +7,7 @@ import br.unicamp.cst.representation.idea.Idea;
 
 public class ObjectCategoryLearnerCodelet extends Codelet {
 
-    Memory detectedObjectsMO;
+    Memory detectedFragmentsMO;
     Memory fragmentCategoriesMO;
     Memory objectCategoriesMO;
 
@@ -16,7 +16,7 @@ public class ObjectCategoryLearnerCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        detectedObjectsMO=(MemoryObject)this.getInput("DETECTED_OBJECTS");
+        detectedFragmentsMO =(MemoryObject)this.getInput("DETECTED_FRAGMENTS");
         fragmentCategoriesMO =(MemoryObject)this.getOutput("FRAGMENT_CATEGORIES");
         objectCategoriesMO =(MemoryObject)this.getOutput("OBJECT_CATEGORIES");
     }
@@ -28,10 +28,10 @@ public class ObjectCategoryLearnerCodelet extends Codelet {
 
     @Override
     public void proc() {
-        if(detectedObjectsMO.getI() == "") {
+        if(detectedFragmentsMO.getI() == "") {
             return;
         }
-        Idea detectedObjects = (Idea) detectedObjectsMO.getI();
+        Idea detectedObjects = (Idea) detectedFragmentsMO.getI();
 
         fragmentCategoryLearner.updateCategories(detectedObjects);
         fragmentCategoriesMO.setI(fragmentCategoryLearner.getRelevantCategories());
