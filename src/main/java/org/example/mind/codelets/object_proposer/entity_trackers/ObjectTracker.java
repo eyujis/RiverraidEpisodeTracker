@@ -30,8 +30,8 @@ public class ObjectTracker {
         }
 
         if(newUnObjsCF.getL().size()>0) {
-            for(Idea newUnFragCF : objectFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
-                objsPF.add(newUnFragCF);
+            for(Idea newUnObjCF : objectFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
+                objsPF.add(newUnObjCF);
             }
         }
 
@@ -40,8 +40,8 @@ public class ObjectTracker {
 
         unObjsCF = detectedObjs;
 
-        int n_fragments = Math.max(unObjsCF.getL().size(), objsPF.getL().size());
-        double[][] dataMatrix = new double[n_fragments][n_fragments];
+        int n_objects = Math.max(unObjsCF.getL().size(), objsPF.getL().size());
+        double[][] dataMatrix = new double[n_objects][n_objects];
         setToMaxValue(dataMatrix);
 
         // Assign fragments between frames
@@ -53,7 +53,7 @@ public class ObjectTracker {
 
                 if(closeCenterDistance
                         && similarRectShape) {
-                    dataMatrix[i][j] = centerDistance ;
+                    dataMatrix[i][j] = centerDistance;
                 }
             }
         }
@@ -66,7 +66,10 @@ public class ObjectTracker {
             //remove fragments from last frame that disappeared in the current frame
             if(assignment[i][1] <= unObjsCF.getL().size()-1) {
                 //new fragments in the current frame that where not present in the previous frame
-                if(assignment[i][0] > objsPF.getL().size()-1) {
+                // TODO there is an error here, sometimes the algorithm is assigning objects which are not close from
+                // each other; I fixed using the minimum distance. However there is other ways to fix it in a more elegant
+                // manner. Or creating a minimum criteria in the object comparator, or changing the Hungarian Algorithm;
+                if(assignment[i][0] > objsPF.getL().size()-1 || !objectComparator.closeCenterDistance(objsPF.getL().get(assignment[i][0]), unObjsCF.getL().get(assignment[i][1]))) {
                     newUnObjsCF.getL().add(unObjsCF.getL().get(assignment[i][1]));
                     //assigns fragments in the previous frame to fragments in the current frame
                 } else {

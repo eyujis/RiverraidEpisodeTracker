@@ -9,7 +9,7 @@ import br.unicamp.cst.representation.idea.Idea;
 public class ObjectsBufferizerCodelet extends Codelet {
     Memory detectedObjectsMO;
     Memory objectsBufferMO;
-    private final int BUFFER_SIZE =2;
+    private final int BUFFER_SIZE = 2;
     private Idea objectsBuffer = new Idea("objectsBuffer","",0);
 
     @Override
@@ -26,14 +26,15 @@ public class ObjectsBufferizerCodelet extends Codelet {
     @Override
     public void proc() {
         Idea detectedObjects = (Idea) detectedObjectsMO.getI();
-        addElement(detectedObjects);
+        addElement(detectedObjects.clone());
 
         if(objectsBuffer.getL().size()>=BUFFER_SIZE) {
             objectsBufferMO.setI(objectsBuffer);
         }
 
 //        if(objectsBufferMO.getI() instanceof Idea) {
-//            System.out.println(((Idea)objectsBufferMO.getI()).toStringFull());
+//            Idea objectBuffer = (Idea) objectsBufferMO.getI();
+//            System.out.println(objectBuffer.toStringFull());
 //        }
     }
 

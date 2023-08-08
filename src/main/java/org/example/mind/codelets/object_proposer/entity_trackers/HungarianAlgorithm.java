@@ -79,7 +79,7 @@ public class HungarianAlgorithm {
 
     /**
      * Check if all columns are covered. If that's the case then the
-     * optimal solution is found
+     * optimal solution is found
      *
      * @return true or false
      */

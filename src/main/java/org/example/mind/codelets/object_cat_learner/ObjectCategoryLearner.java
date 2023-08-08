@@ -20,12 +20,15 @@ public class ObjectCategoryLearner {
     double DECREMENT_FACTOR = 0.5;
     double MINIMUM_RELEVANCE = 0.5;
 
+    // TODO refactor this whole class, the code is too confusing;
     public ObjectCategoryLearner() {
         catFactory = new EntityCategoryFactory();
         objCategoryList = new Idea("ObjectCategories", "", 0);
     }
 
     public void updateCategories(Idea detectedFragments) {
+        // TODO I do not need to extract object categories from fragments, I could simply input each fragment group to
+        // each category and check if there is a membership relation. I will do this for the Event Category Learner;
         Idea rcvCategories = extractObjectCategories(detectedFragments);
 
         for(Idea rcvCat : rcvCategories.getL()) {
@@ -52,6 +55,7 @@ public class ObjectCategoryLearner {
         for(int i=0; i<objCategoryList.getL().size(); i++) {
             ObjectCategory objCatListElem = (ObjectCategory) objCategoryList.getL().get(i).getValue();
             ObjectCategory objCatComp = (ObjectCategory) cat.getValue();
+
             if(objCatListElem.equals(objCatComp) == true) {
                 idx = i;
             }

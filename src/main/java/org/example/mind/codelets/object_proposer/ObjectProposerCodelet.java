@@ -185,7 +185,7 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
 
                 Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 2);
 
-                String text = "UP";
+                String text = idObjs.getL().get(i).get("id").getValue().toString();
                 Point textOrg = new Point(tl_x, tl_y);
                 int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
                 double fontScale = 0.5;

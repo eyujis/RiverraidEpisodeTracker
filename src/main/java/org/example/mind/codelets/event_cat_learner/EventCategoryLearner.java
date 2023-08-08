@@ -7,15 +7,31 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class EventCategoryLearner_v0 {
+public class EventCategoryLearner {
+    Idea eventCategoryList;
+    EventCategoryFactory eventCatFactory;
 
+    double RELEVANCE_THRESHOLD = 5;
+    double INIT_RELEVANCE = 1;
+    double INCREMENT_FACTOR = 2.2;
+    double DECREMENT_FACTOR = 0.5;
+    double MINIMUM_RELEVANCE = 0.5;
 
-    public void update(Idea objectsBuffer) {
-        Idea objectsTransitions = extractObjectsPropertyTransitions(objectsBuffer, "center");
-        System.out.println(objectsTransitions.toStringFull());
+    public EventCategoryLearner() {
+        eventCatFactory = new EventCategoryFactory();
+        eventCategoryList = new Idea("EventCategories", "", 0);
+    }
+    public void updateCategories(Idea objectsBuffer) {
+        Idea objectsTransitions = extractObjectsPropertyTransitions(objectsBuffer);
+
+        for(Idea objectTransition: objectsTransitions.getL()) {
+            Idea timeSteps = objectTransition.get("timeSteps");
+            eventCatFactory.createEventCategory("center", timeSteps, INIT_RELEVANCE);
+
+        }
     }
 
-    public Idea extractObjectsPropertyTransitions(Idea objectsBuffer, String propertyName) {
+    public Idea extractObjectsPropertyTransitions(Idea objectsBuffer) {
 
         Idea objectsTransitions = new Idea("objectsTransitions", "", 0);
         List<Integer> interIds = objectIdsIntersectingBetweenTimesSteps(objectsBuffer);
