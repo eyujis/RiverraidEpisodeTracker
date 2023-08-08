@@ -49,6 +49,9 @@ public class ObjectFactory {
         Idea boundRectIdea = getClusterOutsideRect(fragmentCluster);
         objectIdea.add(boundRectIdea);
 
+        Idea sizeIdea = getSizeFromBoundRect(boundRectIdea);
+        objectIdea.add(sizeIdea);
+
         Idea centerIdea = getCenterFromBoundRect(boundRectIdea);
         objectIdea.add(centerIdea);
 
@@ -113,10 +116,7 @@ public class ObjectFactory {
             yOutsideRectEnd = y2End;
         }
 
-        // bounding box
         Idea boundRectIdea = new Idea("boundRect", "", 0);
-        boundRectIdea.add(new Idea("height", yOutsideRectEnd-yOutsideRectStart));
-        boundRectIdea.add(new Idea("width", xOutsideRectEnd-xOutsideRectStart));
 
         Idea tlIdea = new Idea("tl", "", 0);
         tlIdea.add(new Idea("x", xOutsideRectStart));
@@ -130,6 +130,21 @@ public class ObjectFactory {
 
         return boundRectIdea;
 
+    }
+
+    private Idea getSizeFromBoundRect(Idea boundRectIdea) {
+        double xStart = (double) boundRectIdea.get("tl.x").getValue();
+        double yStart = (double) boundRectIdea.get("tl.y").getValue();
+        double xEnd = (double) boundRectIdea.get("br.x").getValue();
+        double yEnd = (double) boundRectIdea.get("br.y").getValue();
+
+        double height = yEnd-yStart;
+        double width = xEnd-xStart;
+
+        Idea sizeIdea = new Idea("size", "", 0);
+        sizeIdea.add(new Idea("height", height));
+        sizeIdea.add(new Idea("width", width));
+        return sizeIdea;
     }
 
     private Idea getCenterFromBoundRect(Idea boundRectIdea)   {
@@ -149,8 +164,9 @@ public class ObjectFactory {
     }
 
     public void transferPropertyValues(Idea o1, Idea o2) {
-        o1.get("boundRect.height").setValue(o2.get("boundRect.height").getValue());
-        o1.get("boundRect.width").setValue(o2.get("boundRect.width").getValue());
+        o1.get("size.height").setValue(o2.get("size.height").getValue());
+        o1.get("size.width").setValue(o2.get("size.width").getValue());
+
         o1.get("boundRect.tl.x").setValue(o2.get("boundRect.tl.x").getValue());
         o1.get("boundRect.tl.y").setValue(o2.get("boundRect.tl.y").getValue());
         o1.get("boundRect.br.x").setValue(o2.get("boundRect.br.x").getValue());

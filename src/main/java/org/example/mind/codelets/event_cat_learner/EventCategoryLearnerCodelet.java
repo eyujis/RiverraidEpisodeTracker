@@ -24,6 +24,6 @@ public class EventCategoryLearnerCodelet extends Codelet {
     @Override
     public void proc() {
         eventCategoryLearner.updateCategories((Idea) objectsBufferMO.getI());
-
+        eventCategoriesMO.setI(eventCategoryLearner.getRelevantCategories());
     }
 }

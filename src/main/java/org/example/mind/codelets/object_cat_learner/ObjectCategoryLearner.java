@@ -27,8 +27,6 @@ public class ObjectCategoryLearner {
     }
 
     public void updateCategories(Idea detectedFragments) {
-        // TODO I do not need to extract object categories from fragments, I could simply input each fragment group to
-        // each category and check if there is a membership relation. I will do this for the Event Category Learner;
         Idea rcvCategories = extractObjectCategories(detectedFragments);
 
         for(Idea rcvCat : rcvCategories.getL()) {

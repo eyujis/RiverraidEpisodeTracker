@@ -61,14 +61,21 @@ public class FragmentFactory {
 
         // center
         Idea centerIdea = new Idea("center", "", 0);
+
         centerIdea.add(new Idea("x", centerPoint.x));
         centerIdea.add(new Idea("y", centerPoint.y));
+
         fragmentIdea.add(centerIdea);
+
+        // size
+        Idea sizeIdea = new Idea("size", "", 0);
+        sizeIdea.add(new Idea("height", (double) boundRect.height));
+        sizeIdea.add(new Idea("width", (double) boundRect.width));
+
+        fragmentIdea.add(sizeIdea);
 
         // bounding box
         Idea boundRectIdea = new Idea("boundRect", "", 0);
-        boundRectIdea.add(new Idea("height", (double) boundRect.height));
-        boundRectIdea.add(new Idea("width", (double) boundRect.width));
 
         Idea tlIdea = new Idea("tl", "", 0);
         tlIdea.add(new Idea("x", boundRect.tl().x));
@@ -119,8 +126,9 @@ public class FragmentFactory {
         f1.get("color.B").setValue((double)f2.get("color.B").getValue());
         f1.get("color.G").setValue((double)f2.get("color.G").getValue());
 
-        f1.get("boundRect.height").setValue(f2.get("boundRect.height").getValue());
-        f1.get("boundRect.width").setValue(f2.get("boundRect.width").getValue());
+        f1.get("size.height").setValue(f2.get("size.height").getValue());
+        f1.get("size.width").setValue(f2.get("size.width").getValue());
+
         f1.get("boundRect.tl.x").setValue(f2.get("boundRect.tl.x").getValue());
         f1.get("boundRect.tl.y").setValue(f2.get("boundRect.tl.y").getValue());
         f1.get("boundRect.br.x").setValue(f2.get("boundRect.br.x").getValue());

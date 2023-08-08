@@ -9,8 +9,8 @@ import java.util.ArrayList;
 public class EventCategoryFactory {
     static int factoryId = 0;
 
-    public Idea createEventCategory(String propertyName, Idea timeSteps, double relevance) {
-        Idea category = new Idea("EventCategory"+ generateEventId(), new EventCategory(propertyName, timeSteps,
+    public Idea createEventCategory(String propertyName, Idea objectTransition, double relevance) {
+        Idea category = new Idea("EventCategory"+ generateEventId(), new EventCategory(propertyName, objectTransition,
                 relevance));
         return category;
     }

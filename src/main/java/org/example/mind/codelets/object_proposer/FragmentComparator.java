@@ -7,7 +7,7 @@ import org.opencv.imgproc.Imgproc;
 
 public class FragmentComparator {
     static final double MIN_CENTER_DISTANCE = 50;
-    static final double MIN_SHAPE_DIFF_RATIO= 0.30;
+    static final double MIN_SHAPE_DIFF_RATIO= 0.5;
     static final double MIN_HUE_DIFF = 2;
 
     public double getHueDistance(Idea f1, Idea f2) {
@@ -60,11 +60,11 @@ public class FragmentComparator {
     }
 
     public boolean haveSimilarRectShape(Idea f1, Idea f2) {
-        double f1Height = (double) f1.get("boundRect.height").getValue();
-        double f2Height = (double) f2.get("boundRect.height").getValue();
+        double f1Height = (double) f1.get("size.height").getValue();
+        double f2Height = (double) f2.get("size.height").getValue();
 
-        double f1Width = (double) f1.get("boundRect.width").getValue();
-        double f2Width = (double) f2.get("boundRect.width").getValue();
+        double f1Width = (double) f1.get("size.width").getValue();
+        double f2Width = (double) f2.get("size.width").getValue();
 
         if(hasSimilarLength(f1Height, f2Height)
                 && hasSimilarLength(f1Width, f2Width)) {
