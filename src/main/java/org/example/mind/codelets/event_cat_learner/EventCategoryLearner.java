@@ -4,11 +4,10 @@ import br.unicamp.cst.representation.idea.Idea;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 
-public class EventCategoryLearner {
+public class EventCategoryLearner_v0 {
 
 
     public void update(Idea objectsBuffer) {
@@ -58,7 +57,7 @@ public class EventCategoryLearner {
         for (int i=1; i<objectsBuffer.getL().size(); i++) {
             List<Integer> currentIds = extractIdsFromObjects(objectsBuffer.getL().get(i).get("objects"));
 
-            //https://www.baeldung.com/java-lists-intersection
+            // source: https://www.baeldung.com/java-lists-intersection
             resultIds = resultIds.stream()
                     .distinct()
                     .filter(currentIds::contains)
