@@ -3,6 +3,7 @@ package org.example.mind;
 import br.unicamp.cst.core.entities.*;
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
+import org.example.mind.codelets.event_tracker.EventTrackerCodelet;
 import org.example.mind.codelets.object_cat_learner.ObjectCategoryLearnerCodelet;
 import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
@@ -27,6 +28,7 @@ public class AgentMind extends Mind {
         Memory objectCategoriesMO;
         Memory objectsBufferMO;
         Memory eventCategoriesMO;
+        Memory detectedEventsMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
@@ -38,6 +40,7 @@ public class AgentMind extends Mind {
         objectCategoriesMO = createMemoryObject("OBJECT_CATEGORIES", "");
         objectsBufferMO = createMemoryObject("OBJECTS_BUFFER", "");
         eventCategoriesMO = createMemoryObject("EVENT_CATEGORIES", "");
+        detectedEventsMO = createMemoryObject("DETECTED_EVENTS", "");
 
         registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
@@ -46,6 +49,7 @@ public class AgentMind extends Mind {
         registerMemory(objectCategoriesMO, "EpisodeTrackerMemoryGroup");
         registerMemory(objectsBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(eventCategoriesMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(detectedEventsMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
         rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
@@ -77,7 +81,7 @@ public class AgentMind extends Mind {
         objectsBufferizerCodelet.addOutput(objectsBufferMO);
         objectsBufferizerCodelet.setIsMemoryObserver(true);
         detectedObjectsMO.addMemoryObserver(objectsBufferizerCodelet);
-        objectsBufferizerCodelet.setName("ObjectsBufferizerCodelet");
+        objectsBufferizerCodelet.setName("ObjectsBufferizer");
         insertCodelet(objectsBufferizerCodelet);
 
         Codelet eventCategoryLearnerCodelet = new EventCategoryLearnerCodelet();
@@ -88,11 +92,21 @@ public class AgentMind extends Mind {
         eventCategoryLearnerCodelet.setName("EventCategoryLearner");
         insertCodelet(eventCategoryLearnerCodelet);
 
+        Codelet eventTrackerCodelet = new EventTrackerCodelet();
+        eventTrackerCodelet.addInput(objectsBufferMO);
+        eventTrackerCodelet.addInput(eventCategoriesMO);
+        eventTrackerCodelet.addOutput(detectedEventsMO);
+        eventTrackerCodelet.setIsMemoryObserver(true);
+        objectsBufferMO.addMemoryObserver(eventTrackerCodelet);
+        eventTrackerCodelet.setName("EventTracker");
+        insertCodelet(eventTrackerCodelet);
+
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectsBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())

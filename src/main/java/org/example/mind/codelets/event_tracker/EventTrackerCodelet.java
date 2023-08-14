@@ -3,17 +3,20 @@ package org.example.mind.codelets.event_tracker;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
+import br.unicamp.cst.representation.idea.Idea;
 
 public class EventTrackerCodelet extends Codelet {
-    Memory detectedObjectsMO;
+    Memory objectsBufferMO;
     Memory eventCategoriesMO;
     Memory detectedEventsMO;
 
+    EventTracker eventTracker = new EventTracker();
+
     @Override
     public void accessMemoryObjects() {
-        detectedObjectsMO=(MemoryObject)this.getInput("DETECTED_OBJECTS");
+        objectsBufferMO=(MemoryObject)this.getInput("OBJECTS_BUFFER");
         eventCategoriesMO=(MemoryObject)this.getInput("EVENT_CATEGORIES");
-        detectedObjectsMO=(MemoryObject)this.getInput("DETECTED_EVENTS");
+        detectedEventsMO=(MemoryObject)this.getInput("DETECTED_EVENTS");
     }
 
     @Override
@@ -23,6 +26,12 @@ public class EventTrackerCodelet extends Codelet {
 
     @Override
     public void proc() {
+        if(objectsBufferMO.getI()=="" || eventCategoriesMO.getI()=="") {
+            return;
+        }
+        Idea objectsBuffer = (Idea) objectsBufferMO.getI();
+        Idea eventCategories = (Idea) eventCategoriesMO.getI();
+        eventTracker.detectEvents(objectsBuffer, eventCategories);
 
     }
 }

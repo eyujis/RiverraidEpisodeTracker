@@ -25,6 +25,7 @@ public class EventCategory implements Category {
     @Override
     public double membership(Idea objectTransition) {
         Idea timeSteps = objectTransition.get("timeSteps");
+        // extracts the event vector based on this.property
         RealVector instVector = extractEventVector(timeSteps);
 
         if(isZeroMagnitude(instVector) && isZeroMagnitude(this.eventVector)) {
