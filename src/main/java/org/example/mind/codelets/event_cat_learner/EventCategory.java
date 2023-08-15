@@ -9,12 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventCategory implements Category {
-    public String propertyName;
-    public RealVector eventVector;
+    private String propertyName;
+    private RealVector eventVector;
     double relevance;
 
-    double MIN_ANGLE_DIFF = 0.01;
-    double MIN_MAG_DIFF = 0.01;
+    double MIN_ANGLE_DIFF = 0.1;
+    double MIN_MAG_DIFF = 0.1;
+//    double MIN_MAG_DIFF = 4;
 
     public EventCategory(String propertyName, Idea objectTransition, double relevance) {
         this.propertyName = propertyName;
@@ -35,7 +36,7 @@ public class EventCategory implements Category {
         double magDiff = getMagnitudeDiff(instVector, this.eventVector);
         double angleDiff = getAngleDiff(instVector, this.eventVector);
 
-        if(magDiff<MIN_MAG_DIFF && angleDiff<MIN_ANGLE_DIFF) {
+        if(magDiff<=MIN_MAG_DIFF && angleDiff<=MIN_ANGLE_DIFF) {
             return 1;
         }
 
@@ -129,11 +130,19 @@ public class EventCategory implements Category {
         double magDiff = getMagnitudeDiff(compVector, this.eventVector);
         double angleDiff = getAngleDiff(compVector, this.eventVector);
 
-        if(magDiff<MIN_MAG_DIFF && angleDiff<MIN_ANGLE_DIFF) {
+        if(magDiff<=MIN_MAG_DIFF && angleDiff<=MIN_ANGLE_DIFF) {
             return true;
         }
 
         return false;
+    }
+
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    public RealVector getEventVector() {
+        return eventVector;
     }
 
 }

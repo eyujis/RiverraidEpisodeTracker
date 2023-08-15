@@ -1,10 +1,12 @@
 package org.example.mind.codelets.event_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
+import jdk.jfr.Event;
 import org.example.mind.codelets.event_cat_learner.entities.ObjectsTransitionsExtractor;
 import org.example.mind.codelets.object_cat_learner.entities.EntityCategory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 
+import java.nio.file.FileSystemNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +57,8 @@ public class EventCategoryLearner {
             //TODO this restrain our implementation for only detecting changes on these properties;
             // I should loop instead through all object's properties, I don't do that because
             // the bounding box is a property which contains properties;
-            String[] propertyNames = {"center", "size"};
+//            String[] propertyNames = {"center", "size"};
+            String[] propertyNames = {"center"};
             for(String propertyName: propertyNames) {
                 Idea eventCategory = eventCatFactory.createEventCategory(propertyName, objectTransition, INIT_RELEVANCE);
                 rcvEventCats.add(eventCategory);
@@ -121,6 +124,12 @@ public class EventCategoryLearner {
                 relevantCategories.add(eventCatIdea);
             }
         }
+
+//        for(Idea relevantCategoryIdea : relevantCategories.getL()) {
+//            EventCategory relevantCategory = (EventCategory) relevantCategoryIdea.getValue();
+//            System.out.println(relevantCategory.getEventVector());
+//        }
+//        System.out.println("----------------");
 
         return relevantCategories;
     }

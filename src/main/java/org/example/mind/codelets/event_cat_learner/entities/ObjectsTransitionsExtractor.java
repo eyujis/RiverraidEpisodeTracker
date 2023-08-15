@@ -16,7 +16,9 @@ public class ObjectsTransitionsExtractor {
 
         for (int id: interIds) {
             Idea objectTransition = new Idea("objectTransition", "", 0);
+
             objectTransition.add(new Idea("objectId", id));
+
             Idea propertyTimeSteps = new Idea("timeSteps", "", 0);
 
             for (int i=0; i<objectsBuffer.getL().size(); i++) {

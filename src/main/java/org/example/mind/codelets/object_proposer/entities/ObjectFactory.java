@@ -42,9 +42,12 @@ public class ObjectFactory {
     }
 
 
-    public Idea createUnObject(Idea fragmentCluster) {
+    public Idea createUnObject(Idea fragmentCluster, Idea objectCategory) {
 
         Idea objectIdea = new Idea("unObject","",0);
+
+        Idea objectCategoryIdea = new Idea("objectCategory", objectCategory.getName(), 1);
+        objectIdea.add(objectCategoryIdea);
 
         Idea boundRectIdea = getClusterOutsideRect(fragmentCluster);
         objectIdea.add(boundRectIdea);

@@ -16,7 +16,7 @@ public class EventTrackerCodelet extends Codelet {
     public void accessMemoryObjects() {
         objectsBufferMO=(MemoryObject)this.getInput("OBJECTS_BUFFER");
         eventCategoriesMO=(MemoryObject)this.getInput("EVENT_CATEGORIES");
-        detectedEventsMO=(MemoryObject)this.getInput("DETECTED_EVENTS");
+        detectedEventsMO=(MemoryObject)this.getOutput("DETECTED_EVENTS");
     }
 
     @Override
@@ -33,5 +33,14 @@ public class EventTrackerCodelet extends Codelet {
         Idea eventCategories = (Idea) eventCategoriesMO.getI();
         eventTracker.detectEvents(objectsBuffer, eventCategories);
 
+//        System.out.println(eventTracker.getDetectedEvents().toStringFull());
+
+//        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
+//            if((boolean)eventIdea.get("hasEnded").getValue()==true) {
+//                System.out.println(eventIdea.toStringFull());
+//            }
+//        }
+
+        detectedEventsMO.setI(eventTracker.getDetectedEvents());
     }
 }
