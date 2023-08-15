@@ -35,11 +35,11 @@ public class EventTrackerCodelet extends Codelet {
 
 //        System.out.println(eventTracker.getDetectedEvents().toStringFull());
 
-//        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
-//            if((boolean)eventIdea.get("hasEnded").getValue()==true) {
-//                System.out.println(eventIdea.toStringFull());
-//            }
-//        }
+        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
+            if((boolean)eventIdea.get("hasEnded").getValue()==true) {
+                System.out.println(eventIdea.toStringFull());
+            }
+        }
 
         detectedEventsMO.setI(eventTracker.getDetectedEvents());
     }
