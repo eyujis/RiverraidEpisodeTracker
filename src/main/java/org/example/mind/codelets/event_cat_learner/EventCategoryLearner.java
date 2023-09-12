@@ -19,7 +19,8 @@ public class EventCategoryLearner {
     ObjectsTransitionsExtractor objectsTransitionsExtractor;
 
     double RELEVANCE_THRESHOLD = 5;
-    double INIT_RELEVANCE = 1;
+//    double INIT_RELEVANCE = 1;
+    double INIT_RELEVANCE = 5;
     double INCREMENT_FACTOR = 2.2;
     double DECREMENT_FACTOR = 0.5;
     double MINIMUM_RELEVANCE = 0.5;

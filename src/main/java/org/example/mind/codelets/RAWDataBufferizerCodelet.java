@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RAWDataBufferizerCodelet extends Codelet implements JLabelImgUpdater {
+public class RAWDataBufferizerCodelet extends Codelet {
     private RiverRaidEnv env;
     private Memory rawDataBufferMO;
     private final int BUFFER_SIZE = 2;
@@ -75,7 +75,6 @@ public class RAWDataBufferizerCodelet extends Codelet implements JLabelImgUpdate
         rawDataBuffer.getL().add(rawData);
     }
 
-    @Override
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToUpdate) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToUpdate));
     }

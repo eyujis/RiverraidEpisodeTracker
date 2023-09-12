@@ -6,14 +6,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class MemoriesJFrame extends JFrame {
+public class FirstJFrame extends JFrame {
     String templateImagePath = "template_img.tiff";
     JLabel rawDataBufferImgJLabel;
     JLabel objectsImgJLabel;
     JLabel mergedObjectsImgJLabel;
     JLabel categoriesImgJLabel;
 
-    public MemoriesJFrame() throws IOException {
+    public FirstJFrame() throws IOException {
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 

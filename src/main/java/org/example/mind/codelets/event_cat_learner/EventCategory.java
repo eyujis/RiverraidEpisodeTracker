@@ -17,7 +17,7 @@ public class EventCategory implements Category {
 
     double MIN_ANGLE_DIFF = 0.1;
     double MIN_MAG_DIFF = 0.1;
-    double MIN_DIST_DIFF = 0.1;
+    double MIN_DIST_DIFF = 1;
 //    double MIN_MAG_DIFF = 4;
 
     public EventCategory(String propertyName, Idea objectTransition, double relevance) {

@@ -8,18 +8,23 @@ import org.example.mind.codelets.object_cat_learner.ObjectCategoryLearnerCodelet
 import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
 import org.example.mind.codelets.objects_bufferizer.ObjectsBufferizerCodelet;
+import org.example.visualization.FirstJFrame;
+import org.example.visualization.SecondJFrame;
 
 import javax.swing.*;
 import java.io.IOException;
 
 
 public class AgentMind extends Mind {
-    public AgentMind(RiverRaidEnv env,
-                     JLabel rawDataBufferImgJLabel,
-                     JLabel objectsImgJLabel,
-                     JLabel mergedObjectsImgJLabel,
-                     JLabel categoriesImgJLabel) throws IOException {
+    public AgentMind(RiverRaidEnv env, FirstJFrame firstJFrame, SecondJFrame secondJFrame) throws IOException {
         super();
+
+        JLabel rawDataBufferImgJLabel = firstJFrame.getRawDataBufferImgJLabel();
+        JLabel objectsImgJLabel = firstJFrame.getObjectsImgJLabel();
+        JLabel mergedObjectsImgJLabel = firstJFrame.getMergedObjectsImgJLabel();
+        JLabel categoriesImgJLabel = firstJFrame.getCategoriesImgJLabel();
+
+        JLabel eventImgJLabel = secondJFrame.getEventTrackerImgJLabel();
 
         Memory rawDataBufferMO;
         Memory detectedFragmentsMO;
@@ -92,7 +97,7 @@ public class AgentMind extends Mind {
         eventCategoryLearnerCodelet.setName("EventCategoryLearner");
         insertCodelet(eventCategoryLearnerCodelet);
 
-        Codelet eventTrackerCodelet = new EventTrackerCodelet();
+        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel);
         eventTrackerCodelet.addInput(objectsBufferMO);
         eventTrackerCodelet.addInput(eventCategoriesMO);
         eventTrackerCodelet.addOutput(detectedEventsMO);

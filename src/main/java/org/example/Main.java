@@ -1,11 +1,10 @@
 package org.example;
 
-import br.unicamp.cst.representation.idea.Idea;
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.AgentMind;
-import org.example.visualization.MemoriesJFrame;
+import org.example.visualization.FirstJFrame;
+import org.example.visualization.SecondJFrame;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,14 +16,15 @@ public class Main {
 //        PerceptJFrame perceptJFrame = new PerceptJFrame();
 //        perceptJFrame.setVisible(true);
 
-        MemoriesJFrame memoriesJFrame = new MemoriesJFrame();
-        memoriesJFrame.setVisible(true);
+        FirstJFrame firstJFrame = new FirstJFrame();
+        SecondJFrame secondJFrame = new SecondJFrame();
+
+
+        firstJFrame.setVisible(true);
+        secondJFrame.setVisible(true);
+
         RiverRaidEnv riverRaidEnv = new RiverRaidEnv();
-        AgentMind agentMind = new AgentMind(riverRaidEnv,
-                                            memoriesJFrame.getRawDataBufferImgJLabel(),
-                                            memoriesJFrame.getObjectsImgJLabel(),
-                                            memoriesJFrame.getMergedObjectsImgJLabel(),
-                                            memoriesJFrame.getCategoriesImgJLabel());
+        AgentMind agentMind = new AgentMind(riverRaidEnv, firstJFrame, secondJFrame);
     }
 
     public static void loadOpenCVLibraryFromCurrentPath()   {

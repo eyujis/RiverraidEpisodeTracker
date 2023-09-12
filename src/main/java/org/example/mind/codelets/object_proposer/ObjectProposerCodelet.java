@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
-public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
+public class ObjectProposerCodelet extends Codelet {
     Memory rawDataMO;
     Memory detectedFragmentsMO;
     Memory detectedObjectsMO;
@@ -105,7 +105,6 @@ public class ObjectProposerCodelet extends Codelet implements JLabelImgUpdater {
         }
     }
 
-    @Override
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToSet) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToSet));
     }

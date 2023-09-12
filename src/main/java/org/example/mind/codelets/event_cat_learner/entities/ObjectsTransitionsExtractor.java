@@ -19,7 +19,7 @@ public class ObjectsTransitionsExtractor {
 
             objectTransition.add(new Idea("objectId", id));
 
-            Idea propertyTimeSteps = new Idea("timeSteps", "", 0);
+            Idea timeSteps = new Idea("timeSteps", "", 0);
 
             for (int i=0; i<objectsBuffer.getL().size(); i++) {
 
@@ -34,14 +34,13 @@ public class ObjectsTransitionsExtractor {
                             }
                         }
                         timeStep.add(objectsBuffer.getL().get(i).get("timestamp"));
-                        propertyTimeSteps.add(timeStep);
+                        timeSteps.add(timeStep);
                     }
                 }
             }
-            objectTransition.add(propertyTimeSteps);
+            objectTransition.add(timeSteps);
             objectsTransitions.add(objectTransition);
         }
-
         return objectsTransitions;
     }
 
