@@ -74,7 +74,7 @@ public class EventCategoryLearner {
             EventCategory eventCatListElem = (EventCategory) eventCategoryList.getL().get(i).getValue();
             EventCategory eventInstance = (EventCategory) cat.getValue();
 
-            if(eventCatListElem.equals(eventInstance) == true) {
+            if(eventCatListElem.sameCategory(eventInstance) == true) {
                 idx = i;
             }
         }

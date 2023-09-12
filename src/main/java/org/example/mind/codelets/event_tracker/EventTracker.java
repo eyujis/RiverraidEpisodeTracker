@@ -37,18 +37,14 @@ public class EventTracker {
                         Idea previousEvent = previouslyDetectedEvents.getL().get(previousEventIdxMatch);
                         String previousEventCategory = (String) previousEvent.get("eventCategory").getValue();
 
-                        if(eventCategoryIdea.getName() == previousEventCategory) {
+                        // checks if the total event vector has a similar angle compared with the event category
+                        double[] previousEventVector = (double[]) previousEvent.get("eventVector").getValue();
+                        boolean hasSimilarAngle = ((EventCategory) eventCategoryIdea.getValue()).hasSimilarAngle(previousEventVector);
+
+                        if(eventCategoryIdea.getName() == previousEventCategory && hasSimilarAngle) {
                             extendEventVector(previousEvent, objectTransition);
                             detectedEvents.add(previousEvent);
                         } else {
-                            if((boolean )previousEvent.get("hasEnded").getValue() == false) {
-                                previousEvent.get("hasEnded").setValue(true);
-
-                                int finalTimestamp = (int) objectTransition.get("timeSteps").getL().get(0).get("timestamp").getValue();
-                                Idea finalTimestampIdea  = new Idea("finalTimestamp", finalTimestamp);
-                                previousEvent.add(finalTimestampIdea);
-                                detectedEvents.add(previousEvent);
-                            }
                             Idea newEvent = createEvent(objectTransition, eventCategoryIdea);
                             detectedEvents.add(newEvent);
                         }
@@ -80,8 +76,6 @@ public class EventTracker {
         double[] eventVector = extractEventVector(objectTransition.get("timeSteps"), propertyName);
         eventIdea.add(new Idea("eventVector", eventVector));
 
-        eventIdea.add(new Idea("hasEnded", false));
-
         return eventIdea;
     }
 
@@ -94,15 +88,15 @@ public class EventTracker {
 
         Idea lastStep = timeSteps.getL().get(nSteps-1);
 
-        Idea sPropertyState = previousEvent.get("initialPosition");
-        Idea ePropertyState = lastStep.get(propertyName);
+        Idea initialPropertyState = previousEvent.get("initialPosition");
+        Idea finalPropertyState = lastStep.get(propertyName);
 
-        double[] rawVector = new double[sPropertyState.getL().size()];
+        double[] rawVector = new double[initialPropertyState.getL().size()];
 
-        if(sPropertyState.getL().size()==ePropertyState.getL().size()) {
-            for(int i=0; i<sPropertyState.getL().size(); i++) {
-                double startValue = (double) sPropertyState.getL().get(i).getValue();
-                double endValue = (double) ePropertyState.getL().get(i).getValue();
+        if(initialPropertyState.getL().size()==finalPropertyState.getL().size()) {
+            for(int i=0; i<initialPropertyState.getL().size(); i++) {
+                double startValue = (double) initialPropertyState.getL().get(i).getValue();
+                double endValue = (double) finalPropertyState.getL().get(i).getValue();
                 rawVector[i] = endValue-startValue;
             }
         } else {
@@ -154,4 +148,5 @@ public class EventTracker {
     public Idea getDetectedEvents() {
         return detectedEvents;
     }
+
 }
