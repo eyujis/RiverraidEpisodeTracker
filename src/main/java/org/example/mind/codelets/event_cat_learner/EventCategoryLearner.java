@@ -1,16 +1,10 @@
 package org.example.mind.codelets.event_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
-import jdk.jfr.Event;
 import org.example.mind.codelets.event_cat_learner.entities.ObjectsTransitionsExtractor;
-import org.example.mind.codelets.object_cat_learner.entities.EntityCategory;
-import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
-
-import java.nio.file.FileSystemNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class EventCategoryLearner {
@@ -35,14 +29,14 @@ public class EventCategoryLearner {
         Idea objectsTransitions = objectsTransitionsExtractor.extract(objectsBuffer);
         Idea rcvEventCats = extractEventCategories(objectsTransitions);
 
-        for(Idea rcvCat : rcvEventCats.getL()) {
+        for (Idea rcvCat : rcvEventCats.getL()) {
             int equalCatIdx = this.equalCategoryIdx(rcvCat);
 
-            if(equalCatIdx == -1) {
+            if (equalCatIdx == -1) {
                 eventCategoryList.add(rcvCat);
             } else {
                 EventCategory eventCat = (EventCategory) eventCategoryList.getL().get(equalCatIdx).getValue();
-                if(eventCat.getRelevance()<RELEVANCE_THRESHOLD) {
+                if (eventCat.getRelevance()<RELEVANCE_THRESHOLD) {
                     eventCat.incrementRelevance(INCREMENT_FACTOR);
                 }
             }
@@ -53,27 +47,34 @@ public class EventCategoryLearner {
 
     public Idea extractEventCategories(Idea objectsTransitions) {
         Idea rcvEventCats = new Idea("extractedEventCategories", "", 0);
-        for(Idea objectTransition: objectsTransitions.getL()) {
+        for (Idea objectTransition: objectsTransitions.getL()) {
 
-            //TODO this restrain our implementation for only detecting changes on these properties;
-            // I should loop instead through all object's properties, I don't do that because
-            // the bounding box is a property which contains properties;
-//            String[] propertyNames = {"center", "size"};
-            String[] propertyNames = {"center"};
-            for(String propertyName: propertyNames) {
-                Idea eventCategory = eventCatFactory.createEventCategory(propertyName, objectTransition, INIT_RELEVANCE);
-                rcvEventCats.add(eventCategory);
+            String eventType = findEventType(objectTransition);
+
+            switch (eventType) {
+                case "VectorEventCategory":
+                    //TODO this restrain our implementation for only detecting changes on these properties;
+                    String[] propertyNames = {"center"};
+                    for(String propertyName: propertyNames) {
+                        Idea eventCategory = eventCatFactory.createVectorEventCategory(propertyName, objectTransition, INIT_RELEVANCE);
+                        rcvEventCats.add(eventCategory);
+                    }
+                    break;
+                case "AppearanceEventCategory":
+                    Idea eventCategory = eventCatFactory.createAppearanceEventCategory(objectTransition, INIT_RELEVANCE);
+                    rcvEventCats.add(eventCategory);
+                    break;
             }
         }
         return rcvEventCats;
     }
 
-    public int equalCategoryIdx(Idea cat) {
+    public int equalCategoryIdx(Idea categoryFromInstance) {
         int idx = -1;
 
         for(int i=0; i<eventCategoryList.getL().size(); i++) {
             EventCategory eventCatListElem = (EventCategory) eventCategoryList.getL().get(i).getValue();
-            EventCategory eventInstance = (EventCategory) cat.getValue();
+            EventCategory eventInstance = (EventCategory) categoryFromInstance.getValue();
 
             if(eventCatListElem.sameCategory(eventInstance) == true) {
                 idx = i;
@@ -95,10 +96,10 @@ public class EventCategoryLearner {
     public void removeIrrelevantCategories() {
         ArrayList<Integer> idxsToRemove = new ArrayList();
 
-        for(int i=0; i<eventCategoryList.getL().size(); i++) {
+        for (int i=0; i<eventCategoryList.getL().size(); i++) {
             Idea eventCatIdea = eventCategoryList.getL().get(i);
             EventCategory eventCat = (EventCategory) eventCatIdea.getValue();
-            if(eventCat.getRelevance() < MINIMUM_RELEVANCE) {
+            if (eventCat.getRelevance() < MINIMUM_RELEVANCE) {
                 idxsToRemove.add(i);
             }
         }
@@ -119,19 +120,22 @@ public class EventCategoryLearner {
     public Idea getRelevantCategories() {
         Idea relevantCategories = new Idea("RelevantCategories", "", 0);;
 
-        for(Idea eventCatIdea : eventCategoryList.getL()) {
+        for (Idea eventCatIdea : eventCategoryList.getL()) {
             EventCategory eventCategory = (EventCategory) eventCatIdea.getValue();
-            if(eventCategory.getRelevance()>=RELEVANCE_THRESHOLD) {
+            if (eventCategory.getRelevance()>=RELEVANCE_THRESHOLD) {
                 relevantCategories.add(eventCatIdea);
             }
         }
-
-//        for(Idea relevantCategoryIdea : relevantCategories.getL()) {
-//            EventCategory relevantCategory = (EventCategory) relevantCategoryIdea.getValue();
-//            System.out.println(relevantCategory.getEventVector());
-//        }
-//        System.out.println("----------------");
-
         return relevantCategories;
+    }
+    private String findEventType(Idea objectTransition) {
+        List<Idea> timeSteps = objectTransition.get("timeSteps").getL();
+
+        for (int i = 0; i < timeSteps.size(); i++) {
+            if (timeSteps.get(i).get("idObject") == null) {
+                return "AppearanceEventCategory";
+            }
+        }
+        return "VectorEventCategory";
     }
 }
