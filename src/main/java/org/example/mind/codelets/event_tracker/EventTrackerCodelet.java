@@ -47,9 +47,9 @@ public class EventTrackerCodelet extends Codelet {
         Idea eventCategories = (Idea) eventCategoriesMO.getI();
         eventTracker.detectEvents(objectsBuffer, eventCategories);
 
-//        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
-//            System.out.println(eventIdea.toStringFull());
-//        }
+        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
+            System.out.println(eventIdea.toStringFull());
+        }
 
         try {
             updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));

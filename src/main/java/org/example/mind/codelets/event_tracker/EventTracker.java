@@ -6,9 +6,13 @@ import org.example.mind.codelets.event_cat_learner.VectorEventCategory;
 import org.example.mind.codelets.event_cat_learner.EventCategory;
 import org.example.mind.codelets.event_cat_learner.entities.ObjectsTransitionsExtractor;
 
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 public class EventTracker {
     Idea detectedEvents;
     ObjectsTransitionsExtractor objectsTransitionsExtractor;
+    int factoryId = 0;
 
     public EventTracker() {
         detectedEvents = new Idea("DetectedEvents", "", 0);
@@ -43,6 +47,7 @@ public class EventTracker {
 
                         if(eventCategoryIdea.getName() == previousEventCategory && hasSimilarAngle) {
                             extendEventVector(previousEvent, objectTransition);
+                            updateCurrentTimestamp(previousEvent, objectTransition);
                             detectedEvents.add(previousEvent);
                         } else {
                             Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
@@ -57,10 +62,16 @@ public class EventTracker {
                 }
             }
         }
+
+        updateHasFinished(previouslyDetectedEvents, detectedEvents);
     }
 
     public Idea createAppearanceEvent(Idea objectTransition, Idea eventCategoryIdea) {
         Idea eventIdea = new Idea("event", "", 0);
+
+        eventIdea.add(new Idea("eventId", generateEventId()));
+
+        eventIdea.add(new Idea("hasFinished", false));
 
         eventIdea.add(new Idea("objectId", (int) objectTransition.get("objectId").getValue()));
 
@@ -86,6 +97,10 @@ public class EventTracker {
     public Idea createVectorEvent(Idea objectTransition, Idea eventCategoryIdea) {
         Idea eventIdea = new Idea("event", "", 0);
 
+        eventIdea.add(new Idea("eventId", generateEventId()));
+
+        eventIdea.add(new Idea("hasFinished", false));
+
         eventIdea.add(new Idea("objectId", (int) objectTransition.get("objectId").getValue()));
 
         eventIdea.add(new Idea("eventCategory", (String) eventCategoryIdea.getName()));
@@ -101,10 +116,10 @@ public class EventTracker {
         initialTimestamp.setName("initialTimestamp");
         eventIdea.add(initialTimestamp);
 
-//        int nSteps = objectTransition.get("timeSteps").getL().size();
-//        Idea currentTimestamp = objectTransition.get("timeSteps").getL().get(nSteps-1).get("timestamp").clone();
-//        initialTimestamp.setName("currentTimestamp");
-//        eventIdea.add(currentTimestamp);
+        int nSteps = objectTransition.get("timeSteps").getL().size();
+        Idea currentTimestamp = objectTransition.get("timeSteps").getL().get(nSteps-1).get("timestamp").clone();
+        currentTimestamp.setName("currentTimestamp");
+        eventIdea.add(currentTimestamp);
 
 
         double[] eventVector = extractEventVector(objectTransition.get("timeSteps"), propertyName);
@@ -138,6 +153,12 @@ public class EventTracker {
         }
 
         previousEvent.get("eventVector").setValue(rawVector);
+    }
+
+    private void updateCurrentTimestamp(Idea previousEvent, Idea objectTransition) {
+        int nSteps = objectTransition.get("timeSteps").getL().size();
+        int currentTimestamp = (int) objectTransition.get("timeSteps").getL().get(nSteps-1).get("timestamp").clone().getValue();
+        previousEvent.get("currentTimestamp").setValue(currentTimestamp);
     }
 
     private double[] extractEventVector(Idea timeSteps, String propertyName) {
@@ -182,8 +203,26 @@ public class EventTracker {
         return -1;
     }
 
+    private void updateHasFinished(Idea previouslyDetectedEvents, Idea detectedEvents) {
+        // get all event ids from the current detected events
+        ArrayList<Integer> detectedEventsIds = (ArrayList<Integer>) detectedEvents.getL().stream()
+                .map(event -> (Integer) event.get("eventId").getValue()).collect(Collectors.toList());
+
+        // finished events are the one present in the last event list and not present in the current
+        ArrayList<Idea> finishedEvents = (ArrayList<Idea>) previouslyDetectedEvents.getL().stream()
+                .filter(event -> !detectedEventsIds.contains((Integer) event.get("eventId").getValue()))
+                .collect(Collectors.toList());
+
+        finishedEvents.stream().forEach(event -> event.get("hasFinished").setValue(true));
+    }
+
     public Idea getDetectedEvents() {
         return detectedEvents;
+    }
+
+    public int generateEventId() {
+        factoryId++;
+        return factoryId;
     }
 
 }
