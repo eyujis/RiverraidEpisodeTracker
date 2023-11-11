@@ -9,10 +9,8 @@ import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.List;
 
 public class EventTrackerCodelet extends Codelet {
     Memory objectsBufferMO;
@@ -45,7 +43,15 @@ public class EventTrackerCodelet extends Codelet {
         }
         Idea objectsBuffer = (Idea) objectsBufferMO.getI();
         Idea eventCategories = (Idea) eventCategoriesMO.getI();
-        eventTracker.detectEvents(objectsBuffer, eventCategories);
+        Idea detectedEvents = null;
+
+        if(detectedEventsMO.getI()=="") {
+            detectedEvents = new Idea();
+        } else {
+            detectedEvents = (Idea) detectedEventsMO.getI();
+        }
+
+        eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
 
         for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
             System.out.println(eventIdea.toStringFull());

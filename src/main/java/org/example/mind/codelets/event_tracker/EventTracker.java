@@ -19,18 +19,25 @@ public class EventTracker {
         objectsTransitionsExtractor = new ObjectsTransitionsExtractor();
     }
 
-    public void detectEvents(Idea objectsBuffer, Idea eventCategories) {
-        Idea objectTransitions = objectsTransitionsExtractor.extract(objectsBuffer);
-
-        Idea previouslyDetectedEvents = detectedEvents.clone();
+    // pDetectedEvents are the previously detected events.
+    public void detectEvents(Idea objectsBuffer, Idea eventCategories, Idea previousEvents) {
         detectedEvents = new Idea("DetectedEvents", "", 0);
+        Idea objectsTransitions = objectsTransitionsExtractor.extract(objectsBuffer);
 
-        for(Idea objectTransition: objectTransitions.getL()) {
+        Idea currentEvents = extractEventsFromObjectsTransitions(objectsTransitions, eventCategories);
+
+        Idea previousVectorEvents = filterVectorEvents(previousEvents);
+        Idea currentVectorEvents = filterVectorEvents(currentEvents);
+
+
+
+
+        for(Idea objectTransition: objectsTransitions.getL()) {
             for(Idea eventCategoryIdea: eventCategories.getL()) {
                 double membership = ((EventCategory) eventCategoryIdea.getValue()).membership(objectTransition);
 
                 if(membership==1 && eventCategoryIdea.getValue() instanceof VectorEventCategory) {
-                    int previousEventIdxMatch = idxForSameObjectIdAndProperty(previouslyDetectedEvents,
+                    int previousEventIdxMatch = idxForSameObjectIdAndProperty(previousEvents,
                             objectTransition, eventCategoryIdea);
 
                     // checks if there is not a previous event which matches its property and objectId
@@ -38,7 +45,7 @@ public class EventTracker {
                         Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
                         detectedEvents.add(newEvent);
                     } else {
-                        Idea previousEvent = previouslyDetectedEvents.getL().get(previousEventIdxMatch);
+                        Idea previousEvent = previousEvents.getL().get(previousEventIdxMatch);
                         String previousEventCategory = (String) previousEvent.get("eventCategory").getValue();
 
                         // checks if the total event vector has a similar angle compared with the event category
@@ -63,7 +70,29 @@ public class EventTracker {
             }
         }
 
-        updateHasFinished(previouslyDetectedEvents, detectedEvents);
+        updateHasFinished(previousEvents, detectedEvents);
+    }
+
+    private Idea extractEventsFromObjectsTransitions(Idea objectsTransitions, Idea eventCategories) {
+        Idea eventsFromObjsTransitions = new Idea("EventsFromObjectsTransitions", "", 0);
+
+        for(Idea objectTransition: objectsTransitions.getL()) {
+            for (Idea eventCategoryIdea : eventCategories.getL()) {
+                double membership = ((EventCategory) eventCategoryIdea.getValue()).membership(objectTransition);
+                if(membership==1) {
+                    Idea newEvent = null;
+
+                    if(eventCategoryIdea.getValue() instanceof VectorEventCategory) {
+                        newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
+                    }
+                    if(eventCategoryIdea.getValue() instanceof AppearanceEventCategory) {
+                        newEvent = createAppearanceEvent(objectTransition, eventCategoryIdea);
+                    }
+                    eventsFromObjsTransitions.add(newEvent);
+                }
+            }
+        }
+        return eventsFromObjsTransitions;
     }
 
     public Idea createAppearanceEvent(Idea objectTransition, Idea eventCategoryIdea) {
@@ -201,6 +230,17 @@ public class EventTracker {
             }
         }
         return -1;
+    }
+
+    private Idea filterVectorEvents(Idea events) {
+        Idea vectorEvents = new Idea("VectorEvents", "", 0);
+
+        ArrayList<Idea> vectorEventsChildren = (ArrayList<Idea>) events.getL().stream()
+                .filter(event -> ((String) event.get("eventCategory").getValue()).startsWith("VectorEvent"))
+                .collect(Collectors.toList());
+
+        vectorEvents.getL().addAll(vectorEventsChildren);
+        return vectorEvents;
     }
 
     private void updateHasFinished(Idea previouslyDetectedEvents, Idea detectedEvents) {
