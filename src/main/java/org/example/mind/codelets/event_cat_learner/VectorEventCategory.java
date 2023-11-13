@@ -161,23 +161,6 @@ public class VectorEventCategory implements EventCategory {
         return false;
     }
 
-    public boolean hasSimilarAngle(double[] rawVector2) {
-        // extracts the event vector based on this.property
-        RealVector eventVector1 = new ArrayRealVector(this.eventVector);
-        RealVector eventVector2 = new ArrayRealVector(rawVector2);
-
-        if(isZeroMagnitude(eventVector1) && isZeroMagnitude(eventVector2)) {
-            return true;
-        }
-
-        double angleDiff = getAngleDiff(eventVector1, eventVector2);
-
-        if(angleDiff<=MIN_ANGLE_DIFF) {
-            return true;
-        }
-        return false;
-    }
-
     private double getMagnitudeDiff(RealVector vectorA, RealVector vectorB) {
         double aMag = vectorA.getNorm();
         double bMag = vectorB.getNorm();
