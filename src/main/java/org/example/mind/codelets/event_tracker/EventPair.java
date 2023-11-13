@@ -2,11 +2,11 @@ package org.example.mind.codelets.event_tracker;
 
 import br.unicamp.cst.representation.idea.Idea;
 
-public class VectorEventPair {
+public class EventPair {
     private Idea previousEvent;
     private Idea currentEvent;
 
-    public VectorEventPair(Idea previousEvent, Idea currentEvent) {
+    public EventPair(Idea previousEvent, Idea currentEvent) {
         this.previousEvent = previousEvent;
         this.currentEvent = currentEvent;
     }

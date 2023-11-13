@@ -45,17 +45,19 @@ public class EventTrackerCodelet extends Codelet {
         Idea eventCategories = (Idea) eventCategoriesMO.getI();
         Idea detectedEvents = null;
 
-        if(detectedEventsMO.getI()=="") {
-            detectedEvents = new Idea();
-        } else {
-            detectedEvents = (Idea) detectedEventsMO.getI();
+        synchronized (detectedEventsMO) {
+            if(detectedEventsMO.getI()=="") {
+                detectedEvents = new Idea();
+            } else {
+                detectedEvents = (Idea) detectedEventsMO.getI();
+            }
+
+            eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
         }
 
-        eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
-
-//        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
-//            System.out.println(eventIdea.toStringFull());
-//        }
+        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
+            System.out.println(eventIdea.toStringFull());
+        }
 
         try {
             updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));
@@ -94,7 +96,8 @@ public class EventTrackerCodelet extends Codelet {
                 Imgproc.arrowedLine(frame, start, end, color, thickness);
             }
 
-            if(((String) eventIdea.get("eventCategory").getValue()).startsWith("AppearanceEventCategory")) {
+            if(((String) eventIdea.get("eventCategory").getValue()).startsWith("AppearanceEventCategory")
+                    && ((boolean) eventIdea.get("hasFinished").getValue())==false) {
                 Idea positionIdea = null;
                 Scalar color = null;
 

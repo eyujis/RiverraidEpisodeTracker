@@ -32,48 +32,14 @@ public class EventTracker {
 
         VectorEventsProcessor vectorEventsProcessor = new VectorEventsProcessor();
         vectorEventsProcessor.process(previousVectorEvents, currentVectorEvents);
-        detectedEvents = vectorEventsProcessor.getResultVectorEvents();
+        detectedEvents.getL().addAll(vectorEventsProcessor.getResultVectorEvents().getL());
 
+        Idea previousAppearEvents = filterAppearanceEvents(previousEvents);
+        Idea currentAppearEvents = filterAppearanceEvents(currentEvents);
 
-//        for(Idea objectTransition: objectsTransitions.getL()) {
-//            for(Idea eventCategoryIdea: eventCategories.getL()) {
-//                double membership = ((EventCategory) eventCategoryIdea.getValue()).membership(objectTransition);
-//
-//                if(membership==1 && eventCategoryIdea.getValue() instanceof VectorEventCategory) {
-//                    int previousEventIdxMatch = idxForSameObjectIdAndProperty(previousEvents,
-//                            objectTransition, eventCategoryIdea);
-//
-//                    // checks if there is not a previous event which matches its property and objectId
-//                    if(previousEventIdxMatch==-1) {
-//                        Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
-//                        detectedEvents.add(newEvent);
-//                    } else {
-//                        Idea previousEvent = previousEvents.getL().get(previousEventIdxMatch);
-//                        String previousEventCategory = (String) previousEvent.get("eventCategory").getValue();
-//
-//                        // checks if the total event vector has a similar angle compared with the event category
-//                        double[] previousEventVector = (double[]) previousEvent.get("eventVector").getValue();
-//                        boolean hasSimilarAngle = ((VectorEventCategory) eventCategoryIdea.getValue()).hasSimilarAngle(previousEventVector);
-//
-//                        if(eventCategoryIdea.getName() == previousEventCategory && hasSimilarAngle) {
-//                            extendEventVector(previousEvent, objectTransition);
-//                            updateCurrentTimestamp(previousEvent, objectTransition);
-//                            detectedEvents.add(previousEvent);
-//                        } else {
-//                            Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
-//                            detectedEvents.add(newEvent);
-//                        }
-//                    }
-//                }
-//
-//                if(membership==1 && eventCategoryIdea.getValue() instanceof AppearanceEventCategory) {
-//                    Idea newEvent = createAppearanceEvent(objectTransition, eventCategoryIdea);
-//                    detectedEvents.add(newEvent);
-//                }
-//            }
-//        }
-//
-//        updateHasFinished(previousEvents, detectedEvents);
+        AppearanceEventProcessor appearanceEventProcessor = new AppearanceEventProcessor();
+        appearanceEventProcessor.process(previousAppearEvents, currentAppearEvents);
+        detectedEvents.getL().addAll(appearanceEventProcessor.getResultAppearanceEvents().getL());
     }
 
     private Idea extractEventsFromObjectsTransitions(Idea objectsTransitions, Idea eventCategories) {
@@ -109,18 +75,30 @@ public class EventTracker {
 
         eventIdea.add(new Idea("eventCategory", (String) eventCategoryIdea.getName()));
 
+        Idea initialTimestamp = objectTransition.get("timeSteps").getL().get(0).get("timestamp").clone();
+        initialTimestamp.setName("initialTimestamp");
+        eventIdea.add(initialTimestamp);
+
+        int nSteps = objectTransition.get("timeSteps").getL().size();
+        Idea currentTimestamp = objectTransition.get("timeSteps").getL().get(nSteps-1).get("timestamp").clone();
+        currentTimestamp.setName("currentTimestamp");
+        eventIdea.add(currentTimestamp);
+
         int disappear = ((AppearanceEventCategory) eventCategoryIdea.getValue()).disappearance;
         if(disappear==1) {
             Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(0).get("idObject").get("center").clone();
             propertyState0.setName("disappearState");
             eventIdea.add(propertyState0);
+
+            eventIdea.add(new Idea("appearanceEventType", "disappear"));
         }
 
         if(disappear==0) {
-            int nSteps = objectTransition.get("timeSteps").getL().size();
             Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(nSteps-1).get("idObject").get("center").clone();
             propertyState0.setName("appearState");
             eventIdea.add(propertyState0);
+
+            eventIdea.add(new Idea("appearanceEventType", "appear"));
         }
 
         return eventIdea;
@@ -153,44 +131,10 @@ public class EventTracker {
         currentTimestamp.setName("currentTimestamp");
         eventIdea.add(currentTimestamp);
 
-
         double[] eventVector = extractEventVector(objectTransition.get("timeSteps"), propertyName);
         eventIdea.add(new Idea("eventVector", eventVector));
 
         return eventIdea;
-    }
-
-    private void extendEventVector(Idea previousEvent, Idea objectTransition) {
-
-        String propertyName = (String) previousEvent.get("propertyName").getValue();
-        Idea timeSteps = objectTransition.get("timeSteps");
-
-        int nSteps = timeSteps.getL().size();
-
-        Idea lastObjectStep = timeSteps.getL().get(nSteps-1).get("idObject");
-
-        Idea initialPropertyState = previousEvent.get("initialState");
-        Idea finalPropertyState = lastObjectStep.get(propertyName);
-
-        double[] rawVector = new double[initialPropertyState.getL().size()];
-
-        if(initialPropertyState.getL().size()==finalPropertyState.getL().size()) {
-            for(int i=0; i<initialPropertyState.getL().size(); i++) {
-                double startValue = (double) initialPropertyState.getL().get(i).getValue();
-                double endValue = (double) finalPropertyState.getL().get(i).getValue();
-                rawVector[i] = endValue-startValue;
-            }
-        } else {
-            System.out.println("Property with inconsistent number of quality dimensions");
-        }
-
-        previousEvent.get("eventVector").setValue(rawVector);
-    }
-
-    private void updateCurrentTimestamp(Idea previousEvent, Idea objectTransition) {
-        int nSteps = objectTransition.get("timeSteps").getL().size();
-        int currentTimestamp = (int) objectTransition.get("timeSteps").getL().get(nSteps-1).get("timestamp").clone().getValue();
-        previousEvent.get("currentTimestamp").setValue(currentTimestamp);
     }
 
     private double[] extractEventVector(Idea timeSteps, String propertyName) {
@@ -217,24 +161,6 @@ public class EventTracker {
         return rawVector;
     }
 
-    public int idxForSameObjectIdAndProperty(Idea previouslyDetectedEvents, Idea objectTransition, Idea eventCategoryIdea) {
-
-        int currentEventObjId = (int) objectTransition.get("objectId").getValue();
-        String currentEventProperty = ((VectorEventCategory) eventCategoryIdea.getValue()).getPropertyName();
-
-        for(int i=0; i<previouslyDetectedEvents.getL().size(); i++) {
-            String previousEventCategoryName = (String) previouslyDetectedEvents.getL().get(i).get("eventCategory").getValue();
-            if(previousEventCategoryName.startsWith("VectorEventCategory")) {
-                int previousEventObjId = (int) previouslyDetectedEvents.getL().get(i).get("objectId").getValue();
-                String previousEventProperty = (String) previouslyDetectedEvents.getL().get(i).get("propertyName").getValue();
-                if(currentEventObjId == previousEventObjId && currentEventProperty == previousEventProperty) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
     private Idea filterVectorEvents(Idea events) {
         Idea vectorEvents = new Idea("VectorEvents", "", 0);
 
@@ -246,17 +172,15 @@ public class EventTracker {
         return vectorEvents;
     }
 
-    private void updateHasFinished(Idea previouslyDetectedEvents, Idea detectedEvents) {
-        // get all event ids from the current detected events
-        ArrayList<Integer> detectedEventsIds = (ArrayList<Integer>) detectedEvents.getL().stream()
-                .map(event -> (Integer) event.get("eventId").getValue()).collect(Collectors.toList());
+    private Idea filterAppearanceEvents(Idea events) {
+        Idea appearEvents = new Idea("AppearanceEvents", "", 0);
 
-        // finished events are the one present in the last event list and not present in the current
-        ArrayList<Idea> finishedEvents = (ArrayList<Idea>) previouslyDetectedEvents.getL().stream()
-                .filter(event -> !detectedEventsIds.contains((Integer) event.get("eventId").getValue()))
+        ArrayList<Idea> appearEventsChildren = (ArrayList<Idea>) events.getL().stream()
+                .filter(event -> ((String) event.get("eventCategory").getValue()).startsWith("AppearanceEvent"))
                 .collect(Collectors.toList());
 
-        finishedEvents.stream().forEach(event -> event.get("hasFinished").setValue(true));
+        appearEvents.getL().addAll(appearEventsChildren);
+        return appearEvents;
     }
 
     public Idea getDetectedEvents() {
@@ -267,5 +191,4 @@ public class EventTracker {
         factoryId++;
         return factoryId;
     }
-
 }

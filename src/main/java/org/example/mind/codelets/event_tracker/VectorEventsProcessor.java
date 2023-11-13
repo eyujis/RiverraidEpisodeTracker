@@ -11,7 +11,7 @@ public class VectorEventsProcessor {
     double MIN_ANGLE_DIFF = 0.1;
 
     Idea resultVectorEvents;
-    ArrayList<VectorEventPair> eventVectorPairsToBeExtended;
+    ArrayList<EventPair> eventVectorPairsToBeExtended;
 
     public VectorEventsProcessor() {
         resultVectorEvents = new Idea("ResultVectorEvents", "", 0);
@@ -44,15 +44,13 @@ public class VectorEventsProcessor {
         resultVectorEvents.getL().addAll(currentEventsNotExtended);
 
         ArrayList<Idea> extendedEvents = extendVectorEvents();
-
         resultVectorEvents.getL().addAll(extendedEvents);
-
     }
 
     private ArrayList<Idea> extendVectorEvents() {
         ArrayList<Idea> extendedEvents = new ArrayList<>();
 
-        for (VectorEventPair eventVectorPairToBeExtended: eventVectorPairsToBeExtended) {
+        for (EventPair eventVectorPairToBeExtended: eventVectorPairsToBeExtended) {
             Idea extendedEvent = extendVectorEvent(eventVectorPairToBeExtended);
             extendedEvents.add(extendedEvent);
         }
@@ -60,7 +58,7 @@ public class VectorEventsProcessor {
         return extendedEvents;
     }
 
-    private Idea extendVectorEvent(VectorEventPair eventVectorPairToBeExtended) {
+    private Idea extendVectorEvent(EventPair eventVectorPairToBeExtended) {
         Idea previousVectorEvent = eventVectorPairToBeExtended.getPreviousEvent();
         Idea currentVectorEvent = eventVectorPairToBeExtended.getCurrentEvent();
 
@@ -115,8 +113,8 @@ public class VectorEventsProcessor {
             String pEventCategory = (String) previousVEvent.get("eventCategory").getValue();
             double[] pEventVector = (double[]) previousVEvent.get("eventVector").getValue();
 
-            if(cObjectId == pObjectId && cEventProperty == pEventProperty && cEventCategory == pEventCategory &&
-            hasSimilarAngle(cEventVector, pEventVector)) {
+            if(cObjectId == pObjectId && cEventProperty.equals(pEventProperty) && cEventCategory.equals(pEventCategory)
+                    && hasSimilarAngle(cEventVector, pEventVector)) {
                 return i;
             }
         }
@@ -124,7 +122,7 @@ public class VectorEventsProcessor {
     }
 
     private void addVectorEventPairToBeExtended(Idea previousEvent, Idea currentEvent) {
-        eventVectorPairsToBeExtended.add(new VectorEventPair(currentEvent, previousEvent));
+        eventVectorPairsToBeExtended.add(new EventPair(currentEvent, previousEvent));
     }
 
     public boolean hasSimilarAngle(double[] rawVector1, double[] rawVector2) {
