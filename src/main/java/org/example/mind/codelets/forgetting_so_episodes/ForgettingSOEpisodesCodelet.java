@@ -1,4 +1,4 @@
-package org.example.mind.codelets.event_tracker;
+package org.example.mind.codelets.forgetting_so_episodes;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
@@ -11,24 +11,25 @@ import org.opencv.imgproc.Imgproc;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
-public class EventTrackerCodelet extends Codelet {
-    Memory objectsBufferMO;
-    Memory eventCategoriesMO;
-    Memory detectedEventsMO;
+public class ForgettingSOEpisodesCodelet extends Codelet {
+    // in timestamp units
+    int FORGETTING_THRESHOLD = 10;
 
-    EventTracker eventTracker = new EventTracker();
-    JLabel eventImgJLabel;
+    Memory sOEpisodesMO;
+    int currentTimestamp;
 
-    public EventTrackerCodelet(JLabel eventImgJLabel) {
-        this.eventImgJLabel = eventImgJLabel;
+    JLabel forgettingSOEpisodesImgJLabel;
+
+    public ForgettingSOEpisodesCodelet(JLabel forgettingSOEpisodesImgJLabel) {
+        this.forgettingSOEpisodesImgJLabel = forgettingSOEpisodesImgJLabel;
     }
 
     @Override
     public void accessMemoryObjects() {
-        objectsBufferMO=(MemoryObject)this.getInput("OBJECTS_BUFFER");
-        eventCategoriesMO=(MemoryObject)this.getInput("EVENT_CATEGORIES");
-        detectedEventsMO=(MemoryObject)this.getOutput("DETECTED_EVENTS");
+        sOEpisodesMO=(MemoryObject)this.getOutput("DETECTED_EVENTS");
     }
 
     @Override
@@ -38,35 +39,38 @@ public class EventTrackerCodelet extends Codelet {
 
     @Override
     public void proc() {
-        if(objectsBufferMO.getI()=="" || eventCategoriesMO.getI()=="") {
-            return;
-        }
-        Idea objectsBuffer = (Idea) objectsBufferMO.getI();
-        Idea eventCategories = (Idea) eventCategoriesMO.getI();
-        Idea detectedEvents = null;
+        synchronized(sOEpisodesMO) {
+            if(sOEpisodesMO.getI()!="") {
+                Idea unfilteredSOEpisodes = (Idea) sOEpisodesMO.getI();
+                currentTimestamp = (int) unfilteredSOEpisodes.getValue();
 
-        synchronized(detectedEventsMO) {
-            if(detectedEventsMO.getI()=="") {
-                detectedEvents = new Idea();
-            } else {
-                detectedEvents = (Idea) detectedEventsMO.getI();
+                Idea filteredSOEpisodes = new Idea("FilteredSOEpisodes", currentTimestamp, 0);
+
+                ArrayList<Idea> filteredSOEpisodesList = (ArrayList<Idea>) unfilteredSOEpisodes.getL()
+                        .stream().filter(event-> !isForget(event))
+                        .collect(Collectors.toList());
+
+                filteredSOEpisodes.getL().addAll(filteredSOEpisodesList);
+                sOEpisodesMO.setI(filteredSOEpisodes);
+
+                try {
+                    updateJLabelImg(forgettingSOEpisodesImgJLabel, getBuffImageFromEvents(filteredSOEpisodes));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-
-            eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
         }
 
-//        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
-//            System.out.println(eventIdea.toStringFull());
-//        }
+    }
 
-        try {
-            updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private boolean isForget(Idea event) {
+        int lastEventTimestamp = (int) event.get("currentTimestamp").getValue();
+        boolean hasFinished = (boolean) event.get("hasFinished").getValue();
+
+        if(hasFinished && currentTimestamp>(lastEventTimestamp+FORGETTING_THRESHOLD)) {
+            return true;
         }
-
-
-        detectedEventsMO.setI(eventTracker.getDetectedEvents());
+        return false;
     }
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToSet) {
@@ -78,8 +82,7 @@ public class EventTrackerCodelet extends Codelet {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
         for(Idea eventIdea : events.getL()) {
-            if(((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")
-            && ((boolean) eventIdea.get("hasFinished").getValue())==false) {
+            if(((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")) {
                 double x_start = (double) eventIdea.get("initialState.x").getValue();
                 double y_start = (double) eventIdea.get("initialState.y").getValue();
 
@@ -96,8 +99,7 @@ public class EventTrackerCodelet extends Codelet {
                 Imgproc.arrowedLine(frame, start, end, color, thickness);
             }
 
-            if(((String) eventIdea.get("eventCategory").getValue()).startsWith("AppearanceEventCategory")
-                    && ((boolean) eventIdea.get("hasFinished").getValue())==false) {
+            if(((String) eventIdea.get("eventCategory").getValue()).startsWith("AppearanceEventCategory")) {
                 Idea positionIdea = null;
                 Scalar color = null;
 

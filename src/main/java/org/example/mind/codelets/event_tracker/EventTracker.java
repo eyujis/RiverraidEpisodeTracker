@@ -40,6 +40,9 @@ public class EventTracker {
         AppearanceEventProcessor appearanceEventProcessor = new AppearanceEventProcessor();
         appearanceEventProcessor.process(previousAppearEvents, currentAppearEvents);
         detectedEvents.getL().addAll(appearanceEventProcessor.getResultAppearanceEvents().getL());
+
+        //update current timestamp
+        detectedEvents.setValue(getCurrentTimestamp(objectsBuffer));
     }
 
     private Idea extractEventsFromObjectsTransitions(Idea objectsTransitions, Idea eventCategories) {
@@ -181,6 +184,12 @@ public class EventTracker {
 
         appearEvents.getL().addAll(appearEventsChildren);
         return appearEvents;
+    }
+
+    private int getCurrentTimestamp(Idea objectsBuffer) {
+        int bufferSize = objectsBuffer.getL().size()-1;
+        int timestamp = (int) objectsBuffer.getL().get(bufferSize).get("timestamp").getValue();
+        return timestamp;
     }
 
     public Idea getDetectedEvents() {
