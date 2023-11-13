@@ -9,14 +9,17 @@ import java.io.IOException;
 public class SecondJFrame extends JFrame {
     String templateImagePath = "template_img.tiff";
     JLabel eventTrackerImgJLabel;
+    JLabel forgettingSOEpisodesImgJLabel;
 
     public SecondJFrame() throws IOException {
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         eventTrackerImgJLabel = jLabelWithTemplateImgIcon();
+        forgettingSOEpisodesImgJLabel = jLabelWithTemplateImgIcon();
 
         JPanel panel = new JPanel();
         panel.add(eventTrackerImgJLabel);
+        panel.add(forgettingSOEpisodesImgJLabel);
 
         this.getContentPane().add(panel, BorderLayout.PAGE_END);
 
@@ -40,5 +43,9 @@ public class SecondJFrame extends JFrame {
 
     public JLabel getEventTrackerImgJLabel() {
         return eventTrackerImgJLabel;
+    }
+
+    public JLabel getForgettingSOEpisodesImgJLabel() {
+        return forgettingSOEpisodesImgJLabel;
     }
 }

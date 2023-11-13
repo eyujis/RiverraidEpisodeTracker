@@ -4,6 +4,7 @@ import br.unicamp.cst.core.entities.*;
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
 import org.example.mind.codelets.event_tracker.EventTrackerCodelet;
+import org.example.mind.codelets.forgetting_so_episodes.ForgettingSOEpisodesCodelet;
 import org.example.mind.codelets.object_cat_learner.ObjectCategoryLearnerCodelet;
 import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
@@ -25,6 +26,7 @@ public class AgentMind extends Mind {
         JLabel categoriesImgJLabel = firstJFrame.getCategoriesImgJLabel();
 
         JLabel eventImgJLabel = secondJFrame.getEventTrackerImgJLabel();
+        JLabel forgettingSOEpisodeImgJLabel = secondJFrame.getForgettingSOEpisodesImgJLabel();
 
         Memory rawDataBufferMO;
         Memory detectedFragmentsMO;
@@ -34,7 +36,6 @@ public class AgentMind extends Mind {
         Memory objectsBufferMO;
         Memory eventCategoriesMO;
         Memory detectedEventsMO;
-        Memory fSOEpisodesMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
@@ -107,12 +108,22 @@ public class AgentMind extends Mind {
         eventTrackerCodelet.setName("EventTracker");
         insertCodelet(eventTrackerCodelet);
 
+        Codelet forgettingSOEpisodesCodelet = new ForgettingSOEpisodesCodelet(forgettingSOEpisodeImgJLabel);
+        forgettingSOEpisodesCodelet.addInput(detectedEventsMO);
+        forgettingSOEpisodesCodelet.addOutput(detectedEventsMO);
+//        forgettingSOEpisodesCodelet.setIsMemoryObserver(true);
+//        detectedEventsMO.addMemoryObserver(forgettingSOEpisodesCodelet);
+        forgettingSOEpisodesCodelet.setName("ForgettingSOEpisodes");
+        insertCodelet(forgettingSOEpisodesCodelet);
+
+
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectsBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())
