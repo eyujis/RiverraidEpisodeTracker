@@ -6,6 +6,7 @@ import org.example.mind.codelets.event_cat_learner.VectorEventCategory;
 import org.example.mind.codelets.event_cat_learner.EventCategory;
 import org.example.mind.codelets.event_cat_learner.entities.ObjectsTransitionsExtractor;
 
+
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -29,48 +30,50 @@ public class EventTracker {
         Idea previousVectorEvents = filterVectorEvents(previousEvents);
         Idea currentVectorEvents = filterVectorEvents(currentEvents);
 
+        VectorEventsProcessor vectorEventsProcessor = new VectorEventsProcessor();
+        vectorEventsProcessor.process(previousVectorEvents, currentVectorEvents);
+        detectedEvents = vectorEventsProcessor.getResultVectorEvents();
 
 
-
-        for(Idea objectTransition: objectsTransitions.getL()) {
-            for(Idea eventCategoryIdea: eventCategories.getL()) {
-                double membership = ((EventCategory) eventCategoryIdea.getValue()).membership(objectTransition);
-
-                if(membership==1 && eventCategoryIdea.getValue() instanceof VectorEventCategory) {
-                    int previousEventIdxMatch = idxForSameObjectIdAndProperty(previousEvents,
-                            objectTransition, eventCategoryIdea);
-
-                    // checks if there is not a previous event which matches its property and objectId
-                    if(previousEventIdxMatch==-1) {
-                        Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
-                        detectedEvents.add(newEvent);
-                    } else {
-                        Idea previousEvent = previousEvents.getL().get(previousEventIdxMatch);
-                        String previousEventCategory = (String) previousEvent.get("eventCategory").getValue();
-
-                        // checks if the total event vector has a similar angle compared with the event category
-                        double[] previousEventVector = (double[]) previousEvent.get("eventVector").getValue();
-                        boolean hasSimilarAngle = ((VectorEventCategory) eventCategoryIdea.getValue()).hasSimilarAngle(previousEventVector);
-
-                        if(eventCategoryIdea.getName() == previousEventCategory && hasSimilarAngle) {
-                            extendEventVector(previousEvent, objectTransition);
-                            updateCurrentTimestamp(previousEvent, objectTransition);
-                            detectedEvents.add(previousEvent);
-                        } else {
-                            Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
-                            detectedEvents.add(newEvent);
-                        }
-                    }
-                }
-
-                if(membership==1 && eventCategoryIdea.getValue() instanceof AppearanceEventCategory) {
-                    Idea newEvent = createAppearanceEvent(objectTransition, eventCategoryIdea);
-                    detectedEvents.add(newEvent);
-                }
-            }
-        }
-
-        updateHasFinished(previousEvents, detectedEvents);
+//        for(Idea objectTransition: objectsTransitions.getL()) {
+//            for(Idea eventCategoryIdea: eventCategories.getL()) {
+//                double membership = ((EventCategory) eventCategoryIdea.getValue()).membership(objectTransition);
+//
+//                if(membership==1 && eventCategoryIdea.getValue() instanceof VectorEventCategory) {
+//                    int previousEventIdxMatch = idxForSameObjectIdAndProperty(previousEvents,
+//                            objectTransition, eventCategoryIdea);
+//
+//                    // checks if there is not a previous event which matches its property and objectId
+//                    if(previousEventIdxMatch==-1) {
+//                        Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
+//                        detectedEvents.add(newEvent);
+//                    } else {
+//                        Idea previousEvent = previousEvents.getL().get(previousEventIdxMatch);
+//                        String previousEventCategory = (String) previousEvent.get("eventCategory").getValue();
+//
+//                        // checks if the total event vector has a similar angle compared with the event category
+//                        double[] previousEventVector = (double[]) previousEvent.get("eventVector").getValue();
+//                        boolean hasSimilarAngle = ((VectorEventCategory) eventCategoryIdea.getValue()).hasSimilarAngle(previousEventVector);
+//
+//                        if(eventCategoryIdea.getName() == previousEventCategory && hasSimilarAngle) {
+//                            extendEventVector(previousEvent, objectTransition);
+//                            updateCurrentTimestamp(previousEvent, objectTransition);
+//                            detectedEvents.add(previousEvent);
+//                        } else {
+//                            Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
+//                            detectedEvents.add(newEvent);
+//                        }
+//                    }
+//                }
+//
+//                if(membership==1 && eventCategoryIdea.getValue() instanceof AppearanceEventCategory) {
+//                    Idea newEvent = createAppearanceEvent(objectTransition, eventCategoryIdea);
+//                    detectedEvents.add(newEvent);
+//                }
+//            }
+//        }
+//
+//        updateHasFinished(previousEvents, detectedEvents);
     }
 
     private Idea extractEventsFromObjectsTransitions(Idea objectsTransitions, Idea eventCategories) {
@@ -109,14 +112,14 @@ public class EventTracker {
         int disappear = ((AppearanceEventCategory) eventCategoryIdea.getValue()).disappearance;
         if(disappear==1) {
             Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(0).get("idObject").get("center").clone();
-            propertyState0.setName("disappearPosition");
+            propertyState0.setName("disappearState");
             eventIdea.add(propertyState0);
         }
 
         if(disappear==0) {
             int nSteps = objectTransition.get("timeSteps").getL().size();
             Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(nSteps-1).get("idObject").get("center").clone();
-            propertyState0.setName("appearPosition");
+            propertyState0.setName("appearState");
             eventIdea.add(propertyState0);
         }
 
@@ -138,7 +141,7 @@ public class EventTracker {
         eventIdea.add(new Idea("propertyName", propertyName));
 
         Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(0).get("idObject").get(propertyName).clone();
-        propertyState0.setName("initialPosition");
+        propertyState0.setName("initialState");
         eventIdea.add(propertyState0);
 
         Idea initialTimestamp = objectTransition.get("timeSteps").getL().get(0).get("timestamp").clone();
@@ -166,7 +169,7 @@ public class EventTracker {
 
         Idea lastObjectStep = timeSteps.getL().get(nSteps-1).get("idObject");
 
-        Idea initialPropertyState = previousEvent.get("initialPosition");
+        Idea initialPropertyState = previousEvent.get("initialState");
         Idea finalPropertyState = lastObjectStep.get(propertyName);
 
         double[] rawVector = new double[initialPropertyState.getL().size()];

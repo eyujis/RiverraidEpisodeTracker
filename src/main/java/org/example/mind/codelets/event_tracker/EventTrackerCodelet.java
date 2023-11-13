@@ -53,9 +53,9 @@ public class EventTrackerCodelet extends Codelet {
 
         eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
 
-        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
-            System.out.println(eventIdea.toStringFull());
-        }
+//        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
+//            System.out.println(eventIdea.toStringFull());
+//        }
 
         try {
             updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));
@@ -76,9 +76,10 @@ public class EventTrackerCodelet extends Codelet {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
         for(Idea eventIdea : events.getL()) {
-            if (((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")) {
-                double x_start = (double) eventIdea.get("initialPosition.x").getValue();
-                double y_start = (double) eventIdea.get("initialPosition.y").getValue();
+            if(((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")
+            && ((boolean) eventIdea.get("hasFinished").getValue())==false) {
+                double x_start = (double) eventIdea.get("initialState.x").getValue();
+                double y_start = (double) eventIdea.get("initialState.y").getValue();
 
                 double[] event_vector =  (double[]) eventIdea.get("eventVector").getValue();
                 double x_end = x_start + event_vector[0];
@@ -97,12 +98,12 @@ public class EventTrackerCodelet extends Codelet {
                 Idea positionIdea = null;
                 Scalar color = null;
 
-                if(eventIdea.get("appearPosition") != null) {
-                    positionIdea = eventIdea.get("appearPosition");
+                if(eventIdea.get("appearState") != null) {
+                    positionIdea = eventIdea.get("appearState");
                     color = new Scalar(0, 255, 0);
                 }
-                if(eventIdea.get("disappearPosition") != null) {
-                    positionIdea = eventIdea.get("disappearPosition");
+                if(eventIdea.get("disappearState") != null) {
+                    positionIdea = eventIdea.get("disappearState");
                     color = new Scalar(0, 0, 255);
                 }
 
