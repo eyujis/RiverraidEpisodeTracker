@@ -5,9 +5,12 @@ import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class VectorEventCategory implements EventCategory {
     private String propertyName;
+    private String objectCategoryName;
     private double[] eventVector;
     double relevance;
 
@@ -19,14 +22,20 @@ public class VectorEventCategory implements EventCategory {
     public VectorEventCategory(String propertyName, Idea objectTransition, double relevance) {
         this.propertyName = propertyName;
         this.relevance = relevance;
-        Idea timeSteps = objectTransition.get("timeSteps");
-        this.eventVector = extractEventVector(timeSteps);
-
+        this.eventVector = extractEventVector(objectTransition);
+        this.objectCategoryName = getObjectCategoryName(objectTransition);
     }
     @Override
     public double membership(Idea objectTransition) {
+
+        // Checks is the object category matches;
+        String objectCategoryName = getObjectCategoryName(objectTransition);
+        if(objectCategoryName==objectCategoryName && !this.objectCategoryName.equals(objectCategoryName)) {
+            return 0;
+        }
+
+        // extracts the event vector based on this.property;
         Idea timeSteps = objectTransition.get("timeSteps");
-        // extracts the event vector based on this.property
         double[] initialPropertyState = extractInitialPropertyState(timeSteps);
         double[] finalPropertyState = extractFinalPropertyState(timeSteps);
 
@@ -115,7 +124,8 @@ public class VectorEventCategory implements EventCategory {
         return finalPropertyState;
     }
 
-    private double[] extractEventVector(Idea timeSteps) {
+    private double[] extractEventVector(Idea objectTransition) {
+        Idea timeSteps = objectTransition.get("timeSteps");
         double[] initialState = extractInitialPropertyState(timeSteps);
         double[] finalState = extractFinalPropertyState(timeSteps);
 
@@ -134,18 +144,23 @@ public class VectorEventCategory implements EventCategory {
 
     @Override
     public boolean sameCategory(EventCategory compCat) {
+        // Checks if the same type of event category;
         if(!(compCat instanceof VectorEventCategory)) {
             return false;
         }
 
-        VectorEventCategory vecCompCat = (VectorEventCategory)  compCat;
+        VectorEventCategory vecCompCat = (VectorEventCategory) compCat;
 
-        if(this.propertyName != vecCompCat.propertyName) {
+        if(!this.objectCategoryName.equals(vecCompCat.getObjectCategoryName())) {
+            return false;
+        }
+
+        if(!this.propertyName.equals(vecCompCat.getPropertyName())) {
             return false;
         }
 
         RealVector catVector = new ArrayRealVector(this.eventVector);
-        RealVector compVector = new ArrayRealVector(vecCompCat.eventVector);
+        RealVector compVector = new ArrayRealVector(vecCompCat.getEventVector());
 
         if(isZeroMagnitude(compVector) && isZeroMagnitude(this.eventVector)) {
             return true;
@@ -197,8 +212,36 @@ public class VectorEventCategory implements EventCategory {
         return false;
     }
 
+    private String getObjectCategoryName(Idea objectTransition) {
+        String categoryName = null;
+        for(Idea timeStep: objectTransition.get("timeSteps").getL()) {
+            Idea object = timeStep.get("idObject");
+
+            if(object!=null) {
+                String currCategoryName = (String) object.get("objectCategory").getValue();
+
+                if(categoryName==null || categoryName==currCategoryName) {
+                    categoryName = currCategoryName;
+                } else {
+                    Logger.getLogger(AppearanceEventCategory.class.getName()).log(Level.SEVERE,
+                            "object category changes between time steps.");
+                }
+            }
+
+        }
+        return categoryName;
+    }
+
     public String getPropertyName() {
         return propertyName;
+    }
+
+    public String getObjectCategoryName() {
+        return objectCategoryName;
+    }
+
+    public double[] getEventVector() {
+        return eventVector;
     }
 
     @Override
