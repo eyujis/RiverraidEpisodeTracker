@@ -17,11 +17,11 @@ public class COEpisodeRelationIdentifier {
         int yi = (int) sOEpisodeY.get("initialTimestamp").getValue();
         int yf = (int) sOEpisodeY.get("currentTimestamp").getValue();
 
-        if(hasMeetsRelation(xHasFinished, xi, xf, yHasFinished, yi, xf)) {
-            return "m";
+        if(hasPrecedesRelation(xHasFinished, xi, xf, yHasFinished, yi, xf)) {
+            return "p";
         }
-        if(hasMeetsRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
-            return "mi";
+        if(hasPrecedesRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
+            return "pi";
         }
 
         return null;
@@ -46,8 +46,9 @@ public class COEpisodeRelationIdentifier {
 
     private boolean hasOverlapsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
+                && xi < yi
                 && yi < xf
-                && xi < yi) {
+                && xf < yf) {
             return true;
         }
         return false;
@@ -55,8 +56,8 @@ public class COEpisodeRelationIdentifier {
 
     private boolean hasStartsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
-                && yf < xf
-                && xi == yi) {
+                && xi == yi
+                && xf < yf) {
             return true;
         }
         return false;
@@ -84,7 +85,7 @@ public class COEpisodeRelationIdentifier {
     private boolean hasEqualsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
                 && yHasFinished
-                && yi == xi
+                && xi == yi
                 && xf == yf) {
             return true;
         }
