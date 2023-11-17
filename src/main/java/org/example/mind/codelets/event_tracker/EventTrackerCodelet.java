@@ -55,6 +55,7 @@ public class EventTrackerCodelet extends Codelet {
             eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
         }
 
+//        System.out.println("=====================================");
 //        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
 //            System.out.println(eventIdea.toStringFull());
 //        }
