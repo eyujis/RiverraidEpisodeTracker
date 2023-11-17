@@ -17,11 +17,47 @@ public class COEpisodeRelationIdentifier {
         int yi = (int) sOEpisodeY.get("initialTimestamp").getValue();
         int yf = (int) sOEpisodeY.get("currentTimestamp").getValue();
 
-        if(hasPrecedesRelation(xHasFinished, xi, xf, yHasFinished, yi, xf)) {
+        if(hasPrecedesRelation(xHasFinished, xi, xf, yHasFinished, yi, yf)) {
             return "p";
         }
         if(hasPrecedesRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
             return "pi";
+        }
+        if(hasMeetsRelation(xHasFinished, xi, xf, yHasFinished, yi, yf)) {
+            return "m";
+        }
+        if(hasMeetsRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
+            return "mi";
+        }
+        if(hasOverlapsRelation(xHasFinished, xi, xf, yHasFinished, yi, yf)) {
+            return "o";
+        }
+        if(hasOverlapsRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
+            return "oi";
+        }
+        if(hasStartsRelation(xHasFinished, xi, xf, yHasFinished, yi, yf)) {
+            return "s";
+        }
+        if(hasStartsRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
+            return "si";
+        }
+        if(hasDuringRelation(xHasFinished, xi, xf, yHasFinished, yi, yf)) {
+            return "d";
+        }
+        if(hasDuringRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
+            return "di";
+        }
+        if(hasFinishesRelation(xHasFinished, xi, xf, yHasFinished, yi, yf)) {
+            return "f";
+        }
+        if(hasFinishesRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
+            return "fi";
+        }
+        if(hasEqualsRelation(xHasFinished, xi, xf, yHasFinished, yi, yf)) {
+            return "e";
+        }
+        if(hasEqualsRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
+            return "ei";
         }
 
         return null;

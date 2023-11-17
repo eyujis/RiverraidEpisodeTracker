@@ -5,6 +5,8 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 
+import java.util.stream.Collectors;
+
 public class COEpisodeCategoryLearnerCodelet extends Codelet {
     Memory sOEpisodesMO;
     Memory cOEpisodeCategoriesMO;
@@ -37,8 +39,22 @@ public class COEpisodeCategoryLearnerCodelet extends Codelet {
 
         synchronized (sOEpisodesMO) {
             synchronized (cOEpisodeCategoriesMO) {
-                coEpisodeCategoryLearner.updateCategories(sOEpisodes, cOEpisodeCategories);
-                cOEpisodeCategoriesMO.setI(coEpisodeCategoryLearner.getRelevantCategories());
+                Idea updatedCategories = coEpisodeCategoryLearner.updateCategories(sOEpisodes, cOEpisodeCategories);
+
+                System.out.println("===========================");
+                System.out.println(updatedCategories.getL().size());
+                System.out.println(updatedCategories.getL().stream()
+                        .filter(cat -> ((COEpisodeCategory)cat.getValue()).getRelevance()>=coEpisodeCategoryLearner.RELEVANCE_THRESHOLD).collect(Collectors.toList()).size());
+//                for(Idea updated: updatedCategories.getL()) {
+//                    System.out.println("---------------------------");
+//                    COEpisodeCategory cat = (COEpisodeCategory) updated.getValue();
+//                    System.out.println(cat.getRelationType());
+//                    System.out.println(cat.getsOEpisodeCategoryX());
+//                    System.out.println(cat.getsOEpisodeCategoryY());
+//                    System.out.println(cat.getRelevance());
+//                }
+
+                cOEpisodeCategoriesMO.setI(updatedCategories);
             }
         }
     }
