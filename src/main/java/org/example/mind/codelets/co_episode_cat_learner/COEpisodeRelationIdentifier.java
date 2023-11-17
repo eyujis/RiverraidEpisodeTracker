@@ -5,35 +5,90 @@ import br.unicamp.cst.representation.idea.Idea;
 // This class based on https://en.wikipedia.org/wiki/Allen%27s_interval_algebra
 
 public class COEpisodeRelationIdentifier {
-    int PRECEDES_THRESHOLD = 5;
+    int PRECEDES_THRESHOLD = Integer.MAX_VALUE;
 
     public String identifyRelationType(Idea sOEpisodeX, Idea sOEpisodeY) {
 
         boolean xHasFinished = (boolean) sOEpisodeX.get("hasFinished").getValue();
-        int xIT = (int) sOEpisodeX.get("initialTimestamp").getValue();
-        int xCT = (int) sOEpisodeX.get("currentTimestamp").getValue();
+        int xi = (int) sOEpisodeX.get("initialTimestamp").getValue();
+        int xf = (int) sOEpisodeX.get("currentTimestamp").getValue();
 
         boolean yHasFinished = (boolean) sOEpisodeY.get("hasFinished").getValue();
-        int yIT = (int) sOEpisodeY.get("initialTimestamp").getValue();
-        int yCT = (int) sOEpisodeY.get("currentTimestamp").getValue();
+        int yi = (int) sOEpisodeY.get("initialTimestamp").getValue();
+        int yf = (int) sOEpisodeY.get("currentTimestamp").getValue();
 
-        if(hasMeetsRelation(xHasFinished, xIT, xCT, yHasFinished, yIT, yCT)) {
+        if(hasMeetsRelation(xHasFinished, xi, xf, yHasFinished, yi, xf)) {
             return "m";
         }
-        if(hasMeetsRelation(yHasFinished, yIT, yCT, xHasFinished, xIT, xCT)) {
+        if(hasMeetsRelation(yHasFinished, yi, yf, xHasFinished, xi, xf)) {
             return "mi";
         }
 
         return null;
     }
 
-    private boolean hasMeetsRelation(boolean xHasFinished, int xIT, int xCT, boolean yHasFinished, int yIT, int yCT) {
-        if(xHasFinished == true
-            && xCT == yIT) {
+    private boolean hasPrecedesRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+        if(xHasFinished
+                && xf < yi
+                && yi - xf <= PRECEDES_THRESHOLD) {
             return true;
         }
         return false;
     }
 
+    private boolean hasMeetsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+        if(xHasFinished
+                && xf == yi) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasOverlapsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+        if(xHasFinished
+                && yi < xf
+                && xi < yi) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasStartsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+        if(xHasFinished
+                && yf < xf
+                && xi == yi) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasDuringRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+        if(xHasFinished
+                && yi < xi
+                && xf < yf) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasFinishesRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+        if(xHasFinished
+                && yHasFinished
+                && yi < xi
+                && xf == yf) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean hasEqualsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+        if(xHasFinished
+                && yHasFinished
+                && yi == xi
+                && xf == yf) {
+            return true;
+        }
+        return false;
+    }
 
 }
