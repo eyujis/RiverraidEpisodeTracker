@@ -63,7 +63,7 @@ public class COEpisodeRelationIdentifier {
         return null;
     }
 
-    private boolean hasPrecedesRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+    public boolean hasPrecedesRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
                 && xf < yi
                 && yi - xf <= PRECEDES_THRESHOLD) {
@@ -72,7 +72,7 @@ public class COEpisodeRelationIdentifier {
         return false;
     }
 
-    private boolean hasMeetsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+    public boolean hasMeetsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
                 && xf == yi) {
             return true;
@@ -80,7 +80,7 @@ public class COEpisodeRelationIdentifier {
         return false;
     }
 
-    private boolean hasOverlapsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+    public boolean hasOverlapsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
                 && xi < yi
                 && yi < xf
@@ -90,7 +90,7 @@ public class COEpisodeRelationIdentifier {
         return false;
     }
 
-    private boolean hasStartsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+    public boolean hasStartsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
                 && xi == yi
                 && xf < yf) {
@@ -99,7 +99,7 @@ public class COEpisodeRelationIdentifier {
         return false;
     }
 
-    private boolean hasDuringRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+    public boolean hasDuringRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
                 && yi < xi
                 && xf < yf) {
@@ -108,7 +108,7 @@ public class COEpisodeRelationIdentifier {
         return false;
     }
 
-    private boolean hasFinishesRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+    public boolean hasFinishesRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
                 && yHasFinished
                 && yi < xi
@@ -118,7 +118,7 @@ public class COEpisodeRelationIdentifier {
         return false;
     }
 
-    private boolean hasEqualsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
+    public boolean hasEqualsRelation(boolean xHasFinished, int xi, int xf, boolean yHasFinished, int yi, int yf) {
         if(xHasFinished
                 && yHasFinished
                 && xi == yi
