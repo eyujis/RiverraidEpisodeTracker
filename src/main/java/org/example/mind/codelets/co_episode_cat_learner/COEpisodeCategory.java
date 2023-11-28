@@ -2,7 +2,7 @@ package org.example.mind.codelets.co_episode_cat_learner;
 
 import br.unicamp.cst.representation.idea.Category;
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.event_cat_learner.AppearanceEventCategory;
+import org.example.mind.codelets.object_proposer.ObjectComparator;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -13,6 +13,8 @@ public class COEpisodeCategory implements Category {
     String sOEpisodeCategoryX;
     String sOEpisodeCategoryY;
     double relevance;
+    double MIN_RECT_DISTANCE = 5;
+
 
     public COEpisodeCategory(String relationType, String sOEpisodeCategoryX, String sOEpisodeCategoryY, double relevance) {
         this.relationType = relationType;
@@ -29,7 +31,7 @@ public class COEpisodeCategory implements Category {
     public boolean sameCategory(COEpisodeCategory c2) {
         if (this.relationType.equals(c2.getRelationType())
                 && this.sOEpisodeCategoryX.equals(c2.getsOEpisodeCategoryX())
-                && this.sOEpisodeCategoryY.equals(c2.getsOEpisodeCategoryY())) {
+                && this.sOEpisodeCategoryY.equals(c2.getSOEpisodeCategoryY())) {
             return true;
         }
         return false;
@@ -42,6 +44,16 @@ public class COEpisodeCategory implements Category {
 
     @Override
     public double membership(Idea idea) {
+        Idea sOEpisodeX = idea.getL().get(0);
+        Idea sOEpisodeY = idea.getL().get(1);
+
+        double rectDistance = new ObjectComparator().rectDistance(sOEpisodeX.get("lastObjectState") ,
+                sOEpisodeY.get("lastObjectState"));
+
+        String sOEventCatX = (String) sOEpisodeX.get("eventCategory").getValue();
+        String sOEventCatY = (String) sOEpisodeY.get("eventCategory").getValue();
+
+
         return 0;
     }
 
@@ -65,7 +77,7 @@ public class COEpisodeCategory implements Category {
         return sOEpisodeCategoryX;
     }
 
-    public String getsOEpisodeCategoryY() {
+    public String getSOEpisodeCategoryY() {
         return sOEpisodeCategoryY;
     }
 }

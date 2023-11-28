@@ -50,6 +50,7 @@ public class COEpisodeCategoryLearner {
             for (int j = i + 1; j < sOEpisodes.getL().size(); j++) {
                 Idea e1 = sOEpisodes.getL().get(i);
                 Idea e2 = sOEpisodes.getL().get(j);
+                System.out.println(e1.toStringFull());
 
                 String relationType = identifyCOEpisodeCategoryRelation(e1, e2);
                 String c1 = (String) e1.get("eventCategory").getValue();
@@ -58,7 +59,7 @@ public class COEpisodeCategoryLearner {
                 double rectDistance = new ObjectComparator().rectDistance(e1.get("lastObjectState") ,
                         e2.get("lastObjectState"));
 
-                if(relationType != null && rectDistance < MIN_RECT_DISTANCE) {
+                if(relationType != null && rectDistance <= MIN_RECT_DISTANCE) {
                     Idea newCategory = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                     rcvCOEpisodeCategories.getL().add(newCategory);
                 }
