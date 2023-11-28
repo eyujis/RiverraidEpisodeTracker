@@ -83,8 +83,8 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
 
         for(Idea eventIdea : events.getL()) {
             if(((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")) {
-                double x_start = (double) eventIdea.get("initialState.x").getValue();
-                double y_start = (double) eventIdea.get("initialState.y").getValue();
+                double x_start = (double) eventIdea.get("initialPropertyState.x").getValue();
+                double y_start = (double) eventIdea.get("initialPropertyState.y").getValue();
 
                 double[] event_vector =  (double[]) eventIdea.get("eventVector").getValue();
                 double x_end = x_start + event_vector[0];
@@ -103,12 +103,12 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
                 Idea positionIdea = null;
                 Scalar color = null;
 
-                if(eventIdea.get("appearState") != null) {
-                    positionIdea = eventIdea.get("appearState");
+                if(eventIdea.get("appearanceEventType").getValue() != "disappear") {
+                    positionIdea = eventIdea.get("lastObjectState.center");
                     color = new Scalar(0, 255, 0);
                 }
-                if(eventIdea.get("disappearState") != null) {
-                    positionIdea = eventIdea.get("disappearState");
+                if(eventIdea.get("appearanceEventType").getValue() != "appear") {
+                    positionIdea = eventIdea.get("lastObjectState.center");
                     color = new Scalar(0, 0, 255);
                 }
 

@@ -89,16 +89,16 @@ public class EventTracker {
 
         int disappear = ((AppearanceEventCategory) eventCategoryIdea.getValue()).disappearance;
         if(disappear==1) {
-            Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(0).get("idObject").get("center").clone();
-            propertyState0.setName("disappearState");
+            Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(0).get("idObject").clone();
+            propertyState0.setName("lastObjectState");
             eventIdea.add(propertyState0);
 
             eventIdea.add(new Idea("appearanceEventType", "disappear"));
         }
 
         if(disappear==0) {
-            Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(nSteps-1).get("idObject").get("center").clone();
-            propertyState0.setName("appearState");
+            Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(nSteps-1).get("idObject").clone();
+            propertyState0.setName("lastObjectState");
             eventIdea.add(propertyState0);
 
             eventIdea.add(new Idea("appearanceEventType", "appear"));
@@ -122,7 +122,7 @@ public class EventTracker {
         eventIdea.add(new Idea("propertyName", propertyName));
 
         Idea propertyState0 =  objectTransition.get("timeSteps").getL().get(0).get("idObject").get(propertyName).clone();
-        propertyState0.setName("initialState");
+        propertyState0.setName("initialPropertyState");
         eventIdea.add(propertyState0);
 
         Idea initialTimestamp = objectTransition.get("timeSteps").getL().get(0).get("timestamp").clone();
@@ -133,6 +133,10 @@ public class EventTracker {
         Idea currentTimestamp = objectTransition.get("timeSteps").getL().get(nSteps-1).get("timestamp").clone();
         currentTimestamp.setName("currentTimestamp");
         eventIdea.add(currentTimestamp);
+
+        Idea currentObjectState = objectTransition.get("timeSteps").getL().get(nSteps-1).get("idObject").clone();
+        currentObjectState.setName("lastObjectState");
+        eventIdea.add(currentObjectState);
 
         double[] eventVector = extractEventVector(objectTransition.get("timeSteps"), propertyName);
         eventIdea.add(new Idea("eventVector", eventVector));

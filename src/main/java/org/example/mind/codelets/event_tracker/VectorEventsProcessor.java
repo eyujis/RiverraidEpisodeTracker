@@ -68,9 +68,9 @@ public class VectorEventsProcessor {
         int currentTimestamp = (int) currentVectorEvent.get("currentTimestamp").getValue();
         extendedVectorEvent.get("currentTimestamp").setValue(currentTimestamp);
 
-        Idea previousEventInitialState = previousVectorEvent.get("initialState");
+        Idea previousEventInitialState = previousVectorEvent.get("initialPropertyState");
 
-        Idea currentEventInitialState = currentVectorEvent.get("initialState");
+        Idea currentEventInitialState = currentVectorEvent.get("initialPropertyState");
         double[] currentEventEventVector = (double[]) currentVectorEvent.get("eventVector").getValue();
         double[] currentEventFinalState = new double[currentEventEventVector.length];
         // produce the current event final state

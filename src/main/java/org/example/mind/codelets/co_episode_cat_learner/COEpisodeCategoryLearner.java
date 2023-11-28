@@ -1,15 +1,17 @@
 package org.example.mind.codelets.co_episode_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_proposer.ObjectComparator;
 
 import java.util.stream.Collectors;
 
 public class COEpisodeCategoryLearner {
-    double RELEVANCE_THRESHOLD = 100;
+    double RELEVANCE_THRESHOLD = 3;
     double INIT_RELEVANCE = 1;
-    double INCREMENT_FACTOR = 1;
+    double INCREMENT_FACTOR = 2;
     double DECREMENT_FACTOR = 1;
     double MINIMUM_RELEVANCE = 0;
+    double MIN_RECT_DISTANCE = 5;
 
     COEpisodeCategoryFactory cOEpisodeCategoryFactory;
 
@@ -53,7 +55,10 @@ public class COEpisodeCategoryLearner {
                 String c1 = (String) e1.get("eventCategory").getValue();
                 String c2 = (String) e2.get("eventCategory").getValue();
 
-                if(relationType != null) {
+                double rectDistance = new ObjectComparator().rectDistance(e1.get("lastObjectState") ,
+                        e2.get("lastObjectState"));
+
+                if(relationType != null && rectDistance < MIN_RECT_DISTANCE) {
                     Idea newCategory = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                     rcvCOEpisodeCategories.getL().add(newCategory);
                 }

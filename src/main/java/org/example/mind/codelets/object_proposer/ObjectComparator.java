@@ -52,4 +52,41 @@ public class ObjectComparator {
         return false;
     }
 
+    public double rectDistance(Idea o1, Idea o2) {
+
+        // based on https://stackoverflow.com/a/26178015
+        double x1tl = (double) o1.get("boundRect.tl.x").getValue();
+        double y1tl = (double) o1.get("boundRect.tl.y").getValue();
+        double x1br = (double) o1.get("boundRect.br.x").getValue();
+        double y1br = (double) o1.get("boundRect.br.y").getValue();
+        double x2tl = (double) o2.get("boundRect.tl.x").getValue();
+        double y2tl = (double) o2.get("boundRect.tl.y").getValue();
+        double x2br = (double) o2.get("boundRect.br.x").getValue();
+        double y2br = (double) o2.get("boundRect.br.y").getValue();
+
+        boolean left = x2br < x1tl;
+        boolean right = x1br < x2tl;
+        boolean bottom = y2br < y1tl;
+        boolean top = y1br < y2tl;
+
+        if(top && left) {
+            return pointDistance(new Point(x1tl, y1br), new Point(x2br, y2tl));
+        } else if(left && bottom) {
+            return pointDistance(new Point(x1tl, y1tl), new Point(x2br, y2br));
+        } else if(bottom && right) {
+            return pointDistance(new Point(x1br, y1tl), new Point(x2tl, y2br));
+        } else if(right && top) {
+            return pointDistance(new Point(x1br, y1br), new Point(x2tl, y2tl));
+        } else if(left) {
+            return x1tl - x2br;
+        } else if(right) {
+            return x2tl - x1br;
+        } else if(bottom) {
+            return y1tl - y2br;
+        } else if(top) {
+            return y2tl - y1br;
+        } else {
+            return 0;
+        }
+    }
 }
