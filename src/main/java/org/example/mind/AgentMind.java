@@ -40,7 +40,8 @@ public class AgentMind extends Mind {
         Memory detectedEventsMO;
         Memory cOEpisodeCategoriesMO;
         Memory detectedCOEpisodesMO;
-        Memory sOEpisodesTSMO;
+        Memory cOEpisodeCategoriesTSMO;
+        Memory cOEpisodeTrackerTSMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
@@ -55,7 +56,8 @@ public class AgentMind extends Mind {
         detectedEventsMO = createMemoryObject("DETECTED_EVENTS", "");
         cOEpisodeCategoriesMO = createMemoryObject("CO_EPISODE_CATEGORIES", "");
         detectedCOEpisodesMO = createMemoryObject("DETECTED_CO_EPISODES", "");
-        sOEpisodesTSMO= createMemoryObject("DETECTED_SO_EPISODES_TS", "");
+        cOEpisodeCategoriesTSMO= createMemoryObject("CO_EPISODE_CATEGORIES_TS", "");
+        cOEpisodeTrackerTSMO = createMemoryObject("CO_EPISODES_TS", "");
 
         registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
@@ -66,7 +68,8 @@ public class AgentMind extends Mind {
         registerMemory(eventCategoriesMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedEventsMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeCategoriesMO, "EpisodeTrackerMemoryGroup");
-        registerMemory(sOEpisodesTSMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(cOEpisodeCategoriesTSMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(cOEpisodeTrackerTSMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
         rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
@@ -129,9 +132,9 @@ public class AgentMind extends Mind {
         Codelet cOEpisodeCategoryLearnerCodelet = new COEpisodeCategoryLearnerCodelet();
         cOEpisodeCategoryLearnerCodelet.addInput(detectedEventsMO);
         cOEpisodeCategoryLearnerCodelet.addInput(cOEpisodeCategoriesMO);
-        cOEpisodeCategoryLearnerCodelet.addOutput(sOEpisodesTSMO);
+        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
         cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesMO);
-        cOEpisodeCategoryLearnerCodelet.addOutput(sOEpisodesTSMO);
+        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
         cOEpisodeCategoryLearnerCodelet.setIsMemoryObserver(true);
         detectedEventsMO.addMemoryObserver(cOEpisodeCategoryLearnerCodelet);
         cOEpisodeCategoryLearnerCodelet.setName("COEpisodeCategoryLearner");
@@ -142,6 +145,8 @@ public class AgentMind extends Mind {
         Codelet cOEpisodeTrackerCodelet = new COEpisodeTrackerCodelet();
         cOEpisodeTrackerCodelet.addInput(detectedEventsMO);
         cOEpisodeTrackerCodelet.addInput(cOEpisodeCategoriesMO);
+        cOEpisodeTrackerCodelet.addInput(cOEpisodeTrackerTSMO);
+        cOEpisodeTrackerCodelet.addOutput(cOEpisodeTrackerTSMO);
         cOEpisodeTrackerCodelet.addOutput(detectedCOEpisodesMO);
         cOEpisodeTrackerCodelet.setIsMemoryObserver(true);
         detectedEventsMO.addMemoryObserver(cOEpisodeTrackerCodelet);

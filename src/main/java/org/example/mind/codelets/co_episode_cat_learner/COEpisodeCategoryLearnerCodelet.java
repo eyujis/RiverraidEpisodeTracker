@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 public class COEpisodeCategoryLearnerCodelet extends Codelet {
     Memory sOEpisodesMO;
     Memory cOEpisodeCategoriesMO;
-    Memory sOEpisodesTSMO;
+    Memory cOEpisodeCategoriesTSMO;
     COEpisodeCategoryLearner coEpisodeCategoryLearner = new COEpisodeCategoryLearner();
 
     @Override
     public void accessMemoryObjects() {
         sOEpisodesMO=(MemoryObject)this.getInput("DETECTED_EVENTS");
         cOEpisodeCategoriesMO=(MemoryObject)this.getOutput("CO_EPISODE_CATEGORIES");
-        sOEpisodesTSMO=(MemoryObject)this.getOutput("DETECTED_SO_EPISODES_TS");
+        cOEpisodeCategoriesTSMO=(MemoryObject)this.getOutput("CO_EPISODE_CATEGORIES_TS");
     }
 
     @Override
@@ -31,8 +31,8 @@ public class COEpisodeCategoryLearnerCodelet extends Codelet {
             return;
         }
 
-        if(sOEpisodesTSMO.getI()=="") {
-            sOEpisodesTSMO.setI(-1);
+        if(cOEpisodeCategoriesTSMO.getI()=="") {
+            cOEpisodeCategoriesTSMO.setI(-1);
         }
 
         // initialize cOEpisodeCategoriesMO
@@ -43,7 +43,7 @@ public class COEpisodeCategoryLearnerCodelet extends Codelet {
 
         Idea sOEpisodes = (Idea) sOEpisodesMO.getI();
         Idea cOEpisodeCategories = (Idea) cOEpisodeCategoriesMO.getI();
-        int lastTimestamp = (int) sOEpisodesTSMO.getI();
+        int lastTimestamp = (int) cOEpisodeCategoriesTSMO.getI();
 
         synchronized (sOEpisodesMO) {
             synchronized (cOEpisodeCategoriesMO) {
@@ -52,8 +52,7 @@ public class COEpisodeCategoryLearnerCodelet extends Codelet {
                 if(lastTimestamp==currentTimestamp) {
                     return;
                 } else {
-                    System.out.println(currentTimestamp);
-                    sOEpisodesTSMO.setI(currentTimestamp);
+                    cOEpisodeCategoriesTSMO.setI(currentTimestamp);
                 }
 
                 Idea updatedCategories = coEpisodeCategoryLearner.updateCategories(sOEpisodes, cOEpisodeCategories);
