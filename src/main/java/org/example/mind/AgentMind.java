@@ -3,6 +3,7 @@ package org.example.mind;
 import br.unicamp.cst.core.entities.*;
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategoryLearnerCodelet;
+import org.example.mind.codelets.co_episode_tracker.COEpisodeTrackerCodelet;
 import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
 import org.example.mind.codelets.event_tracker.EventTrackerCodelet;
 import org.example.mind.codelets.forgetting_so_episodes.ForgettingSOEpisodesCodelet;
@@ -38,6 +39,9 @@ public class AgentMind extends Mind {
         Memory eventCategoriesMO;
         Memory detectedEventsMO;
         Memory cOEpisodeCategoriesMO;
+        Memory detectedCOEpisodesMO;
+        Memory cOEpisodeCategoriesTSMO;
+        Memory cOEpisodeTrackerTSMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
@@ -51,6 +55,9 @@ public class AgentMind extends Mind {
         eventCategoriesMO = createMemoryObject("EVENT_CATEGORIES", "");
         detectedEventsMO = createMemoryObject("DETECTED_EVENTS", "");
         cOEpisodeCategoriesMO = createMemoryObject("CO_EPISODE_CATEGORIES", "");
+        detectedCOEpisodesMO = createMemoryObject("DETECTED_CO_EPISODES", "");
+        cOEpisodeCategoriesTSMO= createMemoryObject("CO_EPISODE_CATEGORIES_TS", "");
+        cOEpisodeTrackerTSMO = createMemoryObject("CO_EPISODES_TS", "");
 
         registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
@@ -61,6 +68,8 @@ public class AgentMind extends Mind {
         registerMemory(eventCategoriesMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedEventsMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeCategoriesMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(cOEpisodeCategoriesTSMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(cOEpisodeTrackerTSMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
         rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
@@ -123,11 +132,27 @@ public class AgentMind extends Mind {
         Codelet cOEpisodeCategoryLearnerCodelet = new COEpisodeCategoryLearnerCodelet();
         cOEpisodeCategoryLearnerCodelet.addInput(detectedEventsMO);
         cOEpisodeCategoryLearnerCodelet.addInput(cOEpisodeCategoriesMO);
+        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
         cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesMO);
+        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
         cOEpisodeCategoryLearnerCodelet.setIsMemoryObserver(true);
         detectedEventsMO.addMemoryObserver(cOEpisodeCategoryLearnerCodelet);
         cOEpisodeCategoryLearnerCodelet.setName("COEpisodeCategoryLearner");
         insertCodelet(cOEpisodeCategoryLearnerCodelet);
+
+
+
+        Codelet cOEpisodeTrackerCodelet = new COEpisodeTrackerCodelet();
+        cOEpisodeTrackerCodelet.addInput(detectedEventsMO);
+        cOEpisodeTrackerCodelet.addInput(cOEpisodeCategoriesMO);
+        cOEpisodeTrackerCodelet.addInput(cOEpisodeTrackerTSMO);
+        cOEpisodeTrackerCodelet.addOutput(cOEpisodeTrackerTSMO);
+        cOEpisodeTrackerCodelet.addOutput(detectedCOEpisodesMO);
+        cOEpisodeTrackerCodelet.setIsMemoryObserver(true);
+        detectedEventsMO.addMemoryObserver(cOEpisodeTrackerCodelet);
+        cOEpisodeTrackerCodelet.setName("COEpisodeTracker");
+        insertCodelet(cOEpisodeTrackerCodelet);
+
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
@@ -137,6 +162,7 @@ public class AgentMind extends Mind {
         registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())

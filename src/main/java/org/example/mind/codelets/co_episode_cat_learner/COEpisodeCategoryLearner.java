@@ -50,7 +50,6 @@ public class COEpisodeCategoryLearner {
             for (int j = i + 1; j < sOEpisodes.getL().size(); j++) {
                 Idea e1 = sOEpisodes.getL().get(i);
                 Idea e2 = sOEpisodes.getL().get(j);
-                System.out.println(e1.toStringFull());
 
                 String relationType = identifyCOEpisodeCategoryRelation(e1, e2);
                 String c1 = (String) e1.get("eventCategory").getValue();
@@ -85,7 +84,6 @@ public class COEpisodeCategoryLearner {
                 idx = i;
             }
         }
-
         return idx;
     }
 
