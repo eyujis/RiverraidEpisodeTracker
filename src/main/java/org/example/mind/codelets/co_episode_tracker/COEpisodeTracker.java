@@ -8,17 +8,13 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class COEpisodeTracker {
-    public Idea updateRelations(Idea sOEpisodes, Idea cOEpisodeCategories, Idea previousCOEpisodes) {
+    double RELEVANCE_THRESHOLD = 3;
 
-        // compare each sOEpisode;
-        // check if is there a previous relation between SOEpisodes;
-        // check if there is a membership across cOEpisodeCategories;
-        // assign necessary relations;
-        // add previousCOEpisodes that vanished in the current timestamp;
+    public Idea updateRelations(Idea sOEpisodes, Idea cOEpisodeCategories, Idea previousCOEpisodes) {
 
         Idea cOEpisodes = sOEpisodes.clone();
 
-
+        // compare each sOEpisode;
         for (int i = 0; i < cOEpisodes.getL().size(); i++) {
             for (int j = i + 1; j < cOEpisodes.getL().size(); j++) {
                 Idea ex = cOEpisodes.getL().get(i);
@@ -27,67 +23,64 @@ public class COEpisodeTracker {
                 initializeRelations(ex);
                 initializeRelations(ey);
 
+                // check if is there a previous relation between SOEpisodes;
                 boolean alreadyInARelation = alreadyHasRelation(ex, ey, previousCOEpisodes);
 
                 if(!alreadyInARelation) {
+                    // check if there is a membership across cOEpisodeCategories;
                     for(Idea categoryIdea : cOEpisodeCategories.getL()) {
-                        String categoryName = categoryIdea.getName();
-                        COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
-
-                        Idea membershipParameters = new Idea("hasRelation", "", 0);
-                        membershipParameters.getL().add(ex);
-                        membershipParameters.getL().add(ey);
-
-                        double isMember = category.membership(membershipParameters);
-                        if(isMember==1) {
-                            Idea eyRelation = new Idea("relation", "", 0);
-                            eyRelation.add(new Idea("eventId", (int) ey.get("eventId").getValue()));
-                            eyRelation.add(new Idea("category", categoryName));
-                            eyRelation.add(new Idea("relationType", category.getRelationType()));
-                            ex.get("relations").add(eyRelation);
-
-                            Idea exRelation = new Idea("relation", "", 0);
-                            exRelation.add(new Idea("eventId", (int) ex.get("eventId").getValue()));
-                            exRelation.add(new Idea("category", categoryName));
-                            exRelation.add(new Idea("relationType", category.getRelationType() + "i"));
-                            ey.get("relations").add(exRelation);
-                        }
-
-                        Idea membershipIParameters = new Idea("hasRelationI", "", 0);
-                        membershipIParameters.getL().add(ey);
-                        membershipIParameters.getL().add(ex);
-
-                        double isIMember = category.membership(membershipIParameters);
-                        if(isIMember==1) {
-                            Idea exRelation = new Idea("relation", "", 0);
-                            exRelation.add(new Idea("eventId", (int) ex.get("eventId").getValue()));
-                            exRelation.add(new Idea("category", categoryName));
-                            exRelation.add(new Idea("relationType", category.getRelationType()));
-                            ey.get("relations").add(exRelation);
-
-                            Idea eyRelation = new Idea("relation", "", 0);
-                            eyRelation.add(new Idea("eventId", (int) ey.get("eventId").getValue()));
-                            eyRelation.add(new Idea("category", categoryName));
-                            eyRelation.add(new Idea("relationType", category.getRelationType() + "i"));
-                            ex.get("relations").add(eyRelation);
-                        }
-
+                        // assign necessary relations;
+                        verifyAndCreateRelationship(ex, ey, categoryIdea);
+                        verifyAndCreateRelationship(ey, ex, categoryIdea);
                     }
                 }
             }
         }
 
-        ArrayList<Integer> cOEpisodesIDs = (ArrayList<Integer>) cOEpisodes.getL().stream()
-                .map(e -> (Integer) e.get("eventId").getValue())
-                .collect(Collectors.toList());
+        // add previousCOEpisodes that are not in the current timestamp;
+        ArrayList<Integer> cOEpisodesIDs = getEpisodeIds(cOEpisodes);
 
-        ArrayList<Idea> cOEpisodesNotPresentInCurrentsOEpisodes = (ArrayList<Idea>) previousCOEpisodes.getL().stream()
-                .filter(e -> !cOEpisodesIDs.contains((Integer) e.get("eventId").getValue()))
-                .collect(Collectors.toList());
+        ArrayList<Idea> cOEpisodesNotPresentInCurrentsOEpisodes = filterEpisodesByIdsNotInList(
+                previousCOEpisodes,
+                cOEpisodesIDs);
 
         cOEpisodes.getL().addAll(cOEpisodesNotPresentInCurrentsOEpisodes);
 
         return cOEpisodes;
+    }
+
+
+    public void verifyAndCreateRelationship(Idea ex, Idea ey, Idea categoryIdea) {
+        String categoryName = categoryIdea.getName();
+        COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
+
+        if (category.getRelevance() < RELEVANCE_THRESHOLD) {
+            return;
+        }
+
+        Idea membershipParameters = createMembershipParameters(ex, ey);
+        double isMember = category.membership(membershipParameters);
+
+        if(isMember==1) {
+            addRelation(ex, ey, categoryName, category.getRelationType());
+            addRelation(ey, ex, categoryName, category.getRelationType()+"i");
+        }
+    }
+
+    private Idea createMembershipParameters(Idea ex, Idea ey) {
+        Idea membershipParameters = new Idea("hasRelation", "", 0);
+        membershipParameters.getL().add(ex);
+        membershipParameters.getL().add(ey);
+
+        return membershipParameters;
+    }
+
+    private void addRelation(Idea source, Idea target, String categoryName, String relationType) {
+        Idea relation = new Idea("relation", "", 0);
+        relation.add(new Idea("eventId", (int) target.get("eventId").getValue()));
+        relation.add(new Idea("category", categoryName));
+        relation.add(new Idea("relationType", relationType));
+        source.get("relations").add(relation);
     }
 
     private boolean alreadyHasRelation(Idea e1, Idea e2, Idea previousCOEpisodes) {
@@ -110,6 +103,20 @@ public class COEpisodeTracker {
         }
 
         return false;
+    }
+
+    private ArrayList<Integer> getEpisodeIds(Idea episodesIdea) {
+        // add previousCOEpisodes that are not in the current timestamp;
+        ArrayList<Integer> episodesIds = (ArrayList<Integer>) episodesIdea.getL().stream()
+                .map(e -> (Integer) e.get("eventId").getValue())
+                .collect(Collectors.toList());
+        return episodesIds;
+    }
+
+    public ArrayList<Idea> filterEpisodesByIdsNotInList(Idea episodes, ArrayList<Integer> idList) {
+        return (ArrayList<Idea>) episodes.getL().stream()
+                .filter(e -> !idList.contains((Integer) e.get("eventId").getValue()))
+                .collect(Collectors.toList());
     }
 
     private void initializeRelations(Idea episode) {
