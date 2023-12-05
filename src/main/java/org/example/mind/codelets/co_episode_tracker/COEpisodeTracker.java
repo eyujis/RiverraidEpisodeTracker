@@ -89,6 +89,10 @@ public class COEpisodeTracker {
     }
 
     private boolean hasRelationIn(Idea e1, Idea e2, Idea previousEpisode) {
+        if(previousEpisode==null) {
+            return false;
+        }
+
         return previousEpisode.get("relations").getL().stream().
                 anyMatch(relation -> matchesRelationSOEpisodeId(e1, e2, relation));
     }
