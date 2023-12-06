@@ -14,14 +14,13 @@ public class COEpisodeTracker {
 
         Idea cOEpisodes = sOEpisodes.clone();
 
+        initializeRelations(cOEpisodes);
+
         // compare each sOEpisode;
         for (int i = 0; i < cOEpisodes.getL().size(); i++) {
             for (int j = i + 1; j < cOEpisodes.getL().size(); j++) {
                 Idea ex = cOEpisodes.getL().get(i);
                 Idea ey = cOEpisodes.getL().get(j);
-
-                initializeRelations(ex);
-                initializeRelations(ey);
 
                 // check if is there a previous relation between SOEpisodes;
                 boolean alreadyInARelation = alreadyHasRelation(ex, ey, previousCOEpisodes);
@@ -93,8 +92,19 @@ public class COEpisodeTracker {
             return false;
         }
 
-        return previousEpisode.get("relations").getL().stream().
-                anyMatch(relation -> matchesRelationSOEpisodeId(e1, e2, relation));
+        boolean result = false;
+
+        try {
+            result = previousEpisode.get("relations").getL().stream().
+                    anyMatch(relation -> matchesRelationSOEpisodeId(e1, e2, relation));
+        } catch (NullPointerException e) {
+            System.out.println(previousEpisode.toStringFull());
+            System.out.println(previousEpisode.get("relations")==null);
+            System.out.println(previousEpisode.get("relations").toStringFull());
+            System.out.println(previousEpisode.get("relations").getL().size());
+        }
+
+        return result;
     }
 
     private boolean matchesRelationSOEpisodeId(Idea e1, Idea e2, Idea relation) {
@@ -123,10 +133,12 @@ public class COEpisodeTracker {
                 .collect(Collectors.toList());
     }
 
-    private void initializeRelations(Idea episode) {
-        if(episode.get("relations") == null) {
-            Idea relations = new Idea("relations", "", 0);
-            episode.add(relations);
+    private void initializeRelations(Idea episodes) {
+        for(Idea episode : episodes.getL()) {
+            if(episode.get("relations") == null) {
+                Idea relations = new Idea("relations", "", 0);
+                episode.add(relations);
+            }
         }
     }
 }

@@ -100,10 +100,13 @@ public class VectorEventsProcessor {
     }
 
     private int getMatchingEventIdx(Idea currentVEvent, Idea previousVectorEvents) {
+        int k=0;
+        int j=-1;
         int cObjectId = (int) currentVEvent.get("objectId").getValue();
         String cEventProperty = (String) currentVEvent.get("propertyName").getValue();
         String cEventCategory = (String) currentVEvent.get("eventCategory").getValue();
         double[] cEventVector = (double[]) currentVEvent.get("eventVector").getValue();
+        boolean cEventHasFinished = (boolean) currentVEvent.get("hasFinished").getValue();
 
         for(int i=0; i<previousVectorEvents.getL().size(); i++) {
             Idea previousVEvent = previousVectorEvents.getL().get(i);
@@ -112,13 +115,21 @@ public class VectorEventsProcessor {
             String pEventProperty = (String) previousVEvent.get("propertyName").getValue();
             String pEventCategory = (String) previousVEvent.get("eventCategory").getValue();
             double[] pEventVector = (double[]) previousVEvent.get("eventVector").getValue();
+            boolean pEventHasFinished = (boolean) previousVEvent.get("hasFinished").getValue();
 
             if(cObjectId == pObjectId && cEventProperty.equals(pEventProperty) && cEventCategory.equals(pEventCategory)
-                    && hasSimilarAngle(cEventVector, pEventVector)) {
-                return i;
+                    && hasSimilarAngle(cEventVector, pEventVector)
+                    && !cEventHasFinished
+                    && !pEventHasFinished
+                    ) {
+
+                j=i;
+                k++;
             }
         }
-        return -1;
+        System.out.println(k);
+        return j;
+//        return -1;
     }
 
     private void addVectorEventPairToBeExtended(Idea previousEvent, Idea currentEvent) {
@@ -162,6 +173,7 @@ public class VectorEventsProcessor {
     }
 
     public Idea getResultVectorEvents() {
+//        System.out.println(resultVectorEvents.getL().size());
         return resultVectorEvents;
     }
 }

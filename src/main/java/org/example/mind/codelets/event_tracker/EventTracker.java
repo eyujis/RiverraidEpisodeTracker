@@ -54,8 +54,11 @@ public class EventTracker {
                 if(membership==1) {
                     Idea newEvent = null;
 
-                    if(eventCategoryIdea.getValue() instanceof VectorEventCategory) {
+                    if(eventCategoryIdea.getValue() instanceof VectorEventCategory
+                            && ((VectorEventCategory) eventCategoryIdea.getValue()).getPropertyName()=="center") {
                         newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
+                        eventsFromObjsTransitions.add(newEvent);
+                        break;
                     }
                     if(eventCategoryIdea.getValue() instanceof AppearanceEventCategory) {
                         newEvent = createAppearanceEvent(objectTransition, eventCategoryIdea);

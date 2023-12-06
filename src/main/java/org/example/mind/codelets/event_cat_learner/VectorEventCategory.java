@@ -15,8 +15,10 @@ public class VectorEventCategory implements EventCategory {
     double relevance;
 
     double MIN_ANGLE_DIFF = 0.1;
-    double MIN_MAG_DIFF = 0.1;
-    double MIN_DIST_DIFF = 1;
+    // if I change this value to 10 it will work, but I need to figure out why it does not with 5
+    double MIN_MAG_DIFF = 5;
+    // hypotenuse of the rectangle triangle
+    double MIN_DIST_DIFF = Math.sqrt(Math.pow(MIN_MAG_DIFF,2)+Math.pow(MIN_MAG_DIFF,2));
 
 
     public VectorEventCategory(String propertyName, Idea objectTransition, double relevance) {
@@ -46,6 +48,11 @@ public class VectorEventCategory implements EventCategory {
         double[] predPropertyState = predictPropertyState(initialPropertyState);
 
         double result = stateDifference(finalPropertyState, predPropertyState);
+
+        // in the case event vector has 0 magnitude, the property should stay absolutely fixed
+        if(isZeroMagnitude(eventVector) && result>0) {
+            return 0;
+        }
 
         if(result<=MIN_DIST_DIFF) {
             return 1;
@@ -164,6 +171,11 @@ public class VectorEventCategory implements EventCategory {
 
         if(isZeroMagnitude(compVector) && isZeroMagnitude(this.eventVector)) {
             return true;
+        }
+
+        if((isZeroMagnitude(compVector) && !isZeroMagnitude(this.eventVector))
+                || (!isZeroMagnitude(compVector) && isZeroMagnitude(this.eventVector))) {
+            return false;
         }
 
         double magDiff = getMagnitudeDiff(compVector, catVector);
