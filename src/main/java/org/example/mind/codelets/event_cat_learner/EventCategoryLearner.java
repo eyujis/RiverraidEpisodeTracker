@@ -76,7 +76,8 @@ public class EventCategoryLearner {
             EventCategory eventCatListElem = (EventCategory) eventCategoryList.getL().get(i).getValue();
             EventCategory eventInstance = (EventCategory) categoryFromInstance.getValue();
 
-            if(eventCatListElem.sameCategory(eventInstance) == true) {
+            if(eventCatListElem.sameCategory(eventInstance) == true
+                    && eventCatListElem.getRelevance()>=RELEVANCE_THRESHOLD) {
                 idx = i;
             }
         }

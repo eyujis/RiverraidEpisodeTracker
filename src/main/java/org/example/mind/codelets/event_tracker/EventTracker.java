@@ -22,6 +22,7 @@ public class EventTracker {
 
     // pDetectedEvents are the previously detected events.
     public void detectEvents(Idea objectsBuffer, Idea eventCategories, Idea previousEvents) {
+
         detectedEvents = new Idea("DetectedEvents", "", 0);
         Idea objectsTransitions = objectsTransitionsExtractor.extract(objectsBuffer);
 
@@ -47,20 +48,24 @@ public class EventTracker {
 
     private Idea extractEventsFromObjectsTransitions(Idea objectsTransitions, Idea eventCategories) {
         Idea eventsFromObjsTransitions = new Idea("EventsFromObjectsTransitions", "", 0);
-
         for(Idea objectTransition: objectsTransitions.getL()) {
             for (Idea eventCategoryIdea : eventCategories.getL()) {
                 double membership = ((EventCategory) eventCategoryIdea.getValue()).membership(objectTransition);
                 if(membership==1) {
                     Idea newEvent = null;
 
-                    if(eventCategoryIdea.getValue() instanceof VectorEventCategory) {
-                        newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
-                    }
                     if(eventCategoryIdea.getValue() instanceof AppearanceEventCategory) {
                         newEvent = createAppearanceEvent(objectTransition, eventCategoryIdea);
                     }
-                    eventsFromObjsTransitions.add(newEvent);
+
+                    if(eventCategoryIdea.getValue() instanceof VectorEventCategory
+                            && ((VectorEventCategory) eventCategoryIdea.getValue()).getPropertyName()=="center") {
+                        newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
+//                        break;
+                    }
+                    if(newEvent!=null) {
+                        eventsFromObjsTransitions.add(newEvent);
+                    }
                 }
             }
         }

@@ -15,8 +15,9 @@ public class VectorEventCategory implements EventCategory {
     double relevance;
 
     double MIN_ANGLE_DIFF = 0.1;
-    double MIN_MAG_DIFF = 0.1;
-    double MIN_DIST_DIFF = 1;
+    double MIN_MAG_DIFF = 5;
+    // hypotenuse of the rectangle triangle
+    double MIN_DIST_DIFF = Math.sqrt(Math.pow(MIN_MAG_DIFF,2)+Math.pow(MIN_MAG_DIFF,2));
 
 
     public VectorEventCategory(String propertyName, Idea objectTransition, double relevance) {
@@ -43,11 +44,22 @@ public class VectorEventCategory implements EventCategory {
             return 0;
         }
 
-        double[] predPropertyState = predictPropertyState(initialPropertyState);
+        RealVector catVector = new ArrayRealVector(this.eventVector);
+        RealVector arrayRealVector = new ArrayRealVector(getVectorFromInitialAndFinalState(initialPropertyState,
+                finalPropertyState));
 
+        double angleDiff = getAngleDiff(arrayRealVector, catVector);
+
+        double[] predPropertyState = predictPropertyState(initialPropertyState);
         double result = stateDifference(finalPropertyState, predPropertyState);
 
-        if(result<=MIN_DIST_DIFF) {
+        // in the case event vector has 0 magnitude, the property should stay absolutely fixed
+        if(isZeroMagnitude(eventVector) && result>0) {
+            return 0;
+        }
+
+        //compares the prediction distance and angle
+        if(result<MIN_DIST_DIFF && angleDiff<MIN_ANGLE_DIFF) {
             return 1;
         }
         return 0;
@@ -166,6 +178,11 @@ public class VectorEventCategory implements EventCategory {
             return true;
         }
 
+        if((isZeroMagnitude(compVector) && !isZeroMagnitude(this.eventVector))
+                || (!isZeroMagnitude(compVector) && isZeroMagnitude(this.eventVector))) {
+            return false;
+        }
+
         double magDiff = getMagnitudeDiff(compVector, catVector);
         double angleDiff = getAngleDiff(compVector, catVector);
 
@@ -230,6 +247,15 @@ public class VectorEventCategory implements EventCategory {
 
         }
         return categoryName;
+    }
+    private double[] getVectorFromInitialAndFinalState(double[] initialState, double[] finalState) {
+        //
+        double[] vector = new double[initialState.length];
+
+        for(int i=0; i<initialState.length; i++) {
+            vector[i] = finalState[i] - initialState[i];
+        }
+        return vector;
     }
 
     public String getPropertyName() {

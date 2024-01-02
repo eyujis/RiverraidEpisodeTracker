@@ -32,14 +32,13 @@ public class VectorEventsProcessor {
         // events that have ended
         ArrayList<Idea> previousEventsNotExtended = (ArrayList<Idea>) previousVectorEvents.getL().stream()
                 .filter(event -> !previousEventIdsInEventsToBeExtended.contains(event.get("eventId").getValue()))
-                .collect(Collectors.toList());;
+                .collect(Collectors.toList());
         previousEventsNotExtended.stream().forEach(event -> event.get("hasFinished").setValue(true));
 
         // new events
         ArrayList<Idea> currentEventsNotExtended = (ArrayList<Idea>) currentVectorEvents.getL().stream()
                 .filter(event -> !currentEventIdsInEventsToBeExtended.contains(event.get("eventId").getValue()))
-                .collect(Collectors.toList());;
-
+                .collect(Collectors.toList());
         resultVectorEvents.getL().addAll(previousEventsNotExtended);
         resultVectorEvents.getL().addAll(currentEventsNotExtended);
 
@@ -94,16 +93,21 @@ public class VectorEventsProcessor {
         for(Idea currentVEvent: currentVectorEvents.getL()) {
             int i = getMatchingEventIdx(currentVEvent, previousVectorEvents);
             if(i!=-1) {
-                addVectorEventPairToBeExtended(currentVEvent, previousVectorEvents.getL().get(i));
+                addVectorEventPairToBeExtended(previousVectorEvents.getL().get(i), currentVEvent);
             }
         }
     }
 
     private int getMatchingEventIdx(Idea currentVEvent, Idea previousVectorEvents) {
+        int k=0;
+        int j=-1;
+
+
         int cObjectId = (int) currentVEvent.get("objectId").getValue();
         String cEventProperty = (String) currentVEvent.get("propertyName").getValue();
         String cEventCategory = (String) currentVEvent.get("eventCategory").getValue();
         double[] cEventVector = (double[]) currentVEvent.get("eventVector").getValue();
+        boolean cEventHasFinished = (boolean) currentVEvent.get("hasFinished").getValue();
 
         for(int i=0; i<previousVectorEvents.getL().size(); i++) {
             Idea previousVEvent = previousVectorEvents.getL().get(i);
@@ -112,17 +116,26 @@ public class VectorEventsProcessor {
             String pEventProperty = (String) previousVEvent.get("propertyName").getValue();
             String pEventCategory = (String) previousVEvent.get("eventCategory").getValue();
             double[] pEventVector = (double[]) previousVEvent.get("eventVector").getValue();
+            boolean pEventHasFinished = (boolean) previousVEvent.get("hasFinished").getValue();
 
             if(cObjectId == pObjectId && cEventProperty.equals(pEventProperty) && cEventCategory.equals(pEventCategory)
-                    && hasSimilarAngle(cEventVector, pEventVector)) {
-                return i;
+                    && hasSimilarAngle(cEventVector, pEventVector)
+                    && !cEventHasFinished
+                    && !pEventHasFinished
+                    ) {
+//                System.out.println(previousVEvent.get("eventId").getValue());
+                j=i;
+                k++;
             }
         }
-        return -1;
+        System.out.println(k);
+        System.out.println("=============");
+        return j;
+//        return -1;
     }
 
     private void addVectorEventPairToBeExtended(Idea previousEvent, Idea currentEvent) {
-        eventVectorPairsToBeExtended.add(new EventPair(currentEvent, previousEvent));
+        eventVectorPairsToBeExtended.add(new EventPair(previousEvent, currentEvent));
     }
 
     public boolean hasSimilarAngle(double[] rawVector1, double[] rawVector2) {
@@ -162,6 +175,7 @@ public class VectorEventsProcessor {
     }
 
     public Idea getResultVectorEvents() {
+//        System.out.println(resultVectorEvents.getL().size());
         return resultVectorEvents;
     }
 }

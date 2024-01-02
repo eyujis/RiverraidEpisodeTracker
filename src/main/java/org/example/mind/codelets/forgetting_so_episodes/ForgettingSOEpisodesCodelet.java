@@ -5,6 +5,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.util.MatBufferedImageConverter;
+import org.example.visualization.Category2Color;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
@@ -22,6 +23,8 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
     int currentTimestamp;
 
     JLabel forgettingSOEpisodesImgJLabel;
+
+    Category2Color category2Color = new Category2Color();
 
     public ForgettingSOEpisodesCodelet(JLabel forgettingSOEpisodesImgJLabel) {
         this.forgettingSOEpisodesImgJLabel = forgettingSOEpisodesImgJLabel;
@@ -90,11 +93,13 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
                 double x_end = x_start + event_vector[0];
                 double y_end = y_start + event_vector[1];
 
+                String eventCategory = (String) eventIdea.get("eventCategory").getValue();
+
                 Point start = new Point(x_start, y_start);
                 Point end = new Point(x_end, y_end);
-                Scalar color = new Scalar(255, 255, 255);
+                Scalar color = category2Color.getColor(eventCategory);
 
-                int thickness = 1;
+                int thickness = 2;
 
                 Imgproc.arrowedLine(frame, start, end, color, thickness);
             }
