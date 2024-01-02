@@ -121,7 +121,6 @@ public class VectorEventsProcessor {
                     && !cEventHasFinished
                     && !pEventHasFinished
                     ) {
-//                System.out.println(previousVEvent.get("eventId").getValue());
                 j=i;
             }
         }
@@ -169,7 +168,6 @@ public class VectorEventsProcessor {
     }
 
     public Idea getResultVectorEvents() {
-//        System.out.println(resultVectorEvents.getL().size());
         return resultVectorEvents;
     }
 }
