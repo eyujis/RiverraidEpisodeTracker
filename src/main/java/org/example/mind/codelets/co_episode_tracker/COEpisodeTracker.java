@@ -43,7 +43,8 @@ public class COEpisodeTracker {
                 previousCOEpisodes,
                 cOEpisodesIDs);
 
-        cOEpisodes.getL().addAll(cOEpisodesNotPresentInCurrentsOEpisodes);
+//        TODO: uncomment the line below when creating the forgetting mechanism.
+//        cOEpisodes.getL().addAll(cOEpisodesNotPresentInCurrentsOEpisodes);
 
         return cOEpisodes;
     }

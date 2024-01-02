@@ -45,10 +45,10 @@ public class VectorEventCategory implements EventCategory {
         }
 
         RealVector catVector = new ArrayRealVector(this.eventVector);
-        RealVector arrayRealVector = new ArrayRealVector(getVectorFromInitialAndFinalState(initialPropertyState,
+        RealVector transitionVector = new ArrayRealVector(getVectorFromInitialAndFinalState(initialPropertyState,
                 finalPropertyState));
 
-        double angleDiff = getAngleDiff(arrayRealVector, catVector);
+        double angleDiff = getAngleDiff(transitionVector, catVector);
 
         double[] predPropertyState = predictPropertyState(initialPropertyState);
         double result = stateDifference(finalPropertyState, predPropertyState);
@@ -56,6 +56,10 @@ public class VectorEventCategory implements EventCategory {
         // in the case event vector has 0 magnitude, the property should stay absolutely fixed
         if(isZeroMagnitude(eventVector) && result>0) {
             return 0;
+        }
+
+        if(isZeroMagnitude(eventVector) && isZeroMagnitude(transitionVector)) {
+            return 1;
         }
 
         //compares the prediction distance and angle

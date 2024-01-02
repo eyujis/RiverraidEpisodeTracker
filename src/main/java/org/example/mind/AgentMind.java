@@ -29,6 +29,7 @@ public class AgentMind extends Mind {
 
         JLabel eventImgJLabel = secondJFrame.getEventTrackerImgJLabel();
         JLabel forgettingSOEpisodeImgJLabel = secondJFrame.getForgettingSOEpisodesImgJLabel();
+//        JLabel coEpisodeImgJLabel = secondJFrame.getcOEpisodesImgJLabel();
 
         Memory rawDataBufferMO;
         Memory detectedFragmentsMO;
@@ -141,7 +142,7 @@ public class AgentMind extends Mind {
 //        insertCodelet(cOEpisodeCategoryLearnerCodelet);
 //
 //
-//        Codelet cOEpisodeTrackerCodelet = new COEpisodeTrackerCodelet();
+//        Codelet cOEpisodeTrackerCodelet = new COEpisodeTrackerCodelet(coEpisodeImgJLabel);
 //        cOEpisodeTrackerCodelet.addInput(detectedEventsMO);
 //        cOEpisodeTrackerCodelet.addInput(cOEpisodeCategoriesMO);
 //        cOEpisodeTrackerCodelet.addInput(cOEpisodeTrackerTSMO);
