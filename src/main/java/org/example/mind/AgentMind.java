@@ -117,6 +117,7 @@ public class AgentMind extends Mind {
         Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel);
         eventTrackerCodelet.addInput(objectsBufferMO);
         eventTrackerCodelet.addInput(eventCategoriesMO);
+        eventTrackerCodelet.addOutput(eventCategoriesMO);
         eventTrackerCodelet.addOutput(detectedEventsMO);
         eventTrackerCodelet.setIsMemoryObserver(true);
         objectsBufferMO.addMemoryObserver(eventTrackerCodelet);

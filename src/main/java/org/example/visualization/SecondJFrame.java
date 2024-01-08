@@ -22,7 +22,7 @@ public class SecondJFrame extends JFrame {
         JPanel panel = new JPanel();
         panel.add(eventTrackerImgJLabel);
         panel.add(forgettingSOEpisodesImgJLabel);
-//        panel.add(cOEpisodesImgJLabel);
+        panel.add(cOEpisodesImgJLabel);
 
         this.getContentPane().add(panel, BorderLayout.PAGE_END);
 

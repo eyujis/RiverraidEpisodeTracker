@@ -27,7 +27,7 @@ public class EventTrackerCodelet extends Codelet {
     @Override
     public void accessMemoryObjects() {
         objectsBufferMO=(MemoryObject)this.getInput("OBJECTS_BUFFER");
-        eventCategoriesMO=(MemoryObject)this.getInput("EVENT_CATEGORIES");
+        eventCategoriesMO=(MemoryObject)this.getOutput("EVENT_CATEGORIES");
         detectedEventsMO=(MemoryObject)this.getOutput("DETECTED_EVENTS");
     }
 
@@ -41,28 +41,24 @@ public class EventTrackerCodelet extends Codelet {
         if(objectsBufferMO.getI()=="" || eventCategoriesMO.getI()=="") {
             return;
         }
-        Idea objectsBuffer = (Idea) objectsBufferMO.getI();
-        Idea eventCategories = (Idea) eventCategoriesMO.getI();
-        Idea detectedEvents = null;
 
         synchronized (eventCategoriesMO) {
+            Idea objectsBuffer = (Idea) objectsBufferMO.getI();
+            Idea eventCategories = (Idea) eventCategoriesMO.getI();
+            Idea detectedEvents = null;
+
             if(detectedEventsMO.getI()=="") {
                 detectedEvents = new Idea();
             } else {
                 detectedEvents = (Idea) detectedEventsMO.getI();
             }
+
+            eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
+            detectedEventsMO.setI(eventTracker.getDetectedEvents());
+
+            eventCategories.getL().addAll(eventTracker.getAssimilatedCategories().getL());
+            eventCategoriesMO.setI(eventCategories);
         }
-
-        eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
-
-//        System.out.println("=====================================");
-//        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
-//            System.out.println(eventIdea.toStringFull());
-//        }
-
-        System.out.println("====================");
-        detectedEventsMO.setI(eventTracker.getDetectedEvents());
-
         try {
             updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));
         } catch (IOException e) {

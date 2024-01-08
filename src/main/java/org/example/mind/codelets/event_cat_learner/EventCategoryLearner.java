@@ -8,7 +8,7 @@ import java.util.List;
 
 
 public class EventCategoryLearner {
-    Idea eventCategoryList;
+    Idea eventCategories;
     EventCategoryFactory eventCatFactory;
     ObjectsTransitionsExtractor objectsTransitionsExtractor;
 
@@ -21,23 +21,39 @@ public class EventCategoryLearner {
 
     public EventCategoryLearner() {
         eventCatFactory = new EventCategoryFactory();
-        eventCategoryList = new Idea("EventCategories", "", 0);
+        eventCategories = new Idea("EventCategories", "", 0);
         objectsTransitionsExtractor = new ObjectsTransitionsExtractor();
     }
 
-    public void updateCategories(Idea objectsBuffer) {
+    public void updateCategories(Idea objectsBuffer, Idea eventCategories) {
+        this.eventCategories = eventCategories;
+
         Idea objectsTransitions = objectsTransitionsExtractor.extract(objectsBuffer);
-        Idea rcvEventCats = extractEventCategories(objectsTransitions);
 
-        for (Idea rcvCat : rcvEventCats.getL()) {
-            int equalCatIdx = this.equalCategoryIdx(rcvCat);
+        // Remember categories based on category similarity
+//        Idea rcvEventCats = extractEventCategories(objectsTransitions);
+//
+//        for (Idea rcvCat : rcvEventCats.getL()) {
+//            int equalCatIdx = this.equalCategoryIdx(rcvCat);
+//
+//            if (equalCatIdx != -1) {
+//                EventCategory eventCat = (EventCategory) eventCategories.getL().get(equalCatIdx).getValue();
+//                if (eventCat.getRelevance()<RELEVANCE_THRESHOLD) {
+//                    eventCat.incrementRelevance(INCREMENT_FACTOR);
+//                }
+//            }
+//        }
 
-            if (equalCatIdx == -1) {
-                eventCategoryList.add(rcvCat);
-            } else {
-                EventCategory eventCat = (EventCategory) eventCategoryList.getL().get(equalCatIdx).getValue();
-                if (eventCat.getRelevance()<RELEVANCE_THRESHOLD) {
-                    eventCat.incrementRelevance(INCREMENT_FACTOR);
+        // Remember categories based on membership
+        for (Idea objectTransition : objectsTransitions.getL()) {
+            for (Idea eventCategoryIdea : eventCategories.getL()) {
+                EventCategory eventCategory = (EventCategory) eventCategoryIdea.getValue();
+                double membership = eventCategory.membership(objectTransition);
+                if(membership==1) {
+                    if (eventCategory.getRelevance()<RELEVANCE_THRESHOLD) {
+                        eventCategory.incrementRelevance(INCREMENT_FACTOR);
+                    }
+                    break;
                 }
             }
         }
@@ -57,12 +73,12 @@ public class EventCategoryLearner {
                     String[] propertyNames = {"center"};
                     for(String propertyName: propertyNames) {
                         Idea eventCategory = eventCatFactory.createVectorEventCategory(propertyName, objectTransition, INIT_RELEVANCE);
-                        rcvEventCats.add(eventCategory);
+                        rcvEventCats.getL().add(eventCategory);
                     }
                     break;
                 case "AppearanceEventCategory":
                     Idea eventCategory = eventCatFactory.createAppearanceEventCategory(objectTransition, INIT_RELEVANCE);
-                    rcvEventCats.add(eventCategory);
+                    rcvEventCats.getL().add(eventCategory);
                     break;
             }
         }
@@ -72,8 +88,8 @@ public class EventCategoryLearner {
     public int equalCategoryIdx(Idea categoryFromInstance) {
         int idx = -1;
 
-        for(int i=0; i<eventCategoryList.getL().size(); i++) {
-            EventCategory eventCatListElem = (EventCategory) eventCategoryList.getL().get(i).getValue();
+        for(int i=0; i<eventCategories.getL().size(); i++) {
+            EventCategory eventCatListElem = (EventCategory) eventCategories.getL().get(i).getValue();
             EventCategory eventInstance = (EventCategory) categoryFromInstance.getValue();
 
             if(eventCatListElem.sameCategory(eventInstance)) {
@@ -85,7 +101,7 @@ public class EventCategoryLearner {
     }
 
     public void decrementCategoriesRelevance() {
-        for(Idea eventCategoryIdea: eventCategoryList.getL()) {
+        for(Idea eventCategoryIdea: eventCategories.getL()) {
             EventCategory eventCategory = (EventCategory) eventCategoryIdea.getValue();
             if(eventCategory.getRelevance() < RELEVANCE_THRESHOLD) {
                 eventCategory.decrementRelevance(DECREMENT_FACTOR);
@@ -96,8 +112,8 @@ public class EventCategoryLearner {
     public void removeIrrelevantCategories() {
         ArrayList<Integer> idxsToRemove = new ArrayList();
 
-        for (int i=0; i<eventCategoryList.getL().size(); i++) {
-            Idea eventCatIdea = eventCategoryList.getL().get(i);
+        for (int i=0; i<eventCategories.getL().size(); i++) {
+            Idea eventCatIdea = eventCategories.getL().get(i);
             EventCategory eventCat = (EventCategory) eventCatIdea.getValue();
             if (eventCat.getRelevance() < MINIMUM_RELEVANCE) {
                 idxsToRemove.add(i);
@@ -111,8 +127,8 @@ public class EventCategoryLearner {
         Collections.sort(idxsToRemove, Collections.reverseOrder());
 
         for (int index : idxsToRemove) {
-            if (index >= 0 && index < eventCategoryList.getL().size()) {
-                eventCategoryList.getL().remove(index);
+            if (index >= 0 && index < eventCategories.getL().size()) {
+                eventCategories.getL().remove(index);
             }
         }
     }
@@ -120,15 +136,15 @@ public class EventCategoryLearner {
     public Idea getRelevantCategories() {
         Idea relevantCategories = new Idea("RelevantCategories", "", 0);;
 
-        for (Idea eventCatIdea : eventCategoryList.getL()) {
+        for (Idea eventCatIdea : eventCategories.getL()) {
             EventCategory eventCategory = (EventCategory) eventCatIdea.getValue();
             if (eventCategory.getRelevance()>=RELEVANCE_THRESHOLD) {
-                relevantCategories.add(eventCatIdea);
+                relevantCategories.getL().add(eventCatIdea);
             }
         }
         return relevantCategories;
     }
-    private String findEventType(Idea objectTransition) {
+    public String findEventType(Idea objectTransition) {
         List<Idea> timeSteps = objectTransition.get("timeSteps").getL();
 
         for (int i = 0; i < timeSteps.size(); i++) {

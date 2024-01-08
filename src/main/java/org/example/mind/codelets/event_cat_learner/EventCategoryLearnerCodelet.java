@@ -24,7 +24,17 @@ public class EventCategoryLearnerCodelet extends Codelet {
     @Override
     public void proc() {
         synchronized (eventCategoriesMO) {
-            eventCategoryLearner.updateCategories((Idea) objectsBufferMO.getI());
+            Idea eventCategories = null;
+
+            if(eventCategoriesMO.getI()=="") {
+                eventCategories = new Idea("EventCategories", "", 0);
+            } else {
+                eventCategories = (Idea) eventCategoriesMO.getI();
+            }
+            System.out.println(eventCategories.getL().size());
+            eventCategoryLearner.updateCategories((Idea) objectsBufferMO.getI(), eventCategories);
+            System.out.println(eventCategoryLearner.getRelevantCategories().getL().size());
+            System.out.println("====================");
             eventCategoriesMO.setI(eventCategoryLearner.getRelevantCategories());
         }
     }
