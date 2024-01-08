@@ -45,33 +45,36 @@ public class EventTrackerCodelet extends Codelet {
         Idea eventCategories = (Idea) eventCategoriesMO.getI();
         Idea detectedEvents = null;
 
-        synchronized(detectedEventsMO) {
+        synchronized (eventCategoriesMO) {
             if(detectedEventsMO.getI()=="") {
                 detectedEvents = new Idea();
             } else {
                 detectedEvents = (Idea) detectedEventsMO.getI();
             }
-
-            eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
         }
+
+        eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
 
 //        System.out.println("=====================================");
 //        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
 //            System.out.println(eventIdea.toStringFull());
 //        }
 
+        System.out.println("====================");
+        detectedEventsMO.setI(eventTracker.getDetectedEvents());
+
         try {
             updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
-        detectedEventsMO.setI(eventTracker.getDetectedEvents());
     }
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToSet) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToSet));
+        jLabelToUpdate.revalidate();
+        jLabelToUpdate.repaint();
+        jLabelToUpdate.update(jLabelToUpdate.getGraphics());
     }
 
 

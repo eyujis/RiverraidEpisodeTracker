@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class EventTracker {
     Idea detectedEvents;
+    Idea assimilatedCategories;
     ObjectsTransitionsExtractor objectsTransitionsExtractor;
     int factoryId = 0;
 
@@ -48,7 +49,6 @@ public class EventTracker {
 
     private Idea extractEventsFromObjectsTransitions(Idea objectsTransitions, Idea eventCategories) {
         Idea eventsFromObjsTransitions = new Idea("EventsFromObjectsTransitions", "", 0);
-
         for(Idea objectTransition: objectsTransitions.getL()) {
             for (Idea eventCategoryIdea : eventCategories.getL()) {
                 double membership = ((EventCategory) eventCategoryIdea.getValue()).membership(objectTransition);
@@ -64,6 +64,8 @@ public class EventTracker {
                         Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
                         eventsFromObjsTransitions.add(newEvent);
                     }
+                } else {
+                    //TODO create a new event and add assimilatedCategories
                 }
             }
         }
@@ -197,6 +199,10 @@ public class EventTracker {
         int bufferSize = objectsBuffer.getL().size()-1;
         int timestamp = (int) objectsBuffer.getL().get(bufferSize).get("timestamp").getValue();
         return timestamp;
+    }
+
+    public Idea getAssimilatedCategories() {
+        return assimilatedCategories;
     }
 
     public Idea getDetectedEvents() {

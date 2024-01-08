@@ -78,6 +78,9 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToSet) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToSet));
+        jLabelToUpdate.revalidate();
+        jLabelToUpdate.repaint();
+        jLabelToUpdate.update(jLabelToUpdate.getGraphics());
     }
 
 

@@ -5,13 +5,10 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.environment.RiverRaidEnv;
-import org.example.visualization.JLabelImgUpdater;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RAWDataBufferizerCodelet extends Codelet {
     private RiverRaidEnv env;
@@ -77,5 +74,8 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToUpdate) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToUpdate));
+        jLabelToUpdate.revalidate();
+        jLabelToUpdate.repaint();
+        jLabelToUpdate.update(jLabelToUpdate.getGraphics());
     }
 }

@@ -39,9 +39,9 @@ public class FirstJFrame extends JFrame {
         try {
             BufferedImage img= ImageIO.read(getClass().getClassLoader().getResource(templateImagePath));
             imageLbl.setIcon(new ImageIcon(img));
-            imageLbl.revalidate();
-            imageLbl.repaint();
-            imageLbl.update(imageLbl.getGraphics());
+//            imageLbl.revalidate();
+//            imageLbl.repaint();
+//            imageLbl.update(imageLbl.getGraphics());
         } catch (IOException ex) {
             System.out.println(ex);
         }

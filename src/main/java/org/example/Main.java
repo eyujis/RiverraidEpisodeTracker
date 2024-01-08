@@ -13,9 +13,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
         loadOpenCVLibraryFromCurrentPath();
 
-//        PerceptJFrame perceptJFrame = new PerceptJFrame();
-//        perceptJFrame.setVisible(true);
-
         FirstJFrame firstJFrame = new FirstJFrame();
         SecondJFrame secondJFrame = new SecondJFrame();
 
