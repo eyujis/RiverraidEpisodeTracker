@@ -31,10 +31,7 @@ public class EventCategoryLearnerCodelet extends Codelet {
             } else {
                 eventCategories = (Idea) eventCategoriesMO.getI();
             }
-            System.out.println(eventCategories.getL().size());
             eventCategoryLearner.updateCategories((Idea) objectsBufferMO.getI(), eventCategories);
-            System.out.println(eventCategoryLearner.getRelevantCategories().getL().size());
-            System.out.println("====================");
             eventCategoriesMO.setI(eventCategoryLearner.getRelevantCategories());
         }
     }

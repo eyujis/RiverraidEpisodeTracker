@@ -29,7 +29,7 @@ public class COEpisodeCategoryLearner {
             int equalCatIdx = equalCategoryIdx(rcvCategory, updatedCategories);
 
             if(equalCatIdx == -1) {
-                updatedCategories.add(rcvCategory);
+//                updatedCategories.add(rcvCategory);
             } else {
                 COEpisodeCategory category = (COEpisodeCategory) updatedCategories.getL().get(equalCatIdx).getValue();
                 if (category.getRelevance()<RELEVANCE_THRESHOLD) {

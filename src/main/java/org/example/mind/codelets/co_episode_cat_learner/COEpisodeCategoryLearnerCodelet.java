@@ -57,12 +57,6 @@ public class COEpisodeCategoryLearnerCodelet extends Codelet {
 
                 Idea updatedCategories = coEpisodeCategoryLearner.updateCategories(sOEpisodes, cOEpisodeCategories);
 
-                System.out.println("===========================");
-                System.out.println(updatedCategories.getL().size());
-                System.out.println(updatedCategories.getL().stream()
-                        .filter(cat -> ((COEpisodeCategory)cat.getValue()).getRelevance()>=coEpisodeCategoryLearner.RELEVANCE_THRESHOLD)
-                        .collect(Collectors.toList()).size());
-
                 cOEpisodeCategoriesMO.setI(updatedCategories);
             }
         }

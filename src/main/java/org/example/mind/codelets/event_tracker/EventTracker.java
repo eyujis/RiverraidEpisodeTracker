@@ -69,7 +69,7 @@ public class EventTracker {
                     }
 
                     if(eventCategoryIdea.getValue() instanceof VectorEventCategory
-                            && ((VectorEventCategory) eventCategoryIdea.getValue()).getPropertyName()=="center") {
+                            && ((VectorEventCategory) eventCategoryIdea.getValue()).getPropertyName().equals("center")) {
                         Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
                         eventsFromObjsTransitions.getL().add(newEvent);
                     }
