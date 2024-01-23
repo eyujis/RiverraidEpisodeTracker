@@ -42,7 +42,6 @@ public class COEpisodeTrackerCodelet extends Codelet {
 
     @Override
     public void calculateActivation() {
-
     }
 
     @Override
