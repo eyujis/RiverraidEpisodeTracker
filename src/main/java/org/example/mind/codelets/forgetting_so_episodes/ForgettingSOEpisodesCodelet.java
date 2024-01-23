@@ -12,6 +12,7 @@ import org.opencv.imgproc.Imgproc;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.security.cert.PolicyNode;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -87,6 +88,8 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
     public BufferedImage getBuffImageFromEvents(Idea events) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
+        addTimestamp(frame, events.getValue().toString());
+
         for(Idea eventIdea : events.getL()) {
             if(((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")) {
                 double x_start = (double) eventIdea.get("initialPropertyState.x").getValue();
@@ -101,10 +104,11 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
                 Point start = new Point(x_start, y_start);
                 Point end = new Point(x_end, y_end);
                 Scalar color = category2Color.getColor(eventCategory);
-
                 int thickness = 2;
-
                 Imgproc.arrowedLine(frame, start, end, color, thickness);
+
+                addTextId(frame, eventIdea, new Point((x_start+x_end)/2, (y_start+y_end)/2), color);
+
             }
 
             if(((String) eventIdea.get("eventCategory").getValue()).startsWith("AppearanceEventCategory")) {
@@ -135,11 +139,28 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
                         color,  //Scalar object for color
                         thickness                      //Thickness of the circle
                 );
+
+                addTextId(frame, eventIdea, position, color);
             }
         }
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
 
         return bufferedImage;
+    }
+
+    private void addTextId(Mat frame, Idea eventIdea, Point point, Scalar color) {
+        String text = eventIdea.get("eventId").getValue().toString();
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+        Imgproc.putText(frame, text, point, fontFace, fontScale, color, textThickness);
+    }
+
+    private void addTimestamp(Mat frame, String timestamp) {
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+        Imgproc.putText(frame, String.valueOf(timestamp), new Point(10,20), fontFace, fontScale, new Scalar(255,255,255), textThickness);
     }
 }

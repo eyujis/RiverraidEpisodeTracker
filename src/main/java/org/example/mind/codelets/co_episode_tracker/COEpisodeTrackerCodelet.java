@@ -13,7 +13,10 @@ import javax.swing.*;
 import javax.swing.text.html.Option;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class COEpisodeTrackerCodelet extends Codelet {
     Memory sOEpisodesMO;
@@ -97,15 +100,31 @@ public class COEpisodeTrackerCodelet extends Codelet {
     public BufferedImage getBuffImageFromEvents(Idea events) {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
+        addTimestamp(frame, events.getValue().toString());
+        System.out.println("==========="+ events.getValue().toString() +"===========");
 
         for(Idea eventIdea : events.getL()) {
+            ArrayList<Idea> inverseMeetsRelations = (ArrayList<Idea>) eventIdea.get("relations").getL().stream()
+                    .filter(event -> ((String) event.get("relationType").getValue()).equals("mi")).collect(Collectors.toList());
 
-            Optional<Idea> hasInverseRelation = eventIdea.get("relations").getL().stream()
-                    .filter(event -> ((String) event.get("relationType").getValue()).equals("mi"))
-                    .findAny();
+            boolean isRootRelation = inverseMeetsRelations.isEmpty();
+            boolean inverseRelationsNotFoundInFrame = false;
 
+            if(!isRootRelation && !((boolean) eventIdea.get("hasFinished").getValue())) {
+                ArrayList<Integer> inverseMeetsRelationsIds = (ArrayList<Integer>) inverseMeetsRelations.stream()
+                        .map(relation -> (Integer) relation.get("eventId").getValue())
+                        .collect(Collectors.toList());
 
-            boolean isRootRelation = hasInverseRelation.isEmpty();
+                ArrayList<Integer> eventIds = (ArrayList<Integer>) events.getL().stream()
+                        .map(event -> (Integer) event.get("eventId").getValue())
+                        .collect(Collectors.toList());
+
+                for(Integer relationId : inverseMeetsRelationsIds) {
+                    if(!eventIds.contains(relationId)) {
+                        inverseRelationsNotFoundInFrame=true;
+                    }
+                }
+            }
 
             if (isRootRelation) {
                 Point position = null;
@@ -134,9 +153,51 @@ public class COEpisodeTrackerCodelet extends Codelet {
                         1                      //Thickness of the circle
                 );
 
+                addTextId(frame, eventIdea, position, new Scalar(255,255,255));
+                String causalChain = "Source: " + eventIdea.get("eventId").getValue().toString();
 
-                drawRelations(frame, position, eventIdea.get("relations"), events);
+                causalChain = causalChain + drawRelations(frame, position, eventIdea.get("relations"), events);
+
             }
+
+            else if(inverseRelationsNotFoundInFrame && !((boolean) eventIdea.get("hasFinished").getValue())) {
+                Point position = null;
+
+                if(((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")) {
+                    double x_start = (double) eventIdea.get("initialPropertyState.x").getValue();
+                    double y_start = (double) eventIdea.get("initialPropertyState.y").getValue();
+
+
+                    double[] event_vector =  (double[]) eventIdea.get("eventVector").getValue();
+                    double x_end = x_start + event_vector[0];
+                    double y_end = y_start + event_vector[1];
+
+                    Point origin = new Point(x_start, y_start);
+                    position = new Point(x_end, y_end);
+
+                    Imgproc.arrowedLine(frame, origin, position, new Scalar(255,255,255), 1);
+                }
+
+                if(((String) eventIdea.get("eventCategory").getValue()).startsWith("AppearanceEventCategory")) {
+
+                    Idea positionIdea = eventIdea.get("lastObjectState.center");
+                    double x = (double) positionIdea.get("x").getValue();
+                    double y = (double) positionIdea.get("y").getValue();
+
+                    position = new Point(x, y);
+                    Imgproc.circle (
+                            frame,                 //Matrix obj of the image
+                            position,    //Center of the circle
+                            3,                    //Radius
+                            new Scalar(255,255,255),  //Scalar object for color
+                            1                      //Thickness of the circle
+                    );
+                }
+                addTextId(frame, eventIdea, position, new Scalar(255,255,255));
+                drawRelations(frame, position, eventIdea.get("relations"), events);
+
+            }
+
         }
 
         BufferedImage bufferedImage = null;
@@ -149,10 +210,11 @@ public class COEpisodeTrackerCodelet extends Codelet {
         return bufferedImage;
     }
 
-    private void drawRelations(Mat frame, Point origin, Idea relations, Idea events) {
+    private String drawRelations(Mat frame, Point origin, Idea relations, Idea events) {
+        String result = "\n \t";
+
         for (Idea relation: relations.getL()) {
             String relationType = (String) relation.get("relationType").getValue();
-
             if(relationType.equals("m")) {
                 int rEventId = (int) relation.get("eventId").getValue();
                 Optional<Idea> optionalREvent = events.getL().stream()
@@ -180,11 +242,31 @@ public class COEpisodeTrackerCodelet extends Codelet {
                     Point end = new Point(x_end, y_end);
 
                     Imgproc.arrowedLine(frame, origin, end, new Scalar(255,255,255), 1);
+                    addTextId(frame, rEvent, end, new Scalar(255,255,255));
 
-                    drawRelations(frame, end, rEvent.get("relations"), events);
+                    result = result + rEvent.get("eventId").getValue().toString() + "\n";
+
+                    return result + drawRelations(frame, end, rEvent.get("relations"), events);
                 }
             }
         }
+
+        return "";
+    }
+
+    private void addTextId(Mat frame, Idea eventIdea, Point point, Scalar color) {
+        String text = eventIdea.get("eventId").getValue().toString();
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+//        Imgproc.putText(frame, text, point, fontFace, fontScale, color, textThickness);
+    }
+
+    private void addTimestamp(Mat frame, String timestamp) {
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+        Imgproc.putText(frame, String.valueOf(timestamp), new Point(10,20), fontFace, fontScale, new Scalar(255,255,255), textThickness);
     }
 
 }

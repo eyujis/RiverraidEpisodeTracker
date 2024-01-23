@@ -21,7 +21,9 @@ public class COEpisodeTracker {
     public Idea updateRelations(Idea sOEpisodes, Idea cOEpisodeCategories, Idea previousCOEpisodes) {
         cOEpisodeCategoryFactory = new COEpisodeCategoryFactory();
         Idea cOEpisodes = sOEpisodes.clone();
+        // TODO initialize with previous relations!
         initializeRelations(cOEpisodes);
+        duplicateRelations(cOEpisodes, previousCOEpisodes);
 
         // compare each sOEpisode;
         for (int i = 0; i < cOEpisodes.getL().size(); i++) {
@@ -55,8 +57,13 @@ public class COEpisodeTracker {
                             Idea newCategoryIdea = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                             COEpisodeCategory newCategory = (COEpisodeCategory) newCategoryIdea.getValue();
 
-                            addRelation(ex, ey, newCategoryIdea.getName(), newCategory.getRelationType());
-                            addRelation(ey, ex, newCategoryIdea.getName(), newCategory.getRelationType()+"i");
+                            if(relationType.endsWith("i")) {
+                                addRelation(ey, ex, newCategoryIdea.getName(), newCategory.getRelationType());
+                                addRelation(ex, ey, newCategoryIdea.getName(), newCategory.getRelationType()+"i");
+                            } else {
+                                addRelation(ex, ey, newCategoryIdea.getName(), newCategory.getRelationType());
+                                addRelation(ey, ex, newCategoryIdea.getName(), newCategory.getRelationType()+"i");
+                            }
                         }
                     }
                 }
@@ -129,8 +136,8 @@ public class COEpisodeTracker {
                     .filter(relation -> relation.get("eventId").getValue()==pe1.get().get("eventId").getValue()).findFirst();
 
             if(pe1Rpe2.isPresent() && pe2Rpe1.isPresent()) {
-                e1.get("relations").getL().add(pe1Rpe2.get().clone());
-                e2.get("relations").getL().add(pe2Rpe1.get().clone());
+//                e1.get("relations").getL().add(pe1Rpe2.get().clone());
+//                e2.get("relations").getL().add(pe2Rpe1.get().clone());
                 return true;
             }
         }
@@ -157,6 +164,20 @@ public class COEpisodeTracker {
             if(episode.get("relations") == null) {
                 Idea relations = new Idea("relations", "", 0);
                 episode.add(relations);
+            }
+        }
+    }
+
+    private void duplicateRelations(Idea episodes, Idea previousEpisodes) {
+        for(Idea episode : episodes.getL()) {
+            int eventId = (int) episode.get("eventId").getValue();
+
+            Optional<Idea> previousMatchingEpisode = previousEpisodes.getL().stream()
+                    .filter(previousEpisode -> (int) previousEpisode.get("eventId").getValue()==eventId)
+                    .findFirst();
+
+            if(previousMatchingEpisode.isPresent()) {
+                episode.get("relations").getL().addAll(previousMatchingEpisode.get().get("relations").getL());
             }
         }
     }
