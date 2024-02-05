@@ -7,7 +7,8 @@ import java.util.stream.Collectors;
 
 public class COEpisodeCategoryLearner {
     double RELEVANCE_THRESHOLD = 3;
-    double INIT_RELEVANCE = 1;
+//    double INIT_RELEVANCE = 1;
+    double INIT_RELEVANCE = 5;
     double INCREMENT_FACTOR = 2;
     double DECREMENT_FACTOR = 1;
     double MINIMUM_RELEVANCE = 0;
@@ -28,7 +29,7 @@ public class COEpisodeCategoryLearner {
             int equalCatIdx = equalCategoryIdx(rcvCategory, updatedCategories);
 
             if(equalCatIdx == -1) {
-                updatedCategories.add(rcvCategory);
+//                updatedCategories.add(rcvCategory);
             } else {
                 COEpisodeCategory category = (COEpisodeCategory) updatedCategories.getL().get(equalCatIdx).getValue();
                 if (category.getRelevance()<RELEVANCE_THRESHOLD) {

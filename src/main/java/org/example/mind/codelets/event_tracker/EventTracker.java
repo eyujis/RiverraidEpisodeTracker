@@ -1,9 +1,7 @@
 package org.example.mind.codelets.event_tracker;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.event_cat_learner.AppearanceEventCategory;
-import org.example.mind.codelets.event_cat_learner.VectorEventCategory;
-import org.example.mind.codelets.event_cat_learner.EventCategory;
+import org.example.mind.codelets.event_cat_learner.*;
 import org.example.mind.codelets.event_cat_learner.entities.ObjectsTransitionsExtractor;
 
 
@@ -12,18 +10,27 @@ import java.util.stream.Collectors;
 
 public class EventTracker {
     Idea detectedEvents;
+    Idea assimilatedCategories;
+
     ObjectsTransitionsExtractor objectsTransitionsExtractor;
+    EventCategoryFactory eventCatFactory;
+    double INIT_RELEVANCE = 5;
+
     int factoryId = 0;
 
     public EventTracker() {
         detectedEvents = new Idea("DetectedEvents", "", 0);
+        assimilatedCategories = new Idea("AssimilatedCategories", "", 0);
         objectsTransitionsExtractor = new ObjectsTransitionsExtractor();
+        eventCatFactory = new EventCategoryFactory();
     }
 
     // pDetectedEvents are the previously detected events.
     public void detectEvents(Idea objectsBuffer, Idea eventCategories, Idea previousEvents) {
 
         detectedEvents = new Idea("DetectedEvents", "", 0);
+        assimilatedCategories = new Idea("AssimilatedCategories", "", 0);
+
         Idea objectsTransitions = objectsTransitionsExtractor.extract(objectsBuffer);
 
         Idea currentEvents = extractEventsFromObjectsTransitions(objectsTransitions, eventCategories);
@@ -49,23 +56,51 @@ public class EventTracker {
     private Idea extractEventsFromObjectsTransitions(Idea objectsTransitions, Idea eventCategories) {
         Idea eventsFromObjsTransitions = new Idea("EventsFromObjectsTransitions", "", 0);
         for(Idea objectTransition: objectsTransitions.getL()) {
+            boolean categoryDetected = false;
+
             for (Idea eventCategoryIdea : eventCategories.getL()) {
                 double membership = ((EventCategory) eventCategoryIdea.getValue()).membership(objectTransition);
                 if(membership==1) {
-                    Idea newEvent = null;
+                    categoryDetected = true;
 
                     if(eventCategoryIdea.getValue() instanceof AppearanceEventCategory) {
-                        newEvent = createAppearanceEvent(objectTransition, eventCategoryIdea);
+                        Idea newEvent = createAppearanceEvent(objectTransition, eventCategoryIdea);
+                        eventsFromObjsTransitions.getL().add(newEvent);
                     }
 
                     if(eventCategoryIdea.getValue() instanceof VectorEventCategory
-                            && ((VectorEventCategory) eventCategoryIdea.getValue()).getPropertyName()=="center") {
-                        newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
-//                        break;
+                            && ((VectorEventCategory) eventCategoryIdea.getValue()).getPropertyName().equals("center")) {
+                        Idea newEvent = createVectorEvent(objectTransition, eventCategoryIdea);
+                        eventsFromObjsTransitions.getL().add(newEvent);
                     }
-                    if(newEvent!=null) {
-                        eventsFromObjsTransitions.add(newEvent);
-                    }
+                }
+            }
+
+            if(!categoryDetected){
+                //TODO create a new event and add assimilatedCategories
+                String eventType = new EventCategoryLearner().findEventType(objectTransition);
+
+                switch (eventType) {
+                    case "VectorEventCategory":
+                        //TODO this restrain our implementation for only detecting changes on these properties;
+                        String[] propertyNames = {"center"};
+                        for (String propertyName : propertyNames) {
+                            Idea eventCategory = eventCatFactory.createVectorEventCategory(propertyName, objectTransition, INIT_RELEVANCE);
+                            assimilatedCategories.getL().add(eventCategory);
+
+                            Idea newEvent = createVectorEvent(objectTransition, eventCategory);
+                            eventsFromObjsTransitions.getL().add(newEvent);
+
+                        }
+                        break;
+                    case "AppearanceEventCategory":
+                        Idea eventCategory = eventCatFactory.createAppearanceEventCategory(objectTransition, INIT_RELEVANCE);
+                        assimilatedCategories.getL().add(eventCategory);
+
+                        Idea newEvent = createAppearanceEvent(objectTransition, eventCategory);
+                        eventsFromObjsTransitions.getL().add(newEvent);
+
+                        break;
                 }
             }
         }
@@ -199,6 +234,10 @@ public class EventTracker {
         int bufferSize = objectsBuffer.getL().size()-1;
         int timestamp = (int) objectsBuffer.getL().get(bufferSize).get("timestamp").getValue();
         return timestamp;
+    }
+
+    public Idea getAssimilatedCategories() {
+        return assimilatedCategories;
     }
 
     public Idea getDetectedEvents() {

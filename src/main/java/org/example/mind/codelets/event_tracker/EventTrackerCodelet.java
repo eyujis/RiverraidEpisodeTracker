@@ -5,6 +5,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.util.MatBufferedImageConverter;
+import org.example.visualization.Category2Color;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
@@ -19,6 +20,7 @@ public class EventTrackerCodelet extends Codelet {
 
     EventTracker eventTracker = new EventTracker();
     JLabel eventImgJLabel;
+    Category2Color category2Color = new Category2Color();
 
     public EventTrackerCodelet(JLabel eventImgJLabel) {
         this.eventImgJLabel = eventImgJLabel;
@@ -27,7 +29,7 @@ public class EventTrackerCodelet extends Codelet {
     @Override
     public void accessMemoryObjects() {
         objectsBufferMO=(MemoryObject)this.getInput("OBJECTS_BUFFER");
-        eventCategoriesMO=(MemoryObject)this.getInput("EVENT_CATEGORIES");
+        eventCategoriesMO=(MemoryObject)this.getOutput("EVENT_CATEGORIES");
         detectedEventsMO=(MemoryObject)this.getOutput("DETECTED_EVENTS");
     }
 
@@ -41,11 +43,12 @@ public class EventTrackerCodelet extends Codelet {
         if(objectsBufferMO.getI()=="" || eventCategoriesMO.getI()=="") {
             return;
         }
-        Idea objectsBuffer = (Idea) objectsBufferMO.getI();
-        Idea eventCategories = (Idea) eventCategoriesMO.getI();
-        Idea detectedEvents = null;
 
-        synchronized(detectedEventsMO) {
+        synchronized (eventCategoriesMO) {
+            Idea objectsBuffer = (Idea) objectsBufferMO.getI();
+            Idea eventCategories = (Idea) eventCategoriesMO.getI();
+            Idea detectedEvents = null;
+
             if(detectedEventsMO.getI()=="") {
                 detectedEvents = new Idea();
             } else {
@@ -53,30 +56,30 @@ public class EventTrackerCodelet extends Codelet {
             }
 
             eventTracker.detectEvents(objectsBuffer, eventCategories, detectedEvents);
+            detectedEventsMO.setI(eventTracker.getDetectedEvents());
+
+            eventCategories.getL().addAll(eventTracker.getAssimilatedCategories().getL());
+            eventCategoriesMO.setI(eventCategories);
         }
-
-//        System.out.println("=====================================");
-//        for(Idea eventIdea: eventTracker.getDetectedEvents().getL()) {
-//            System.out.println(eventIdea.toStringFull());
-//        }
-
         try {
             updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
-        detectedEventsMO.setI(eventTracker.getDetectedEvents());
     }
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToSet) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToSet));
+        jLabelToUpdate.revalidate();
+        jLabelToUpdate.repaint();
+        jLabelToUpdate.update(jLabelToUpdate.getGraphics());
     }
 
 
     public BufferedImage getBuffImageFromEvents(Idea events) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
+
+        addTimestamp(frame, events.getValue().toString());
 
         for(Idea eventIdea : events.getL()) {
             if(((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")
@@ -88,13 +91,15 @@ public class EventTrackerCodelet extends Codelet {
                 double x_end = x_start + event_vector[0];
                 double y_end = y_start + event_vector[1];
 
+                String eventCategory = (String) eventIdea.get("eventCategory").getValue();
+
                 Point start = new Point(x_start, y_start);
                 Point end = new Point(x_end, y_end);
-                Scalar color = new Scalar(255, 255, 255);
-
-                int thickness = 1;
-
+                Scalar color = category2Color.getColor(eventCategory);
+                int thickness = 2;
                 Imgproc.arrowedLine(frame, start, end, color, thickness);
+
+                addTextId(frame, eventIdea, new Point((x_start+x_end)/2, (y_start+y_end)/2), color);
             }
 
             if(((String) eventIdea.get("eventCategory").getValue()).startsWith("AppearanceEventCategory")
@@ -126,11 +131,28 @@ public class EventTrackerCodelet extends Codelet {
                         color,  //Scalar object for color
                         thickness                      //Thickness of the circle
                 );
+
+                addTextId(frame, eventIdea, position, color);
             }
         }
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
 
         return bufferedImage;
+    }
+
+    private void addTextId(Mat frame, Idea eventIdea, Point point, Scalar color) {
+        String text = eventIdea.get("eventId").getValue().toString();
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+        Imgproc.putText(frame, text, point, fontFace, fontScale, color, textThickness);
+    }
+
+    private void addTimestamp(Mat frame, String timestamp) {
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+        Imgproc.putText(frame, String.valueOf(timestamp), new Point(10,20), fontFace, fontScale, new Scalar(255,255,255), textThickness);
     }
 }

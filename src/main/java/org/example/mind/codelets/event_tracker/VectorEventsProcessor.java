@@ -99,9 +99,7 @@ public class VectorEventsProcessor {
     }
 
     private int getMatchingEventIdx(Idea currentVEvent, Idea previousVectorEvents) {
-        int k=0;
         int j=-1;
-
 
         int cObjectId = (int) currentVEvent.get("objectId").getValue();
         String cEventProperty = (String) currentVEvent.get("propertyName").getValue();
@@ -123,15 +121,10 @@ public class VectorEventsProcessor {
                     && !cEventHasFinished
                     && !pEventHasFinished
                     ) {
-//                System.out.println(previousVEvent.get("eventId").getValue());
                 j=i;
-                k++;
             }
         }
-        System.out.println(k);
-        System.out.println("=============");
         return j;
-//        return -1;
     }
 
     private void addVectorEventPairToBeExtended(Idea previousEvent, Idea currentEvent) {
@@ -175,7 +168,6 @@ public class VectorEventsProcessor {
     }
 
     public Idea getResultVectorEvents() {
-//        System.out.println(resultVectorEvents.getL().size());
         return resultVectorEvents;
     }
 }

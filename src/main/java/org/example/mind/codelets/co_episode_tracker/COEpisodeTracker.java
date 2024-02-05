@@ -3,18 +3,27 @@ package org.example.mind.codelets.co_episode_tracker;
 import br.unicamp.cst.representation.idea.Category;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategory;
+import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategoryFactory;
+import org.example.mind.codelets.co_episode_cat_learner.COEpisodeRelationIdentifier;
+import org.example.mind.codelets.object_proposer.ObjectComparator;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class COEpisodeTracker {
     double RELEVANCE_THRESHOLD = 3;
+    double MIN_RECT_DISTANCE = 2;
+    double INIT_RELEVANCE = 5;
+
+    COEpisodeCategoryFactory cOEpisodeCategoryFactory;
 
     public Idea updateRelations(Idea sOEpisodes, Idea cOEpisodeCategories, Idea previousCOEpisodes) {
-
+        cOEpisodeCategoryFactory = new COEpisodeCategoryFactory();
         Idea cOEpisodes = sOEpisodes.clone();
-
+        // TODO initialize with previous relations!
         initializeRelations(cOEpisodes);
+        duplicateRelations(cOEpisodes, previousCOEpisodes);
 
         // compare each sOEpisode;
         for (int i = 0; i < cOEpisodes.getL().size(); i++) {
@@ -23,14 +32,39 @@ public class COEpisodeTracker {
                 Idea ey = cOEpisodes.getL().get(j);
 
                 // check if is there a previous relation between SOEpisodes;
-                boolean alreadyInARelation = alreadyHasRelation(ex, ey, previousCOEpisodes);
+                boolean alreadyInARelation = assignPreviousRelationsIfThereAre(ex, ey, previousCOEpisodes);
 
                 if(!alreadyInARelation) {
+                    boolean foundCategory = false;
+                    boolean foundICategory = false;
+
                     // check if there is a membership across cOEpisodeCategories;
                     for(Idea categoryIdea : cOEpisodeCategories.getL()) {
                         // assign necessary relations;
-                        verifyAndCreateRelationship(ex, ey, categoryIdea);
-                        verifyAndCreateRelationship(ey, ex, categoryIdea);
+                        foundCategory = verifyAndCreateRelationship(ex, ey, categoryIdea);
+                        foundICategory = verifyAndCreateRelationship(ey, ex, categoryIdea);
+                    }
+
+                    if(!foundCategory && !foundICategory) {
+                        String relationType = identifyCOEpisodeCategoryRelation(ex, ey);
+                        String c1 = (String) ex.get("eventCategory").getValue();
+                        String c2 = (String) ey.get("eventCategory").getValue();
+
+                        double rectDistance = new ObjectComparator().rectDistance(ex.get("lastObjectState") ,
+                                ey.get("lastObjectState"));
+
+                        if(relationType != null && rectDistance <= MIN_RECT_DISTANCE) {
+                            Idea newCategoryIdea = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
+                            COEpisodeCategory newCategory = (COEpisodeCategory) newCategoryIdea.getValue();
+
+                            if(relationType.endsWith("i")) {
+                                addRelation(ey, ex, newCategoryIdea.getName(), newCategory.getRelationType());
+                                addRelation(ex, ey, newCategoryIdea.getName(), newCategory.getRelationType()+"i");
+                            } else {
+                                addRelation(ex, ey, newCategoryIdea.getName(), newCategory.getRelationType());
+                                addRelation(ey, ex, newCategoryIdea.getName(), newCategory.getRelationType()+"i");
+                            }
+                        }
                     }
                 }
             }
@@ -43,18 +77,19 @@ public class COEpisodeTracker {
                 previousCOEpisodes,
                 cOEpisodesIDs);
 
-        cOEpisodes.getL().addAll(cOEpisodesNotPresentInCurrentsOEpisodes);
+//        TODO: uncomment the line below when creating the forgetting mechanism.
+//        cOEpisodes.getL().addAll(cOEpisodesNotPresentInCurrentsOEpisodes);
 
         return cOEpisodes;
     }
 
 
-    public void verifyAndCreateRelationship(Idea ex, Idea ey, Idea categoryIdea) {
+    public boolean verifyAndCreateRelationship(Idea ex, Idea ey, Idea categoryIdea) {
         String categoryName = categoryIdea.getName();
         COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
 
         if (category.getRelevance() < RELEVANCE_THRESHOLD) {
-            return;
+            return false;
         }
 
         Idea membershipParameters = createMembershipParameters(ex, ey);
@@ -63,7 +98,9 @@ public class COEpisodeTracker {
         if(isMember==1) {
             addRelation(ex, ey, categoryName, category.getRelationType());
             addRelation(ey, ex, categoryName, category.getRelationType()+"i");
+            return true;
         }
+        return false;
     }
 
     private Idea createMembershipParameters(Idea ex, Idea ey) {
@@ -82,42 +119,31 @@ public class COEpisodeTracker {
         source.get("relations").add(relation);
     }
 
-    private boolean alreadyHasRelation(Idea e1, Idea e2, Idea previousCOEpisodes) {
-        return previousCOEpisodes.getL().stream()
-                .anyMatch(previousEpisode -> hasRelationIn(e1, e2, previousEpisode));
-    }
+    private boolean assignPreviousRelationsIfThereAre(Idea e1, Idea e2, Idea previousCOEpisodes) {
+        Optional<Idea> pe1 = previousCOEpisodes.getL().stream()
+                .filter(episode -> episode.get("eventId").getValue()==e1.get("eventId").getValue())
+                .findFirst();
 
-    private boolean hasRelationIn(Idea e1, Idea e2, Idea previousEpisode) {
-        if(previousEpisode==null) {
-            return false;
+        Optional<Idea> pe2 = previousCOEpisodes.getL().stream()
+                .filter(episode -> episode.get("eventId").getValue()==e2.get("eventId").getValue())
+                .findFirst();
+
+        if(pe1.isPresent() && pe2.isPresent()) {
+
+            Optional<Idea> pe1Rpe2 = pe1.get().get("relations").getL().stream()
+                    .filter(relation -> relation.get("eventId").getValue()==pe2.get().get("eventId").getValue()).findFirst();
+            Optional<Idea> pe2Rpe1 = pe2.get().get("relations").getL().stream()
+                    .filter(relation -> relation.get("eventId").getValue()==pe1.get().get("eventId").getValue()).findFirst();
+
+            if(pe1Rpe2.isPresent() && pe2Rpe1.isPresent()) {
+//                e1.get("relations").getL().add(pe1Rpe2.get().clone());
+//                e2.get("relations").getL().add(pe2Rpe1.get().clone());
+                return true;
+            }
         }
-
-        boolean result = false;
-
-        try {
-            result = previousEpisode.get("relations").getL().stream().
-                    anyMatch(relation -> matchesRelationSOEpisodeId(e1, e2, relation));
-        } catch (NullPointerException e) {
-            System.out.println(previousEpisode.toStringFull());
-            System.out.println(previousEpisode.get("relations")==null);
-            System.out.println(previousEpisode.get("relations").toStringFull());
-            System.out.println(previousEpisode.get("relations").getL().size());
-        }
-
-        return result;
-    }
-
-    private boolean matchesRelationSOEpisodeId(Idea e1, Idea e2, Idea relation) {
-        int relationId = (int) relation.get("eventId").getValue();
-        int e1Id = (int) e1.get("eventId").getValue();
-        int e2Id = (int) e2.get("eventId").getValue();
-
-        if(relationId == e1Id || relationId == e2Id) {
-            return true;
-        }
-
         return false;
     }
+
 
     private ArrayList<Integer> getEpisodeIds(Idea episodesIdea) {
         // add previousCOEpisodes that are not in the current timestamp;
@@ -140,5 +166,25 @@ public class COEpisodeTracker {
                 episode.add(relations);
             }
         }
+    }
+
+    private void duplicateRelations(Idea episodes, Idea previousEpisodes) {
+        for(Idea episode : episodes.getL()) {
+            int eventId = (int) episode.get("eventId").getValue();
+
+            Optional<Idea> previousMatchingEpisode = previousEpisodes.getL().stream()
+                    .filter(previousEpisode -> (int) previousEpisode.get("eventId").getValue()==eventId)
+                    .findFirst();
+
+            if(previousMatchingEpisode.isPresent()) {
+                episode.get("relations").getL().addAll(previousMatchingEpisode.get().get("relations").getL());
+            }
+        }
+    }
+
+    public String identifyCOEpisodeCategoryRelation(Idea sOEpisode1, Idea sOEpisode2) {
+        COEpisodeRelationIdentifier relationIdentifier = new COEpisodeRelationIdentifier();
+        String relation = relationIdentifier.identifyRelationType(sOEpisode1, sOEpisode2);
+        return relation;
     }
 }

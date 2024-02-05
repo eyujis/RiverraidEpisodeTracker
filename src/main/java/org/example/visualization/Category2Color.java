@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Category2Color {
-    HashMap<String, Scalar> categoryColors;
+    static HashMap<String, Scalar> categoryColors;
 
     public Category2Color() {
         categoryColors = new HashMap<String, Scalar>();

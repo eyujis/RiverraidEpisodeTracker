@@ -107,6 +107,9 @@ public class ObjectProposerCodelet extends Codelet {
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToSet) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToSet));
+        jLabelToUpdate.revalidate();
+        jLabelToUpdate.repaint();
+        jLabelToUpdate.update(jLabelToUpdate.getGraphics());
     }
 
     public BufferedImage buffImageFromUnObjectList(Idea unObjs) throws IOException {

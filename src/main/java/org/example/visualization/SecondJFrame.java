@@ -10,16 +10,19 @@ public class SecondJFrame extends JFrame {
     String templateImagePath = "template_img.tiff";
     JLabel eventTrackerImgJLabel;
     JLabel forgettingSOEpisodesImgJLabel;
+    JLabel cOEpisodesImgJLabel;
 
     public SecondJFrame() throws IOException {
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         eventTrackerImgJLabel = jLabelWithTemplateImgIcon();
         forgettingSOEpisodesImgJLabel = jLabelWithTemplateImgIcon();
+        cOEpisodesImgJLabel = jLabelWithTemplateImgIcon();
 
         JPanel panel = new JPanel();
         panel.add(eventTrackerImgJLabel);
         panel.add(forgettingSOEpisodesImgJLabel);
+        panel.add(cOEpisodesImgJLabel);
 
         this.getContentPane().add(panel, BorderLayout.PAGE_END);
 
@@ -32,9 +35,9 @@ public class SecondJFrame extends JFrame {
         try {
             BufferedImage img= ImageIO.read(getClass().getClassLoader().getResource(templateImagePath));
             imageLbl.setIcon(new ImageIcon(img));
-            imageLbl.revalidate();
-            imageLbl.repaint();
-            imageLbl.update(imageLbl.getGraphics());
+//            imageLbl.revalidate();
+//            imageLbl.repaint();
+//            imageLbl.update(imageLbl.getGraphics());
         } catch (IOException ex) {
             System.out.println(ex);
         }
@@ -47,5 +50,9 @@ public class SecondJFrame extends JFrame {
 
     public JLabel getForgettingSOEpisodesImgJLabel() {
         return forgettingSOEpisodesImgJLabel;
+    }
+
+    public JLabel getcOEpisodesImgJLabel() {
+        return cOEpisodesImgJLabel;
     }
 }

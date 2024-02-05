@@ -5,13 +5,11 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.environment.RiverRaidEnv;
-import org.example.visualization.JLabelImgUpdater;
+import org.example.environment.RiverRaidPyGame;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class RAWDataBufferizerCodelet extends Codelet {
     private RiverRaidEnv env;
@@ -35,11 +33,7 @@ public class RAWDataBufferizerCodelet extends Codelet {
     @Override
     public void proc() {
         BufferedImage image = null;
-        try {
-            image = this.env.step();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        image = this.env.step();
 
         int timestamp = this.env.getNStep();
 
@@ -77,5 +71,8 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToUpdate) {
         jLabelToUpdate.setIcon(new ImageIcon(imgToUpdate));
+        jLabelToUpdate.revalidate();
+        jLabelToUpdate.repaint();
+        jLabelToUpdate.update(jLabelToUpdate.getGraphics());
     }
 }
