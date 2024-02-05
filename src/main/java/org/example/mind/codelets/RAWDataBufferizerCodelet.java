@@ -5,6 +5,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.environment.RiverRaidEnv;
+import org.example.environment.RiverRaidPyGame;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -32,11 +33,7 @@ public class RAWDataBufferizerCodelet extends Codelet {
     @Override
     public void proc() {
         BufferedImage image = null;
-        try {
-            image = this.env.step();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        image = this.env.step();
 
         int timestamp = this.env.getNStep();
 
