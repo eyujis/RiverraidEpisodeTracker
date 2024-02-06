@@ -97,7 +97,8 @@ public class ObjectProposerCodelet extends Codelet {
             updateJLabelImg(this.mergedObjectsImgJLabel, idFragsBuffImg);
 
             Idea idObjs = objectProposer.getDetectedObjectsCF();
-            BufferedImage objectsImg = buffImageFromCatObjectList(idFrags, idObjs);
+            BufferedImage objectsImg = buffImageFromCatObjectList(idFrags, idObjs, rawDataBufferIdea.getL()
+                    .get(buffSize-1).get("timestamp").getValue().toString());
             updateJLabelImg(this.categoriesImgJLabel, objectsImg);
 
         } catch (Exception err) {
@@ -149,7 +150,7 @@ public class ObjectProposerCodelet extends Codelet {
         return bufferedImage;
     }
 
-    public BufferedImage buffImageFromCatObjectList(Idea idFrags, Idea idObjs) throws IOException {
+    public BufferedImage buffImageFromCatObjectList(Idea idFrags, Idea idObjs, String timestamp) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
         for (int i = 0; i < idFrags.getL().size(); i++) {
@@ -198,9 +199,17 @@ public class ObjectProposerCodelet extends Codelet {
             }
         }
 
+        addTimestamp(frame, timestamp);
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
 
         return bufferedImage;
+    }
+
+    private void addTimestamp(Mat frame, String timestamp) {
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+        Imgproc.putText(frame, String.valueOf(timestamp), new Point(10,20), fontFace, fontScale, new Scalar(255,255,255), textThickness);
     }
 }

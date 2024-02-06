@@ -90,17 +90,18 @@ public class ObjectCategoryLearner {
             if (!visited[i]) {
                 ArrayList<String> group = new ArrayList<>();
                 exploreBorders(i, borderMatrix, visited, group, detectedFragments);
-                fragCatClusters.add(group);
+
+                if(!group.isEmpty()) {
+                    fragCatClusters.add(group);
+                }
             }
         }
 
         Idea objectCategories = new Idea("extractedObjectCategories", "", 0);
 
         for(ArrayList<String> fragCatCluster : fragCatClusters) {
-//            if(fragCatCluster.size()>=1) {
                 Idea objectCategory = catFactory.createObjectCategory(fragCatCluster, INIT_RELEVANCE);
                 objectCategories.add(objectCategory);
-//            }
         }
 
         return objectCategories;
@@ -145,6 +146,7 @@ public class ObjectCategoryLearner {
 
                     if(objCat1.getRelevance()>RELEVANCE_THRESHOLD
                        && objCat2.getRelevance()>RELEVANCE_THRESHOLD
+                       && objCat1.getFragsCategories().size() > objCat2.getFragsCategories().size()
                        && objCat1.getFragsCategories().containsAll(objCat2.getFragsCategories())) {
                         idxsToRemove.add(j);
                     }
@@ -175,7 +177,7 @@ public class ObjectCategoryLearner {
     }
 
     public Idea getRelevantCategories() {
-        Idea relevantCategories = new Idea("RelevantCategories", "", 0);;
+        Idea relevantCategories = new Idea("RelevantCategories", "", 0);
 
         for(Idea objCatIdea : objCategoryList.getL()) {
             EntityCategory objCat = (EntityCategory) objCatIdea.getValue();

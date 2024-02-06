@@ -58,6 +58,10 @@ public class ObjectFactory {
         Idea centerIdea = getCenterFromBoundRect(boundRectIdea);
         objectIdea.add(centerIdea);
 
+        if((double)sizeIdea.get("height").getValue()<3
+                && (double)sizeIdea.get("width").getValue()<3) {
+            return null;
+        }
 
 
 //        Idea objectCategoryIdea = new Idea("objectCategory", null);
@@ -135,7 +139,7 @@ public class ObjectFactory {
 
     }
 
-    private Idea getSizeFromBoundRect(Idea boundRectIdea) {
+    public Idea getSizeFromBoundRect(Idea boundRectIdea) {
         double xStart = (double) boundRectIdea.get("tl.x").getValue();
         double yStart = (double) boundRectIdea.get("tl.y").getValue();
         double xEnd = (double) boundRectIdea.get("br.x").getValue();

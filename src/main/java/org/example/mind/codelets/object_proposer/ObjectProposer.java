@@ -42,7 +42,10 @@ public class ObjectProposer {
             for(Idea objCatIdea : objectCategories.getL()) {
                 ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
                 if(objCat.membership(fragmentCluster) == 1) {
-                    objectInstances.add(objectFactory.createUnObject(fragmentCluster, objCatIdea));
+                    Idea newUnObject = objectFactory.createUnObject(fragmentCluster, objCatIdea);
+                    if(newUnObject!=null) {
+                        objectInstances.add(objectFactory.createUnObject(fragmentCluster, objCatIdea));
+                    }
                 }
             }
         }
