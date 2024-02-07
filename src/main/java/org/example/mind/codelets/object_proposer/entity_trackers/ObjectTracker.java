@@ -29,11 +29,11 @@ public class ObjectTracker {
             objsPF.add(idObjCF);
         }
 
-        if(newUnObjsCF.getL().size()>0) {
-            for(Idea newUnObjCF : objectFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
-                objsPF.add(newUnObjCF);
-            }
-        }
+//        if(newUnObjsCF.getL().size()>0) {
+//            for(Idea newUnObjCF : objectFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
+//                objsPF.add(newUnObjCF);
+//            }
+//        }
 
         idObjsCF = new Idea("idObjsCF", "", 0);
         newUnObjsCF = new Idea("newUnObjsCF", "", 0);
@@ -77,6 +77,12 @@ public class ObjectTracker {
                     objectFactory.transferPropertyValues(objsPF.getL().get(assignment[i][0]), unObjsCF.getL().get(assignment[i][1]));
                     idObjsCF.getL().add(objsPF.getL().get(assignment[i][0]));
                 }
+            }
+        }
+
+        if(newUnObjsCF.getL().size()>0) {
+            for(Idea newUnObjCF : objectFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
+                idObjsCF.add(newUnObjCF);
             }
         }
 

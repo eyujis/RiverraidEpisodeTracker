@@ -31,12 +31,12 @@ public class ObjectCategoryLearnerCodelet extends Codelet {
         if(detectedFragmentsMO.getI() == "") {
             return;
         }
-        Idea detectedObjects = (Idea) detectedFragmentsMO.getI();
+        Idea detectedFragments = (Idea) detectedFragmentsMO.getI();
 
-        fragmentCategoryLearner.updateCategories(detectedObjects);
+        fragmentCategoryLearner.updateCategories(detectedFragments);
         fragmentCategoriesMO.setI(fragmentCategoryLearner.getRelevantCategories());
 
-        objectCategoryLearner.updateCategories(detectedObjects);
+        objectCategoryLearner.updateCategories(detectedFragments);
         objectCategoriesMO.setI(objectCategoryLearner.getRelevantCategories());
 
     }

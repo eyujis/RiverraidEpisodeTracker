@@ -106,54 +106,54 @@ public class AgentMind extends Mind {
         objectsBufferizerCodelet.setName("ObjectsBufferizer");
         insertCodelet(objectsBufferizerCodelet);
 
-//        Codelet eventCategoryLearnerCodelet = new EventCategoryLearnerCodelet();
-//        eventCategoryLearnerCodelet.addInput(objectsBufferMO);
-//        eventCategoryLearnerCodelet.addOutput(eventCategoriesMO);
-//        eventCategoryLearnerCodelet.setIsMemoryObserver(true);
-//        objectsBufferMO.addMemoryObserver(eventCategoryLearnerCodelet);
-//        eventCategoryLearnerCodelet.setName("EventCategoryLearner");
-//        insertCodelet(eventCategoryLearnerCodelet);
-//
-//        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel);
-//        eventTrackerCodelet.addInput(objectsBufferMO);
-//        eventTrackerCodelet.addInput(eventCategoriesMO);
-//        eventTrackerCodelet.addOutput(eventCategoriesMO);
-//        eventTrackerCodelet.addOutput(detectedEventsMO);
-//        eventTrackerCodelet.setIsMemoryObserver(true);
-//        objectsBufferMO.addMemoryObserver(eventTrackerCodelet);
-//        eventTrackerCodelet.setName("EventTracker");
-//        insertCodelet(eventTrackerCodelet);
-//
-//        Codelet forgettingSOEpisodesCodelet = new ForgettingSOEpisodesCodelet(forgettingSOEpisodeImgJLabel);
-//        forgettingSOEpisodesCodelet.addInput(detectedEventsMO);
-//        forgettingSOEpisodesCodelet.addOutput(detectedEventsMO);
-////        forgettingSOEpisodesCodelet.setIsMemoryObserver(true);
-////        detectedEventsMO.addMemoryObserver(forgettingSOEpisodesCodelet);
-//        forgettingSOEpisodesCodelet.setName("ForgettingSOEpisodes");
-//        insertCodelet(forgettingSOEpisodesCodelet);
-//
-//        Codelet cOEpisodeCategoryLearnerCodelet = new COEpisodeCategoryLearnerCodelet();
-//        cOEpisodeCategoryLearnerCodelet.addInput(detectedEventsMO);
-//        cOEpisodeCategoryLearnerCodelet.addInput(cOEpisodeCategoriesMO);
-//        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
-//        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesMO);
-//        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
-//        cOEpisodeCategoryLearnerCodelet.setIsMemoryObserver(true);
-//        detectedEventsMO.addMemoryObserver(cOEpisodeCategoryLearnerCodelet);
-//        cOEpisodeCategoryLearnerCodelet.setName("COEpisodeCategoryLearner");
-//        insertCodelet(cOEpisodeCategoryLearnerCodelet);
-//
-//        Codelet cOEpisodeTrackerCodelet = new COEpisodeTrackerCodelet(cOEpisodesImgJLabel);
-//        cOEpisodeTrackerCodelet.addInput(detectedEventsMO);
-//        cOEpisodeTrackerCodelet.addInput(cOEpisodeCategoriesMO);
-//        cOEpisodeTrackerCodelet.addOutput(cOEpisodeCategoriesMO);
-//        cOEpisodeTrackerCodelet.addInput(cOEpisodeTrackerTSMO);
-//        cOEpisodeTrackerCodelet.addOutput(cOEpisodeTrackerTSMO);
-//        cOEpisodeTrackerCodelet.addOutput(detectedCOEpisodesMO);
-//        cOEpisodeTrackerCodelet.setIsMemoryObserver(true);
-//        detectedEventsMO.addMemoryObserver(cOEpisodeTrackerCodelet);
-//        cOEpisodeTrackerCodelet.setName("COEpisodeTracker");
-//        insertCodelet(cOEpisodeTrackerCodelet);
+        Codelet eventCategoryLearnerCodelet = new EventCategoryLearnerCodelet();
+        eventCategoryLearnerCodelet.addInput(objectsBufferMO);
+        eventCategoryLearnerCodelet.addOutput(eventCategoriesMO);
+        eventCategoryLearnerCodelet.setIsMemoryObserver(true);
+        objectsBufferMO.addMemoryObserver(eventCategoryLearnerCodelet);
+        eventCategoryLearnerCodelet.setName("EventCategoryLearner");
+        insertCodelet(eventCategoryLearnerCodelet);
+
+        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel);
+        eventTrackerCodelet.addInput(objectsBufferMO);
+        eventTrackerCodelet.addInput(eventCategoriesMO);
+        eventTrackerCodelet.addOutput(eventCategoriesMO);
+        eventTrackerCodelet.addOutput(detectedEventsMO);
+        eventTrackerCodelet.setIsMemoryObserver(true);
+        objectsBufferMO.addMemoryObserver(eventTrackerCodelet);
+        eventTrackerCodelet.setName("EventTracker");
+        insertCodelet(eventTrackerCodelet);
+
+        Codelet forgettingSOEpisodesCodelet = new ForgettingSOEpisodesCodelet(forgettingSOEpisodeImgJLabel);
+        forgettingSOEpisodesCodelet.addInput(detectedEventsMO);
+        forgettingSOEpisodesCodelet.addOutput(detectedEventsMO);
+//        forgettingSOEpisodesCodelet.setIsMemoryObserver(true);
+//        detectedEventsMO.addMemoryObserver(forgettingSOEpisodesCodelet);
+        forgettingSOEpisodesCodelet.setName("ForgettingSOEpisodes");
+        insertCodelet(forgettingSOEpisodesCodelet);
+
+        Codelet cOEpisodeCategoryLearnerCodelet = new COEpisodeCategoryLearnerCodelet();
+        cOEpisodeCategoryLearnerCodelet.addInput(detectedEventsMO);
+        cOEpisodeCategoryLearnerCodelet.addInput(cOEpisodeCategoriesMO);
+        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
+        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesMO);
+        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
+        cOEpisodeCategoryLearnerCodelet.setIsMemoryObserver(true);
+        detectedEventsMO.addMemoryObserver(cOEpisodeCategoryLearnerCodelet);
+        cOEpisodeCategoryLearnerCodelet.setName("COEpisodeCategoryLearner");
+        insertCodelet(cOEpisodeCategoryLearnerCodelet);
+
+        Codelet cOEpisodeTrackerCodelet = new COEpisodeTrackerCodelet(cOEpisodesImgJLabel);
+        cOEpisodeTrackerCodelet.addInput(detectedEventsMO);
+        cOEpisodeTrackerCodelet.addInput(cOEpisodeCategoriesMO);
+        cOEpisodeTrackerCodelet.addOutput(cOEpisodeCategoriesMO);
+        cOEpisodeTrackerCodelet.addInput(cOEpisodeTrackerTSMO);
+        cOEpisodeTrackerCodelet.addOutput(cOEpisodeTrackerTSMO);
+        cOEpisodeTrackerCodelet.addOutput(detectedCOEpisodesMO);
+        cOEpisodeTrackerCodelet.setIsMemoryObserver(true);
+        detectedEventsMO.addMemoryObserver(cOEpisodeTrackerCodelet);
+        cOEpisodeTrackerCodelet.setName("COEpisodeTracker");
+        insertCodelet(cOEpisodeTrackerCodelet);
 
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
