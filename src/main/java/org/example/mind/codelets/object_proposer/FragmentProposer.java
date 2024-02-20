@@ -12,7 +12,7 @@ public class FragmentProposer {
     private FragmentTracker fragmentTracker;
     private FragmentComparator fragmentComparator;
 
-    private double MIN_CLUSTER_DISTANCE = 2;
+    private double MIN_CLUSTER_DISTANCE = 0;
 
     private Idea unFragsCF;
     private Idea idFragsCF;
@@ -27,6 +27,7 @@ public class FragmentProposer {
         unFragsCF = vsSketchpad.getUnFragmentsFromFrame(frame);
         idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
     }
+
     public void assignFragmentCategories(Idea fragmentCategories) {
         for(Idea fragCatIdea : fragmentCategories.getL()) {
             FragmentCategory fragCat = (FragmentCategory) fragCatIdea.getValue();
@@ -62,7 +63,7 @@ public class FragmentProposer {
                 Idea f1 = fragmentInstances.getL().get(i);
                 Idea f2 = fragmentInstances.getL().get(j);
 
-                if(i!=j && Math.abs(fragmentComparator.rectDistance(f1, f2))<=MIN_CLUSTER_DISTANCE) {
+                if(i!=j && fragmentComparator.rectDistance(f1, f2)) {
                     borderMatrix[i][j] = true;
                 }
             }
@@ -98,15 +99,6 @@ public class FragmentProposer {
         }
     }
 
-    public Idea getUnFrags() {
-        return unFragsCF;
-    }
-
-    public Idea getDetectedFragmentsCF() {
-        return idFragsCF;
-    }
-
-
     public boolean[][] initializeBooleanMatrix(int size) {
         boolean[][] matrix = new boolean[size][size];
         for(int i=0; i<matrix.length; i++) {
@@ -117,4 +109,11 @@ public class FragmentProposer {
         return matrix;
     }
 
+    public Idea getUnFrags() {
+        return unFragsCF;
+    }
+
+    public Idea getDetectedFragmentsCF() {
+        return idFragsCF;
+    }
 }

@@ -137,12 +137,22 @@ public class ObjectProposerCodelet extends Codelet {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
         for (int i = 0; i < idObjs.getL().size(); i++) {
-            Idea idObj = idObjs.getL().get(i);
-            Imgproc.drawContours(frame,
-                    (List<MatOfPoint>) idObj.get("contours").getValue(),
-                    -1,
-                    (Scalar) idObj.get("colorId").getValue(),
-                    -1);
+//            Idea idObj = idObjs.getL().get(i);
+            Idea boundRectIdea = idObjs.getL().get(i).get("boundRect");
+
+            double tl_x = (double) boundRectIdea.get("tl.x").getValue();
+            double tl_y = (double) boundRectIdea.get("tl.y").getValue();
+            double br_x = (double) boundRectIdea.get("br.x").getValue();
+            double br_y = (double) boundRectIdea.get("br.y").getValue();
+
+            Scalar colorId = (Scalar) idObjs.getL().get(i).get("colorId").getValue();
+
+            Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 1);
+//            Imgproc.drawContours(frame,
+//                    (List<MatOfPoint>) idObj.get("contours").getValue(),
+//                    -1,
+//                    (Scalar) idObj.get("colorId").getValue(),
+//                    -1);
         }
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
@@ -186,7 +196,7 @@ public class ObjectProposerCodelet extends Codelet {
 
                 Scalar colorId = (Scalar) idObjs.getL().get(i).get("colorId").getValue();
 
-                Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 2);
+                Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 1);
 
                 String text = idObjs.getL().get(i).get("id").getValue().toString();
                 Point textOrg = new Point(tl_x, tl_y);

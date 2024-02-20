@@ -5,6 +5,8 @@ import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_proposer.entities.ObjectFactory;
 import org.example.mind.codelets.object_proposer.entity_trackers.ObjectTracker;
 
+import java.util.Optional;
+
 public class ObjectProposer {
     private Idea unObjectsCF;
     private Idea idObjectsCF;
@@ -13,7 +15,7 @@ public class ObjectProposer {
     private ObjectTracker objectTracker;
     private FragmentComparator fragmentComparator;
 
-    private double MIN_CLUSTER_DISTANCE = 2;
+    private double MIN_CLUSTER_DISTANCE = 0;
 
     public ObjectProposer() {
         objectFactory = new ObjectFactory();
@@ -39,13 +41,14 @@ public class ObjectProposer {
 
         Idea fragmentClusters = extractFragmentClusters(detectedFragments);
         for(Idea fragmentCluster : fragmentClusters.getL()) {
-            for(Idea objCatIdea : objectCategories.getL()) {
-                ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
-                if(objCat.membership(fragmentCluster) == 1) {
-                    Idea newUnObject = objectFactory.createUnObject(fragmentCluster, objCatIdea);
-                    if(newUnObject!=null) {
-                        objectInstances.add(objectFactory.createUnObject(fragmentCluster, objCatIdea));
-                    }
+            Optional<Idea> matchedCategory = objectCategories.getL().stream()
+                    .filter(categoryIdea -> ((ObjectCategory) categoryIdea.getValue()).membership(fragmentCluster)==1)
+                    .findFirst();
+
+            if(matchedCategory.isPresent()) {
+                Idea newUnObject = objectFactory.createUnObject(fragmentCluster, matchedCategory.get());
+                if(newUnObject!=null) {
+                    objectInstances.add(newUnObject);
                 }
             }
         }
@@ -61,7 +64,7 @@ public class ObjectProposer {
                 Idea f1 = fragmentInstances.getL().get(i);
                 Idea f2 = fragmentInstances.getL().get(j);
 
-                if(i!=j && Math.abs(fragmentComparator.rectDistance(f1, f2))<=MIN_CLUSTER_DISTANCE) {
+                if(i!=j && fragmentComparator.rectDistance(f1, f2)) {
                     borderMatrix[i][j] = true;
                 }
             }

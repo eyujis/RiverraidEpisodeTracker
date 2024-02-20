@@ -71,7 +71,7 @@ public class ObjectCategoryLearner {
                 Idea f2 = detectedFragments.getL().get(j);
 
                 if(i!=j
-                  && Math.abs(fragmentComparator.rectDistance(f1, f2))<=MIN_CLUSTER_DISTANCE
+                  && fragmentComparator.rectDistance(f1, f2)
                   && f1.get("FragmentCategory").getValue() != null
                   && f2.get("FragmentCategory").getValue() != null) {
                     borderMatrix[i][j] = true;
