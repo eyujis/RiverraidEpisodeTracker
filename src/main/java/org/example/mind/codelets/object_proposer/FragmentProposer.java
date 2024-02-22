@@ -40,7 +40,7 @@ public class FragmentProposer {
     }
 
     public void assignObjectCategories(Idea objectCategories) {
-        Idea fragmentClusters = extractFragmentClusters(getDetectedFragmentsCF());
+        Idea fragmentClusters = extractFragmentClusters(idFragsCF);
         for(Idea fragmentCluster : fragmentClusters.getL()) {
             for(Idea objCatIdea : objectCategories.getL()) {
                 ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();

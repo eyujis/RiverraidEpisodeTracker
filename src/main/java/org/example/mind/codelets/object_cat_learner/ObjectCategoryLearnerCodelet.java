@@ -31,13 +31,21 @@ public class ObjectCategoryLearnerCodelet extends Codelet {
         if(detectedFragmentsMO.getI() == "") {
             return;
         }
-        Idea detectedFragments = (Idea) detectedFragmentsMO.getI();
 
-        fragmentCategoryLearner.updateCategories(detectedFragments);
-        fragmentCategoriesMO.setI(fragmentCategoryLearner.getRelevantCategories());
+        synchronized (objectCategoriesMO) {
+            Idea detectedFragments = (Idea) detectedFragmentsMO.getI();
 
-        objectCategoryLearner.updateCategories(detectedFragments);
-        objectCategoriesMO.setI(objectCategoryLearner.getRelevantCategories());
+            fragmentCategoryLearner.updateCategories(detectedFragments);
+            fragmentCategoriesMO.setI(fragmentCategoryLearner.getRelevantCategories());
 
+            Idea objectCategories = null;
+            if(objectCategoriesMO.getI()=="") {
+                objectCategories = new Idea("ObjectCategories", "", 0);
+            } else {
+                objectCategories = (Idea) objectCategoriesMO.getI();
+            }
+            objectCategories = objectCategoryLearner.updateCategories(detectedFragments, objectCategories);
+            objectCategoriesMO.setI(objectCategories);
+        }
     }
 }

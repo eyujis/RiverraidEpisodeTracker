@@ -42,7 +42,7 @@ public class ObjectProposerCodelet extends Codelet {
     public void accessMemoryObjects() {
         rawDataMO=(MemoryObject)this.getInput("RAW_DATA_BUFFER");
         fragmentCategoriesMO =(MemoryObject)this.getInput("FRAGMENT_CATEGORIES");
-        objectCategoriesMO=(MemoryObject)this.getInput("OBJECT_CATEGORIES");
+        objectCategoriesMO=(MemoryObject)this.getOutput("OBJECT_CATEGORIES");
         detectedFragmentsMO =(MemoryObject)this.getOutput("DETECTED_FRAGMENTS");
         detectedObjectsMO=(MemoryObject)this.getOutput("DETECTED_OBJECTS");
     }
@@ -54,41 +54,40 @@ public class ObjectProposerCodelet extends Codelet {
 
     @Override
     public void proc() {
-
         Idea rawDataBufferIdea = (Idea) rawDataMO.getI();
         int buffSize = rawDataBufferIdea.getL().size();
-        BufferedImage buffImgFrame = (BufferedImage) rawDataBufferIdea.getL().get(buffSize-1).get("image").getValue();
+        BufferedImage buffImgFrame = (BufferedImage) rawDataBufferIdea.getL().get(buffSize - 1).get("image").getValue();
 
         Mat image = null;
         image = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
         this.fragmentProposer.update(image);
 
-        if(fragmentCategoriesMO.getI() != "") {
+        if (fragmentCategoriesMO.getI() != "") {
             Idea fragmentCategories = (Idea) fragmentCategoriesMO.getI();
             fragmentProposer.assignFragmentCategories(fragmentCategories);
         }
-
-        if(objectCategoriesMO.getI() != "") {
-            Idea objectCategories = (Idea) objectCategoriesMO.getI();
-            fragmentProposer.assignObjectCategories(objectCategories);
-
-            objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
-        }
-
-
         detectedFragmentsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
 
-        Idea detectedObjects = new Idea("detectedObjects", "", 0);
-        detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
-        detectedObjects.add(rawDataBufferIdea.getL().get(buffSize-1).get("timestamp"));
-        detectedObjects.get("idObjsCF").setName("objects");
-        detectedObjectsMO.setI(detectedObjects);
+        if (objectCategoriesMO.getI() != "") {
+            Idea objectCategories = (Idea) objectCategoriesMO.getI();
 
-//        System.out.println(((Idea) detectedObjectsMO.getI()).toStringFull());
+            objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
+
+            objectCategories.getL().addAll(objectProposer.getAssimilatedCategories().getL());
+            objectCategoriesMO.setI(objectCategories);
+
+            fragmentProposer.assignObjectCategories(objectCategories);
+
+            Idea detectedObjects = new Idea("detectedObjects", "", 0);
+            detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
+            detectedObjects.add(rawDataBufferIdea.getL().get(buffSize - 1).get("timestamp"));
+            detectedObjects.get("idObjsCF").setName("objects");
+            detectedObjectsMO.setI(detectedObjects);
+        }
 
 //          ----------visualization----------
         try {
-            Idea unFrags =  fragmentProposer.getUnFrags();
+            Idea unFrags = fragmentProposer.getUnFrags();
             BufferedImage unFragsBuffImg = buffImageFromUnObjectList(unFrags);
             updateJLabelImg(this.objectsImgJLabel, unFragsBuffImg);
 
@@ -98,7 +97,7 @@ public class ObjectProposerCodelet extends Codelet {
 
             Idea idObjs = objectProposer.getDetectedObjectsCF();
             BufferedImage objectsImg = buffImageFromCatObjectList(idFrags, idObjs, rawDataBufferIdea.getL()
-                    .get(buffSize-1).get("timestamp").getValue().toString());
+                    .get(buffSize - 1).get("timestamp").getValue().toString());
             updateJLabelImg(this.categoriesImgJLabel, objectsImg);
 
         } catch (Exception err) {
@@ -203,7 +202,7 @@ public class ObjectProposerCodelet extends Codelet {
                 int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
                 double fontScale = 0.5;
                 Scalar textColor = colorId;
-                int textThickness = 2;
+                int textThickness = 1;
 
                 Imgproc.putText(frame, text, textOrg, fontFace, fontScale, textColor, textThickness);
             }

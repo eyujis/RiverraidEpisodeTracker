@@ -8,6 +8,7 @@ import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
 import org.example.mind.codelets.event_tracker.EventTrackerCodelet;
 import org.example.mind.codelets.forgetting_so_episodes.ForgettingSOEpisodesCodelet;
 import org.example.mind.codelets.object_cat_learner.ObjectCategoryLearnerCodelet;
+import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
 import org.example.mind.codelets.objects_bufferizer.ObjectsBufferizerCodelet;
@@ -82,6 +83,7 @@ public class AgentMind extends Mind {
         objectProposerCodelet.addInput(rawDataBufferMO);
         objectProposerCodelet.addInput(fragmentCategoriesMO);
         objectProposerCodelet.addInput(objectCategoriesMO);
+        objectProposerCodelet.addOutput(objectCategoriesMO);
         objectProposerCodelet.addOutput(detectedFragmentsMO);
         objectProposerCodelet.addOutput(detectedObjectsMO);
         objectProposerCodelet.setIsMemoryObserver(true);
