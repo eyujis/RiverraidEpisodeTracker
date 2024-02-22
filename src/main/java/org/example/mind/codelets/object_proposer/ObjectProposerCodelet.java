@@ -60,14 +60,18 @@ public class ObjectProposerCodelet extends Codelet {
 
         Mat image = null;
         image = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
-        this.fragmentProposer.update(image);
 
-        if (fragmentCategoriesMO.getI() != "") {
-            Idea fragmentCategories = (Idea) fragmentCategoriesMO.getI();
-            fragmentProposer.assignFragmentCategories(fragmentCategories);
+        Idea fragmentCategories = null;
+        if(fragmentCategoriesMO.getI()=="") {
+            fragmentCategories = new Idea("FragmentCategories", "", 0);
+        } else {
+            fragmentCategories = (Idea) fragmentCategoriesMO.getI();
         }
-        detectedFragmentsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
 
+        this.fragmentProposer.update(image, fragmentCategories);
+        fragmentCategoriesMO.setI(fragmentCategories);
+
+        detectedFragmentsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
         if (objectCategoriesMO.getI() != "") {
             Idea objectCategories = (Idea) objectCategoriesMO.getI();
 

@@ -144,6 +144,8 @@ public class FragmentFactory {
         f1.get("contours").setValue(f2.get("contours").getValue());
 
         f1.get("externalContour").setValue(f2.get("externalContour").getValue());
+
+        f1.get("FragmentCategory").setValue(f2.get("FragmentCategory").getValue());
     }
 
 }

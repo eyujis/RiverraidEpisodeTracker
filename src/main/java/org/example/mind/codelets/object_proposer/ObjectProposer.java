@@ -56,9 +56,7 @@ public class ObjectProposer {
             Optional<Idea> matchedCategory = objectCategories.getL().stream()
                     .filter(categoryIdea -> ((ObjectCategory) categoryIdea.getValue()).membership(fragmentCluster)==1)
                     .findFirst();
-            if(fragmentCluster.getL().size()==1) {
-                System.out.println(fragmentCluster.toStringFull());
-            }
+
             if(matchedCategory.isPresent()) {
                 Idea newUnObject = objectFactory.createUnObject(fragmentCluster, matchedCategory.get());
                 if(newUnObject!=null) {

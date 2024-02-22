@@ -70,7 +70,8 @@ public class ObjectTracker {
                 // each other; I fixed using the minimum distance. However there is other ways to fix it in a more elegant
                 // manner. Or creating a minimum criteria in the object comparator, or changing the Hungarian Algorithm;
                 if(assignment[i][0] > objsPF.getL().size()-1 || !objectComparator.closeCenterDistance(objsPF.getL().get(assignment[i][0]), unObjsCF.getL().get(assignment[i][1]))
-                || !objectComparator.haveSimilarRectShape(objsPF.getL().get(assignment[i][0]), unObjsCF.getL().get(assignment[i][1]))) {
+//                || !objectComparator.haveSimilarRectShape(objsPF.getL().get(assignment[i][0]), unObjsCF.getL().get(assignment[i][1]))
+                ) {
                     newUnObjsCF.getL().add(unObjsCF.getL().get(assignment[i][1]));
                     //assigns fragments in the previous frame to fragments in the current frame
                 } else {

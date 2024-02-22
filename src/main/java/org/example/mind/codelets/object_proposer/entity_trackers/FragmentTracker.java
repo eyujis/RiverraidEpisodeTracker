@@ -28,12 +28,6 @@ public class FragmentTracker {
             fragsPF.add(idFragCF);
         }
 
-//        if(newUnFragsCF.getL().size()>0) {
-//            for(Idea newUnFragCF : fragFactory.createIdFragsFromUnFrags(newUnFragsCF).getL()) {
-//                fragsPF.add(newUnFragCF);
-//            }
-//        }
-
         idFragsCF = new Idea("idFragsCF", "", 0);
         newUnFragsCF = new Idea("newUnFragsCF", "", 0);
 

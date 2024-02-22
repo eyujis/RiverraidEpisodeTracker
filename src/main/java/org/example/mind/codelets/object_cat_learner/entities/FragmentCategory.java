@@ -8,7 +8,7 @@ import java.util.List;
 
 public class FragmentCategory extends EntityCategory {
     static final double MIN_SHAPE_DIFF_RATIO= 0.1;
-    static final double MIN_HUE_DIFF = 0.2;
+    static final double MIN_HUE_DIFF = 0.1;
 
     Idea fragmentPrototype;
 

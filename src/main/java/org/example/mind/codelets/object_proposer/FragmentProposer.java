@@ -1,42 +1,62 @@
 package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_cat_learner.entities.EntityCategoryFactory;
 import org.example.mind.codelets.object_cat_learner.entities.FragmentCategory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
+import org.example.mind.codelets.object_proposer.entities.FragmentFactory;
 import org.example.mind.codelets.object_proposer.entity_trackers.FragmentTracker;
 import org.opencv.core.Mat;
+
+import java.util.Optional;
 
 public class FragmentProposer {
 
     private VSSketchpad vsSketchpad;
     private FragmentTracker fragmentTracker;
     private FragmentComparator fragmentComparator;
+    FragmentFactory fragmentFactory;
+    EntityCategoryFactory entityCategoryFactory;
 
     private double MIN_CLUSTER_DISTANCE = 0;
+    int INIT_RELEVANCE = 1;
 
+    private Idea possibleFragments;
     private Idea unFragsCF;
     private Idea idFragsCF;
 
     public FragmentProposer() {
         vsSketchpad = new VSSketchpad();
+        fragmentFactory = new FragmentFactory();
+        entityCategoryFactory = new EntityCategoryFactory();
         fragmentTracker = new FragmentTracker();
         fragmentComparator = new FragmentComparator();
     }
 
-    public void update(Mat frame) {
-        unFragsCF = vsSketchpad.getUnFragmentsFromFrame(frame);
-        idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
-    }
+    public void update(Mat frame, Idea fragmentCategories) {
+        possibleFragments = vsSketchpad.getUnFragmentsFromFrame(frame, fragmentCategories);
 
-    public void assignFragmentCategories(Idea fragmentCategories) {
-        for(Idea fragCatIdea : fragmentCategories.getL()) {
-            FragmentCategory fragCat = (FragmentCategory) fragCatIdea.getValue();
-            for (Idea idFrag : idFragsCF.getL()) {
-                if (fragCat.membership(idFrag) == 1) {
-                    idFrag.get("FragmentCategory").setValue(fragCatIdea.getName());
-                }
+        unFragsCF = new Idea("DetectedFragments", "", 0);
+
+//        //Assigning and assimilating categories
+        for(Idea possibleFragment: possibleFragments.getL()) {
+            Optional<Idea> matchedCategory = fragmentCategories.getL().stream()
+                    .filter(categoryIdea -> ((FragmentCategory) categoryIdea.getValue()).membership(possibleFragment)==1)
+                    .findFirst();
+
+            if(matchedCategory.isPresent()) {
+                possibleFragment.get("FragmentCategory").setValue(matchedCategory.get().getName());
+                unFragsCF.add(possibleFragment);
+            } else {
+                Idea assimilatedFragmentCategory = entityCategoryFactory.createFragmentCategory(possibleFragment, INIT_RELEVANCE);
+                possibleFragment.get("FragmentCategory").setValue(assimilatedFragmentCategory.getName());
+                unFragsCF.add(possibleFragment);
+
+                fragmentCategories.getL().add(assimilatedFragmentCategory);
             }
         }
+
+        idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
     }
 
     public void assignObjectCategories(Idea objectCategories) {

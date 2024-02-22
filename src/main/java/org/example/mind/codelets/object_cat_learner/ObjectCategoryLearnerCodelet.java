@@ -28,6 +28,7 @@ public class ObjectCategoryLearnerCodelet extends Codelet {
 
     @Override
     public void proc() {
+
         if(detectedFragmentsMO.getI() == "") {
             return;
         }
@@ -35,8 +36,13 @@ public class ObjectCategoryLearnerCodelet extends Codelet {
         synchronized (objectCategoriesMO) {
             Idea detectedFragments = (Idea) detectedFragmentsMO.getI();
 
-            fragmentCategoryLearner.updateCategories(detectedFragments);
-            fragmentCategoriesMO.setI(fragmentCategoryLearner.getRelevantCategories());
+            Idea fragmentCategories = null;
+            if(fragmentCategoriesMO.getI()=="") {
+                fragmentCategories = new Idea("FragmentCategories", "", 0);
+            } else {
+                fragmentCategories = (Idea) fragmentCategoriesMO.getI();
+            }
+            fragmentCategoriesMO.setI(fragmentCategoryLearner.updateCategories(detectedFragments, fragmentCategories));
 
             Idea objectCategories = null;
             if(objectCategoriesMO.getI()=="") {

@@ -15,7 +15,7 @@ public class RandomSaccadesAlgorithm {
     private FragmentFactory fragmentFactory = new FragmentFactory();
 
     public Idea getAllUnObjects(Mat frame) {
-        Idea unObjects = new Idea("unObjects", "", 0);
+        Idea unObjects = new Idea("PossibleFragments", "", 0);
         fGPositionSampler = new FGPositionSequentialSampler(frame);
 
         while(!fGPositionSampler.isEmpty()) {
@@ -33,26 +33,6 @@ public class RandomSaccadesAlgorithm {
         }
         return unObjects;
     }
-
-//    public ArrayList<UnidentifiedRRObject> getAllUnObjects(Mat frame) {
-//        unObjects = new ArrayList<UnidentifiedRRObject>();
-//        fGPositionSampler = new FGPositionSequentialSampler(frame);
-//
-//        while(!fGPositionSampler.isEmpty()) {
-//            Mat frameClone = frame.clone();
-//            Point randomPoint = fGPositionSampler.getFGPosition();
-//
-//            double[] objColorBRG = frameClone.get((int) randomPoint.y, (int) randomPoint.x);
-//            Mat mask = getFloodFillMask(frameClone, randomPoint);
-//            List<MatOfPoint> objContour = getMaskContour(mask);
-//
-//            UnidentifiedRRObject unObj = new UnidentifiedRRObject(objColorBRG, objContour);
-//            unObjects.add(unObj);
-//
-//            fGPositionSampler.removeMaskFromSample(mask);
-//        }
-//        return unObjects;
-//    }
 
     private Mat getFloodFillMask(Mat frame, Point seedPoint) {
         Mat mask = Mat.zeros(frame.rows() + 2, frame.cols() + 2, 0);

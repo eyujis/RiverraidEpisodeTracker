@@ -82,6 +82,7 @@ public class AgentMind extends Mind {
         Codelet objectProposerCodelet = new ObjectProposerCodelet(objectsImgJLabel, mergedObjectsImgJLabel, categoriesImgJLabel);
         objectProposerCodelet.addInput(rawDataBufferMO);
         objectProposerCodelet.addInput(fragmentCategoriesMO);
+        objectProposerCodelet.addOutput(fragmentCategoriesMO);
         objectProposerCodelet.addInput(objectCategoriesMO);
         objectProposerCodelet.addOutput(objectCategoriesMO);
         objectProposerCodelet.addOutput(detectedFragmentsMO);

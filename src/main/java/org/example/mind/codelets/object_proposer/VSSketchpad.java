@@ -4,9 +4,9 @@ import br.unicamp.cst.representation.idea.Idea;
 import org.opencv.core.Mat;
 
 public class VSSketchpad {
-    public Idea getUnFragmentsFromFrame(Mat frame) {
-        Idea unObjects;
-        unObjects = new RandomSaccadesAlgorithm().getAllUnObjects(frame);
-        return unObjects;
+
+    public Idea getUnFragmentsFromFrame(Mat frame, Idea fragmentCategories) {
+        Idea possibleFragments = new RandomSaccadesAlgorithm().getAllUnObjects(frame);
+        return possibleFragments;
     }
 }
