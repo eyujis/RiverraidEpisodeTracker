@@ -5,7 +5,7 @@ import org.opencv.core.Point;
 
 public class ObjectComparator {
     static final double MIN_CENTER_DISTANCE = 50;
-    static final double MIN_SHAPE_DIFF_RATIO= 0.50;
+    static final double MIN_SHAPE_DIFF_RATIO= 0.5;
 
     public boolean closeCenterDistance(Idea f1, Idea f2) {
         double centerDistance = getCenterDistance(f1, f2);
@@ -14,7 +14,6 @@ public class ObjectComparator {
         }
         return false;
     }
-
 
     public double getCenterDistance(Idea f1, Idea f2) {
         double x1 = (double) f1.get("center.x").getValue();
@@ -32,24 +31,25 @@ public class ObjectComparator {
     }
 
     public boolean haveSimilarRectShape(Idea f1, Idea f2) {
+        return rectShapeSimilarity(f1, f2) > MIN_SHAPE_DIFF_RATIO;
+    }
+
+    public double rectShapeSimilarity(Idea f1, Idea f2) {
         double f1Height = (double) f1.get("size.height").getValue();
         double f2Height = (double) f2.get("size.height").getValue();
 
         double f1Width = (double) f1.get("size.width").getValue();
         double f2Width = (double) f2.get("size.width").getValue();
 
-        if(hasSimilarLength(f1Height, f2Height)
-                && hasSimilarLength(f1Width, f2Width)) {
-            return true;
-        }
-        return false;
+        double heightSimilarity = calculateSimilarity(f1Height, f2Height);
+        double widthSimilarity = calculateSimilarity(f1Width, f2Width);
+
+        return (heightSimilarity + widthSimilarity) / 2.0;
     }
 
-    private boolean hasSimilarLength(double len1, double len2) {
-        double meanLen = (len1+len2)/2;
-        double lenDiffRatio = Math.abs(len1-len2)/meanLen;
-        if(lenDiffRatio<MIN_SHAPE_DIFF_RATIO) {return true;}
-        return false;
+    private double calculateSimilarity(double len1, double len2) {
+        double maxValue = Math.max(len1, len2);
+        return 1.0 - (Math.abs(len1 - len2) / maxValue);
     }
 
     public double rectDistance(Idea o1, Idea o2) {

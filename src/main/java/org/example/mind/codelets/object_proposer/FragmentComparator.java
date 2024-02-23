@@ -80,7 +80,7 @@ public class FragmentComparator {
         return false;
     }
 
-    public double rectDistance(Idea f1, Idea f2) {
+    public boolean rectDistance(Idea f1, Idea f2) {
 
         // based on https://stackoverflow.com/a/26178015
         double x1tl = (double) f1.get("boundRect.tl.x").getValue();
@@ -92,29 +92,34 @@ public class FragmentComparator {
         double x2br = (double) f2.get("boundRect.br.x").getValue();
         double y2br = (double) f2.get("boundRect.br.y").getValue();
 
-        boolean left = x2br < x1tl;
-        boolean right = x1br < x2tl;
-        boolean bottom = y2br < y1tl;
-        boolean top = y1br < y2tl;
+        return areRectanglesAdjacent(x1tl, y1tl, x1br, y1br, x2tl, y2tl, x2br, y2br);
+    }
 
-        if(top && left) {
-            return pointDistance(new Point(x1tl, y1br), new Point(x2br, y2tl));
-        } else if(left && bottom) {
-            return pointDistance(new Point(x1tl, y1tl), new Point(x2br, y2br));
-        } else if(bottom && right) {
-            return pointDistance(new Point(x1br, y1tl), new Point(x2tl, y2br));
-        } else if(right && top) {
-            return pointDistance(new Point(x1br, y1br), new Point(x2tl, y2tl));
-        } else if(left) {
-            return x1tl - x2br;
-        } else if(right) {
-            return x2tl - x1br;
-        } else if(bottom) {
-            return y1tl - y2br;
-        } else if(top) {
-            return y2tl - y1br;
-        } else {
-            return 0;
+    boolean areRectanglesAdjacent(double x1tl, double y1tl, double x1br, double y1br,
+                                  double x2tl, double y2tl, double x2br, double y2br) {
+        // Check if there is overlap in the x-axis
+        boolean overlapX = x1tl <= x2br && x1br >= x2tl;
+
+        // Check if there is overlap in the y-axis
+        boolean overlapY = y1tl <= y2br && y1br >= y2tl;
+
+        // Check if the rectangles are adjacent
+        if (overlapX && overlapY) {
+            // Rectangles are adjacent if there is overlap in both axes
+            return true;
         }
+
+        // Check if the rectangles are adjacent horizontally
+        if ((x1tl == x2br || x1br == x2tl) && overlapY) {
+            return true;
+        }
+
+        // Check if the rectangles are adjacent vertically
+        if ((y1tl == y2br || y1br == y2tl) && overlapX) {
+            return true;
+        }
+
+        // If none of the above conditions met, rectangles are not adjacent
+        return false;
     }
 }

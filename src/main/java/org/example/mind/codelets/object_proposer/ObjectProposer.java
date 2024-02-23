@@ -1,31 +1,45 @@
 package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_cat_learner.entities.EntityCategoryFactory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_proposer.entities.ObjectFactory;
 import org.example.mind.codelets.object_proposer.entity_trackers.ObjectTracker;
+
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ObjectProposer {
     private Idea unObjectsCF;
     private Idea idObjectsCF;
 
+    Idea assimilatedCategories;
+
     private ObjectFactory objectFactory;
     private ObjectTracker objectTracker;
     private FragmentComparator fragmentComparator;
+    private EntityCategoryFactory catFactory;
 
-    private double MIN_CLUSTER_DISTANCE = 2;
+    double INIT_RELEVANCE = 1;
+
+    private double MIN_CLUSTER_DISTANCE = 0;
 
     public ObjectProposer() {
         objectFactory = new ObjectFactory();
         objectTracker = new ObjectTracker();
         fragmentComparator = new FragmentComparator();
+        catFactory = new EntityCategoryFactory();
 
         unObjectsCF = new Idea("unObjsCF", "", 0);
         idObjectsCF = new Idea("idObjsCF", "", 0);
     }
 
     public void update(Idea detectedFragments, Idea objectCategories) {
+        assimilatedCategories = new Idea("AssimilatedCategories", "", 0);
+
         unObjectsCF = extractObjectInstances(detectedFragments, objectCategories);
+
         if(unObjectsCF.getL().size()>0) {
             idObjectsCF = objectTracker.identifyBetweenFrames(unObjectsCF);
         } else {
@@ -39,11 +53,27 @@ public class ObjectProposer {
 
         Idea fragmentClusters = extractFragmentClusters(detectedFragments);
         for(Idea fragmentCluster : fragmentClusters.getL()) {
-            for(Idea objCatIdea : objectCategories.getL()) {
-                ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
-                if(objCat.membership(fragmentCluster) == 1) {
-                    objectInstances.add(objectFactory.createUnObject(fragmentCluster, objCatIdea));
+            Optional<Idea> matchedCategory = objectCategories.getL().stream()
+                    .filter(categoryIdea -> ((ObjectCategory) categoryIdea.getValue()).membership(fragmentCluster)==1)
+                    .findFirst();
+
+            if(matchedCategory.isPresent()) {
+                Idea newUnObject = objectFactory.createUnObject(fragmentCluster, matchedCategory.get());
+                if(newUnObject!=null) {
+                    objectInstances.add(newUnObject);
                 }
+            } else {
+                ArrayList<String> fragCatCluster = (ArrayList<String>) fragmentCluster.getL()
+                        .stream()
+                        .map(fragment -> (String) fragment.get("FragmentCategory").getValue())
+                        .collect(Collectors.toList());
+
+                Idea assimilatedObjectCategory = catFactory.createObjectCategory(fragCatCluster, INIT_RELEVANCE);
+                Idea newUnObject = objectFactory.createUnObject(fragmentCluster, assimilatedObjectCategory);
+                if(newUnObject!=null) {
+                    objectInstances.add(newUnObject);
+                }
+                assimilatedCategories.getL().add(assimilatedObjectCategory);
             }
         }
         return objectInstances;
@@ -58,7 +88,7 @@ public class ObjectProposer {
                 Idea f1 = fragmentInstances.getL().get(i);
                 Idea f2 = fragmentInstances.getL().get(j);
 
-                if(i!=j && Math.abs(fragmentComparator.rectDistance(f1, f2))<=MIN_CLUSTER_DISTANCE) {
+                if(i!=j && fragmentComparator.rectDistance(f1, f2)) {
                     borderMatrix[i][j] = true;
                 }
             }
@@ -102,6 +132,10 @@ public class ObjectProposer {
             }
         }
         return matrix;
+    }
+
+    public Idea getAssimilatedCategories() {
+        return assimilatedCategories;
     }
 
     public Idea getUnObjectsCF() {

@@ -42,7 +42,7 @@ public class ObjectProposerCodelet extends Codelet {
     public void accessMemoryObjects() {
         rawDataMO=(MemoryObject)this.getInput("RAW_DATA_BUFFER");
         fragmentCategoriesMO =(MemoryObject)this.getInput("FRAGMENT_CATEGORIES");
-        objectCategoriesMO=(MemoryObject)this.getInput("OBJECT_CATEGORIES");
+        objectCategoriesMO=(MemoryObject)this.getOutput("OBJECT_CATEGORIES");
         detectedFragmentsMO =(MemoryObject)this.getOutput("DETECTED_FRAGMENTS");
         detectedObjectsMO=(MemoryObject)this.getOutput("DETECTED_OBJECTS");
     }
@@ -54,41 +54,44 @@ public class ObjectProposerCodelet extends Codelet {
 
     @Override
     public void proc() {
-
         Idea rawDataBufferIdea = (Idea) rawDataMO.getI();
         int buffSize = rawDataBufferIdea.getL().size();
-        BufferedImage buffImgFrame = (BufferedImage) rawDataBufferIdea.getL().get(buffSize-1).get("image").getValue();
+        BufferedImage buffImgFrame = (BufferedImage) rawDataBufferIdea.getL().get(buffSize - 1).get("image").getValue();
 
         Mat image = null;
         image = MatBufferedImageConverter.BufferedImage2Mat(buffImgFrame);
-        this.fragmentProposer.update(image);
 
-        if(fragmentCategoriesMO.getI() != "") {
-            Idea fragmentCategories = (Idea) fragmentCategoriesMO.getI();
-            fragmentProposer.assignFragmentCategories(fragmentCategories);
+        Idea fragmentCategories = null;
+        if(fragmentCategoriesMO.getI()=="") {
+            fragmentCategories = new Idea("FragmentCategories", "", 0);
+        } else {
+            fragmentCategories = (Idea) fragmentCategoriesMO.getI();
         }
 
-        if(objectCategoriesMO.getI() != "") {
-            Idea objectCategories = (Idea) objectCategoriesMO.getI();
-            fragmentProposer.assignObjectCategories(objectCategories);
-
-            objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
-        }
-
+        this.fragmentProposer.update(image, fragmentCategories);
+        fragmentCategoriesMO.setI(fragmentCategories);
 
         detectedFragmentsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
+        if (objectCategoriesMO.getI() != "") {
+            Idea objectCategories = (Idea) objectCategoriesMO.getI();
 
-        Idea detectedObjects = new Idea("detectedObjects", "", 0);
-        detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
-        detectedObjects.add(rawDataBufferIdea.getL().get(buffSize-1).get("timestamp"));
-        detectedObjects.get("idObjsCF").setName("objects");
-        detectedObjectsMO.setI(detectedObjects);
+            objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
 
-//        System.out.println(((Idea) detectedObjectsMO.getI()).toStringFull());
+            objectCategories.getL().addAll(objectProposer.getAssimilatedCategories().getL());
+            objectCategoriesMO.setI(objectCategories);
+
+            fragmentProposer.assignObjectCategories(objectCategories);
+
+            Idea detectedObjects = new Idea("detectedObjects", "", 0);
+            detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
+            detectedObjects.add(rawDataBufferIdea.getL().get(buffSize - 1).get("timestamp"));
+            detectedObjects.get("idObjsCF").setName("objects");
+            detectedObjectsMO.setI(detectedObjects);
+        }
 
 //          ----------visualization----------
         try {
-            Idea unFrags =  fragmentProposer.getUnFrags();
+            Idea unFrags = fragmentProposer.getUnFrags();
             BufferedImage unFragsBuffImg = buffImageFromUnObjectList(unFrags);
             updateJLabelImg(this.objectsImgJLabel, unFragsBuffImg);
 
@@ -97,7 +100,8 @@ public class ObjectProposerCodelet extends Codelet {
             updateJLabelImg(this.mergedObjectsImgJLabel, idFragsBuffImg);
 
             Idea idObjs = objectProposer.getDetectedObjectsCF();
-            BufferedImage objectsImg = buffImageFromCatObjectList(idFrags, idObjs);
+            BufferedImage objectsImg = buffImageFromCatObjectList(idFrags, idObjs, rawDataBufferIdea.getL()
+                    .get(buffSize - 1).get("timestamp").getValue().toString());
             updateJLabelImg(this.categoriesImgJLabel, objectsImg);
 
         } catch (Exception err) {
@@ -136,12 +140,22 @@ public class ObjectProposerCodelet extends Codelet {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
         for (int i = 0; i < idObjs.getL().size(); i++) {
-            Idea idObj = idObjs.getL().get(i);
-            Imgproc.drawContours(frame,
-                    (List<MatOfPoint>) idObj.get("contours").getValue(),
-                    -1,
-                    (Scalar) idObj.get("colorId").getValue(),
-                    -1);
+//            Idea idObj = idObjs.getL().get(i);
+            Idea boundRectIdea = idObjs.getL().get(i).get("boundRect");
+
+            double tl_x = (double) boundRectIdea.get("tl.x").getValue();
+            double tl_y = (double) boundRectIdea.get("tl.y").getValue();
+            double br_x = (double) boundRectIdea.get("br.x").getValue();
+            double br_y = (double) boundRectIdea.get("br.y").getValue();
+
+            Scalar colorId = (Scalar) idObjs.getL().get(i).get("colorId").getValue();
+
+            Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 1);
+//            Imgproc.drawContours(frame,
+//                    (List<MatOfPoint>) idObj.get("contours").getValue(),
+//                    -1,
+//                    (Scalar) idObj.get("colorId").getValue(),
+//                    -1);
         }
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
@@ -149,7 +163,7 @@ public class ObjectProposerCodelet extends Codelet {
         return bufferedImage;
     }
 
-    public BufferedImage buffImageFromCatObjectList(Idea idFrags, Idea idObjs) throws IOException {
+    public BufferedImage buffImageFromCatObjectList(Idea idFrags, Idea idObjs, String timestamp) throws IOException {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
         for (int i = 0; i < idFrags.getL().size(); i++) {
@@ -185,22 +199,30 @@ public class ObjectProposerCodelet extends Codelet {
 
                 Scalar colorId = (Scalar) idObjs.getL().get(i).get("colorId").getValue();
 
-                Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 2);
+                Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 1);
 
                 String text = idObjs.getL().get(i).get("id").getValue().toString();
                 Point textOrg = new Point(tl_x, tl_y);
                 int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
                 double fontScale = 0.5;
                 Scalar textColor = colorId;
-                int textThickness = 2;
+                int textThickness = 1;
 
                 Imgproc.putText(frame, text, textOrg, fontFace, fontScale, textColor, textThickness);
             }
         }
 
+        addTimestamp(frame, timestamp);
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
 
         return bufferedImage;
+    }
+
+    private void addTimestamp(Mat frame, String timestamp) {
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+        Imgproc.putText(frame, String.valueOf(timestamp), new Point(10,20), fontFace, fontScale, new Scalar(255,255,255), textThickness);
     }
 }

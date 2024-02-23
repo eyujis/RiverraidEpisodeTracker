@@ -1,45 +1,65 @@
 package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_cat_learner.entities.EntityCategoryFactory;
 import org.example.mind.codelets.object_cat_learner.entities.FragmentCategory;
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
+import org.example.mind.codelets.object_proposer.entities.FragmentFactory;
 import org.example.mind.codelets.object_proposer.entity_trackers.FragmentTracker;
 import org.opencv.core.Mat;
+
+import java.util.Optional;
 
 public class FragmentProposer {
 
     private VSSketchpad vsSketchpad;
     private FragmentTracker fragmentTracker;
     private FragmentComparator fragmentComparator;
+    FragmentFactory fragmentFactory;
+    EntityCategoryFactory entityCategoryFactory;
 
-    private double MIN_CLUSTER_DISTANCE = 2;
+    int INIT_RELEVANCE = 1;
 
+    private Idea possibleFragments;
     private Idea unFragsCF;
     private Idea idFragsCF;
 
     public FragmentProposer() {
         vsSketchpad = new VSSketchpad();
+        fragmentFactory = new FragmentFactory();
+        entityCategoryFactory = new EntityCategoryFactory();
         fragmentTracker = new FragmentTracker();
         fragmentComparator = new FragmentComparator();
     }
 
-    public void update(Mat frame) {
-        unFragsCF = vsSketchpad.getUnFragmentsFromFrame(frame);
-        idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
-    }
-    public void assignFragmentCategories(Idea fragmentCategories) {
-        for(Idea fragCatIdea : fragmentCategories.getL()) {
-            FragmentCategory fragCat = (FragmentCategory) fragCatIdea.getValue();
-            for (Idea idFrag : idFragsCF.getL()) {
-                if (fragCat.membership(idFrag) == 1) {
-                    idFrag.get("FragmentCategory").setValue(fragCatIdea.getName());
-                }
+    public void update(Mat frame, Idea fragmentCategories) {
+        possibleFragments = vsSketchpad.getUnFragmentsFromFrame(frame, fragmentCategories);
+
+        unFragsCF = new Idea("DetectedFragments", "", 0);
+
+//        //Assigning and assimilating categories
+        for(Idea possibleFragment: possibleFragments.getL()) {
+            Optional<Idea> matchedCategory = fragmentCategories.getL().stream()
+                    .filter(categoryIdea -> ((FragmentCategory) categoryIdea.getValue()).membership(possibleFragment)==1)
+                    .findFirst();
+
+            if(matchedCategory.isPresent()) {
+                possibleFragment.get("FragmentCategory").setValue(matchedCategory.get().getName());
+                unFragsCF.add(possibleFragment);
+            } else {
+                Idea assimilatedFragmentCategory = entityCategoryFactory.createFragmentCategory(possibleFragment, INIT_RELEVANCE);
+                possibleFragment.get("FragmentCategory").setValue(assimilatedFragmentCategory.getName());
+                unFragsCF.add(possibleFragment);
+
+                fragmentCategories.getL().add(assimilatedFragmentCategory);
             }
         }
+
+        idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
     }
 
     public void assignObjectCategories(Idea objectCategories) {
-        Idea fragmentClusters = extractFragmentClusters(getDetectedFragmentsCF());
+        Idea fragmentClusters = extractFragmentClusters(idFragsCF);
         for(Idea fragmentCluster : fragmentClusters.getL()) {
             for(Idea objCatIdea : objectCategories.getL()) {
                 ObjectCategory objCat = (ObjectCategory) objCatIdea.getValue();
@@ -62,7 +82,7 @@ public class FragmentProposer {
                 Idea f1 = fragmentInstances.getL().get(i);
                 Idea f2 = fragmentInstances.getL().get(j);
 
-                if(i!=j && Math.abs(fragmentComparator.rectDistance(f1, f2))<=MIN_CLUSTER_DISTANCE) {
+                if(i!=j && fragmentComparator.rectDistance(f1, f2)) {
                     borderMatrix[i][j] = true;
                 }
             }
@@ -98,15 +118,6 @@ public class FragmentProposer {
         }
     }
 
-    public Idea getUnFrags() {
-        return unFragsCF;
-    }
-
-    public Idea getDetectedFragmentsCF() {
-        return idFragsCF;
-    }
-
-
     public boolean[][] initializeBooleanMatrix(int size) {
         boolean[][] matrix = new boolean[size][size];
         for(int i=0; i<matrix.length; i++) {
@@ -117,4 +128,11 @@ public class FragmentProposer {
         return matrix;
     }
 
+    public Idea getUnFrags() {
+        return unFragsCF;
+    }
+
+    public Idea getDetectedFragmentsCF() {
+        return idFragsCF;
+    }
 }

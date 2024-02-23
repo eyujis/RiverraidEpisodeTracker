@@ -28,12 +28,6 @@ public class FragmentTracker {
             fragsPF.add(idFragCF);
         }
 
-        if(newUnFragsCF.getL().size()>0) {
-            for(Idea newUnFragCF : fragFactory.createIdFragsFromUnFrags(newUnFragsCF).getL()) {
-                fragsPF.add(newUnFragCF);
-            }
-        }
-
         idFragsCF = new Idea("idFragsCF", "", 0);
         newUnFragsCF = new Idea("newUnFragsCF", "", 0);
 
@@ -78,6 +72,12 @@ public class FragmentTracker {
                     fragFactory.transferPropertyValues(fragsPF.getL().get(assignment[i][0]), unFragsCF.getL().get(assignment[i][1]));
                     idFragsCF.getL().add(fragsPF.getL().get(assignment[i][0]));
                 }
+            }
+        }
+
+        if(newUnFragsCF.getL().size()>0) {
+            for(Idea newUnFragCF : fragFactory.createIdFragsFromUnFrags(newUnFragsCF).getL()) {
+                idFragsCF.add(newUnFragCF);
             }
         }
 

@@ -8,6 +8,7 @@ import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
 import org.example.mind.codelets.event_tracker.EventTrackerCodelet;
 import org.example.mind.codelets.forgetting_so_episodes.ForgettingSOEpisodesCodelet;
 import org.example.mind.codelets.object_cat_learner.ObjectCategoryLearnerCodelet;
+import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
 import org.example.mind.codelets.objects_bufferizer.ObjectsBufferizerCodelet;
@@ -81,7 +82,9 @@ public class AgentMind extends Mind {
         Codelet objectProposerCodelet = new ObjectProposerCodelet(objectsImgJLabel, mergedObjectsImgJLabel, categoriesImgJLabel);
         objectProposerCodelet.addInput(rawDataBufferMO);
         objectProposerCodelet.addInput(fragmentCategoriesMO);
+        objectProposerCodelet.addOutput(fragmentCategoriesMO);
         objectProposerCodelet.addInput(objectCategoriesMO);
+        objectProposerCodelet.addOutput(objectCategoriesMO);
         objectProposerCodelet.addOutput(detectedFragmentsMO);
         objectProposerCodelet.addOutput(detectedObjectsMO);
         objectProposerCodelet.setIsMemoryObserver(true);
@@ -160,15 +163,15 @@ public class AgentMind extends Mind {
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectsBufferizerCodelet, "EpisodeTrackerCodeletGroup");
-        registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
-        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
-        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
-        registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
-        registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
+//        registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
+//        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
+//        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
+//        registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
+//        registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())
-            c.setTimeStep(1);
+            c.setTimeStep(100);
 
         // Start Cognitive Cycle
         start();

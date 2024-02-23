@@ -10,10 +10,8 @@ import java.util.*;
 
 public class ObjectCategoryLearner {
     private EntityCategoryFactory catFactory;
-    Idea objCategoryList;
     FragmentComparator fragmentComparator = new FragmentComparator();
 
-    double MIN_CLUSTER_DISTANCE = 2;
     double RELEVANCE_THRESHOLD = 5;
     double INIT_RELEVANCE = 1;
     double INCREMENT_FACTOR = 2.2;
@@ -23,35 +21,36 @@ public class ObjectCategoryLearner {
     // TODO refactor this whole class, the code is too confusing;
     public ObjectCategoryLearner() {
         catFactory = new EntityCategoryFactory();
-        objCategoryList = new Idea("ObjectCategories", "", 0);
     }
 
-    public void updateCategories(Idea detectedFragments) {
+    public Idea updateCategories(Idea detectedFragments, Idea objectCategories) {
+
         Idea rcvCategories = extractObjectCategories(detectedFragments);
 
         for(Idea rcvCat : rcvCategories.getL()) {
-            int equalCatIdx = this.equalCategoryIdx(rcvCat);
+            int equalCatIdx = this.equalCategoryIdx(rcvCat, objectCategories);
 
             if(equalCatIdx == -1) {
-                objCategoryList.add(rcvCat);
+//                objCategoryList.add(rcvCat);
             } else {
-                EntityCategory objCat = (EntityCategory) objCategoryList.getL().get(equalCatIdx).getValue();
+                EntityCategory objCat = (EntityCategory) objectCategories.getL().get(equalCatIdx).getValue();
                 if(objCat.getRelevance()<RELEVANCE_THRESHOLD) {
                     objCat.incrementRelevance(INCREMENT_FACTOR);
                 }
             }
         }
 
-        decrementCategoriesRelevance();
-        removeSubsetCategories();
-        removeIrrelevantCategories();
+        decrementCategoriesRelevance(objectCategories);
+        removeSubsetCategories(objectCategories);
+        removeIrrelevantCategories(objectCategories);
+        return objectCategories;
     }
 
-    public int equalCategoryIdx(Idea cat) {
+    public int equalCategoryIdx(Idea cat, Idea objectCategories) {
         int idx = -1;
 
-        for(int i=0; i<objCategoryList.getL().size(); i++) {
-            ObjectCategory objCatListElem = (ObjectCategory) objCategoryList.getL().get(i).getValue();
+        for(int i=0; i<objectCategories.getL().size(); i++) {
+            ObjectCategory objCatListElem = (ObjectCategory) objectCategories.getL().get(i).getValue();
             ObjectCategory objCatComp = (ObjectCategory) cat.getValue();
 
             if(objCatListElem.equals(objCatComp) == true) {
@@ -71,7 +70,7 @@ public class ObjectCategoryLearner {
                 Idea f2 = detectedFragments.getL().get(j);
 
                 if(i!=j
-                  && Math.abs(fragmentComparator.rectDistance(f1, f2))<=MIN_CLUSTER_DISTANCE
+                  && fragmentComparator.rectDistance(f1, f2)
                   && f1.get("FragmentCategory").getValue() != null
                   && f2.get("FragmentCategory").getValue() != null) {
                     borderMatrix[i][j] = true;
@@ -90,17 +89,18 @@ public class ObjectCategoryLearner {
             if (!visited[i]) {
                 ArrayList<String> group = new ArrayList<>();
                 exploreBorders(i, borderMatrix, visited, group, detectedFragments);
-                fragCatClusters.add(group);
+
+                if(!group.isEmpty()) {
+                    fragCatClusters.add(group);
+                }
             }
         }
 
         Idea objectCategories = new Idea("extractedObjectCategories", "", 0);
 
         for(ArrayList<String> fragCatCluster : fragCatClusters) {
-//            if(fragCatCluster.size()>=1) {
                 Idea objectCategory = catFactory.createObjectCategory(fragCatCluster, INIT_RELEVANCE);
                 objectCategories.add(objectCategory);
-//            }
         }
 
         return objectCategories;
@@ -120,31 +120,32 @@ public class ObjectCategoryLearner {
     }
 
 
-    public void removeIrrelevantCategories() {
+    public void removeIrrelevantCategories(Idea objectCategories) {
         ArrayList<Integer> idxsToRemove = new ArrayList();
 
-        for(int i=0; i<objCategoryList.getL().size(); i++) {
-            Idea objCatIdea = objCategoryList.getL().get(i);
+        for(int i=0; i<objectCategories.getL().size(); i++) {
+            Idea objCatIdea = objectCategories.getL().get(i);
             EntityCategory objCat = (EntityCategory) objCatIdea.getValue();
             if(objCat.getRelevance() < MINIMUM_RELEVANCE) {
                 idxsToRemove.add(i);
             }
         }
 
-        removeIdxFromObjectCategoryList(idxsToRemove);
+        removeIdxFromObjectCategoryList(idxsToRemove, objectCategories);
     }
 
-    public void removeSubsetCategories() {
+    public void removeSubsetCategories(Idea objectCategories) {
         ArrayList<Integer> idxsToRemove = new ArrayList();
 
-        for(int i=0; i<objCategoryList.getL().size(); i++) {
-            for(int j=0; j<objCategoryList.getL().size(); j++) {
+        for(int i=0; i<objectCategories.getL().size(); i++) {
+            for(int j=0; j<objectCategories.getL().size(); j++) {
                 if(i!=j) {
-                    ObjectCategory objCat1 = (ObjectCategory) objCategoryList.getL().get(i).getValue();
-                    ObjectCategory objCat2 = (ObjectCategory) objCategoryList.getL().get(j).getValue();
+                    ObjectCategory objCat1 = (ObjectCategory) objectCategories.getL().get(i).getValue();
+                    ObjectCategory objCat2 = (ObjectCategory) objectCategories.getL().get(j).getValue();
 
                     if(objCat1.getRelevance()>RELEVANCE_THRESHOLD
                        && objCat2.getRelevance()>RELEVANCE_THRESHOLD
+                       && objCat1.getFragsCategories().size() > objCat2.getFragsCategories().size()
                        && objCat1.getFragsCategories().containsAll(objCat2.getFragsCategories())) {
                         idxsToRemove.add(j);
                     }
@@ -152,39 +153,26 @@ public class ObjectCategoryLearner {
             }
         }
 
-        removeIdxFromObjectCategoryList(idxsToRemove);
+        removeIdxFromObjectCategoryList(idxsToRemove, objectCategories);
     }
 
-    private void removeIdxFromObjectCategoryList(ArrayList<Integer> idxsToRemove) {
+    private void removeIdxFromObjectCategoryList(ArrayList<Integer> idxsToRemove, Idea objectCategories) {
         Collections.sort(idxsToRemove, Collections.reverseOrder());
 
         for (int index : idxsToRemove) {
-            if (index >= 0 && index < objCategoryList.getL().size()) {
-                objCategoryList.getL().remove(index);
+            if (index >= 0 && index < objectCategories.getL().size()) {
+                objectCategories.getL().remove(index);
             }
         }
     }
 
-    public void decrementCategoriesRelevance() {
-        for(Idea objCatIdea: objCategoryList.getL()) {
+    public void decrementCategoriesRelevance(Idea objectCategories) {
+        for(Idea objCatIdea: objectCategories.getL()) {
             EntityCategory objCat = (EntityCategory) objCatIdea.getValue();
             if(objCat.getRelevance() < RELEVANCE_THRESHOLD) {
                 objCat.decrementRelevance(DECREMENT_FACTOR);
             }
         }
-    }
-
-    public Idea getRelevantCategories() {
-        Idea relevantCategories = new Idea("RelevantCategories", "", 0);;
-
-        for(Idea objCatIdea : objCategoryList.getL()) {
-            EntityCategory objCat = (EntityCategory) objCatIdea.getValue();
-            if(objCat.getRelevance()>=RELEVANCE_THRESHOLD) {
-                relevantCategories.add(objCatIdea);
-            }
-        }
-
-        return relevantCategories;
     }
 
     public boolean[][] initializeBooleanMatrix(int size) {

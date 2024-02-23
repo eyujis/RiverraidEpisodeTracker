@@ -116,8 +116,12 @@ public class FragmentFactory {
 
     private Rect getBoundRectFromContour(MatOfPoint externalContour) {
         MatOfPoint2f contourPoly = new MatOfPoint2f();
-        Imgproc.approxPolyDP(new MatOfPoint2f(externalContour.toArray()), contourPoly, 3, true);
-        Rect boundRect = Imgproc.boundingRect(new MatOfPoint(contourPoly.toArray()));
+        MatOfPoint2f approxCurve = new MatOfPoint2f();
+        externalContour.convertTo(contourPoly, CvType.CV_32F);
+        double epsilon = 0.02 * Imgproc.arcLength(contourPoly, true);
+        Imgproc.approxPolyDP(contourPoly, approxCurve, epsilon, true);
+        MatOfPoint points = new MatOfPoint(approxCurve.toArray());
+        Rect boundRect = Imgproc.boundingRect(points);
         return boundRect;
     }
 
@@ -140,6 +144,8 @@ public class FragmentFactory {
         f1.get("contours").setValue(f2.get("contours").getValue());
 
         f1.get("externalContour").setValue(f2.get("externalContour").getValue());
+
+        f1.get("FragmentCategory").setValue(f2.get("FragmentCategory").getValue());
     }
 
 }
