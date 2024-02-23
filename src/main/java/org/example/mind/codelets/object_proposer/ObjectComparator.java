@@ -15,7 +15,6 @@ public class ObjectComparator {
         return false;
     }
 
-
     public double getCenterDistance(Idea f1, Idea f2) {
         double x1 = (double) f1.get("center.x").getValue();
         double x2 = (double) f2.get("center.x").getValue();

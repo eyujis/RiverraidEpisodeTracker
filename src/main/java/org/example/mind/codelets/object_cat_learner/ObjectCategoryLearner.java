@@ -12,7 +12,6 @@ public class ObjectCategoryLearner {
     private EntityCategoryFactory catFactory;
     FragmentComparator fragmentComparator = new FragmentComparator();
 
-    double MIN_CLUSTER_DISTANCE = 2;
     double RELEVANCE_THRESHOLD = 5;
     double INIT_RELEVANCE = 1;
     double INCREMENT_FACTOR = 2.2;
@@ -41,9 +40,9 @@ public class ObjectCategoryLearner {
             }
         }
 
-//        decrementCategoriesRelevance(objectCategories);
-//        removeSubsetCategories(objectCategories);
-//        removeIrrelevantCategories(objectCategories);
+        decrementCategoriesRelevance(objectCategories);
+        removeSubsetCategories(objectCategories);
+        removeIrrelevantCategories(objectCategories);
         return objectCategories;
     }
 
@@ -175,19 +174,6 @@ public class ObjectCategoryLearner {
             }
         }
     }
-
-//    public Idea getRelevantCategories() {
-//        Idea relevantCategories = new Idea("RelevantCategories", "", 0);
-//
-//        for(Idea objCatIdea : objectCategories.getL()) {
-//            EntityCategory objCat = (EntityCategory) objCatIdea.getValue();
-//            if(objCat.getRelevance()>=RELEVANCE_THRESHOLD) {
-//                relevantCategories.add(objCatIdea);
-//            }
-//        }
-//
-//        return relevantCategories;
-//    }
 
     public boolean[][] initializeBooleanMatrix(int size) {
         boolean[][] matrix = new boolean[size][size];

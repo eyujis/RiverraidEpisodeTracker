@@ -11,10 +11,7 @@ import java.util.Collections;
 public class FragmentCategoryLearner {
     private EntityCategoryFactory catFactory;
 
-//    double RELEVANCE_THRESHOLD = 5;
-    //IT REMEMBER ALL LEARNED FRAGS WITHOUT FORGETTING
-    double RELEVANCE_THRESHOLD = 1;
-    double INIT_RELEVANCE = 1;
+    double RELEVANCE_THRESHOLD = 5;
     double INCREMENT_FACTOR = 2.2;
     double DECREMENT_FACTOR = 0.7;
     double MINIMUM_RELEVANCE = 0.5;

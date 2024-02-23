@@ -18,7 +18,6 @@ public class FragmentProposer {
     FragmentFactory fragmentFactory;
     EntityCategoryFactory entityCategoryFactory;
 
-    private double MIN_CLUSTER_DISTANCE = 0;
     int INIT_RELEVANCE = 1;
 
     private Idea possibleFragments;

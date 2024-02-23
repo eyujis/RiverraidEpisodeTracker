@@ -29,12 +29,6 @@ public class ObjectTracker {
             objsPF.add(idObjCF);
         }
 
-//        if(newUnObjsCF.getL().size()>0) {
-//            for(Idea newUnObjCF : objectFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
-//                objsPF.add(newUnObjCF);
-//            }
-//        }
-
         idObjsCF = new Idea("idObjsCF", "", 0);
         newUnObjsCF = new Idea("newUnObjsCF", "", 0);
 
