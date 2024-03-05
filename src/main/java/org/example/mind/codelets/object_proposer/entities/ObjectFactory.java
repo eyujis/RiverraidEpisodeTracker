@@ -58,8 +58,13 @@ public class ObjectFactory {
         Idea centerIdea = getCenterFromBoundRect(boundRectIdea);
         objectIdea.add(centerIdea);
 
+//        if((double)sizeIdea.get("height").getValue()<5
+//                && (double)sizeIdea.get("width").getValue()<5) {
+//            return null;
+//        }
+
         if((double)sizeIdea.get("height").getValue()<5
-                && (double)sizeIdea.get("width").getValue()<5) {
+                || (double)sizeIdea.get("width").getValue()<5) {
             return null;
         }
 

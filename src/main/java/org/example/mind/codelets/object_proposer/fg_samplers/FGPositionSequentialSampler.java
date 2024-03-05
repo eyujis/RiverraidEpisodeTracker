@@ -8,11 +8,17 @@ import org.opencv.core.Scalar;
 import java.util.List;
 
 public class FGPositionSequentialSampler {
-    private Scalar lowerBoundBlue = new Scalar(185-5,47-5,40-5);
-    private Scalar upperBoundBlue = new Scalar(185+5,47+5,40+5);
+//    private Scalar lowerBoundBlue = new Scalar(185-5,47-5,40-5);
+//    private Scalar upperBoundBlue = new Scalar(185+5,47+5,40+5);
 
-    private Scalar lowerBoundGreen= new Scalar(24-5,95-5,53-5);
-    private Scalar upperBoundGreen = new Scalar(64+5,156+5,111+5);
+    private Scalar lowerBoundBlue = new Scalar(0,0,0);
+    private Scalar upperBoundBlue = new Scalar(1,1,1);
+
+//    private Scalar lowerBoundGreen= new Scalar(24-5,95-5,53-5);
+//    private Scalar upperBoundGreen = new Scalar(64+5,156+5,111+5);
+
+    private Scalar lowerBoundGreen= new Scalar(215-80,215-80,215-80);
+    private Scalar upperBoundGreen = new Scalar(215+10,215+10,215+10);
 
     Mat maskForeground = new Mat();
     Mat maskBackgroundBlue = new Mat();

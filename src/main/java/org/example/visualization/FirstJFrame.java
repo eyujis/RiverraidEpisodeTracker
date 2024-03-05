@@ -13,6 +13,9 @@ public class FirstJFrame extends JFrame {
     JLabel mergedObjectsImgJLabel;
     JLabel categoriesImgJLabel;
 
+    int height;
+    int width;
+
     public FirstJFrame() throws IOException {
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

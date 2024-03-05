@@ -117,7 +117,8 @@ public class ObjectProposerCodelet extends Codelet {
     }
 
     public BufferedImage buffImageFromUnObjectList(Idea unObjs) throws IOException {
-        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(100,100,100));
+//        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(100,100,100));
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(100,100,100));
 
         for (int i = 0; i < unObjs.getL().size(); i++) {
             Idea unObj = unObjs.getL().get(i);
@@ -137,7 +138,9 @@ public class ObjectProposerCodelet extends Codelet {
     }
 
     public BufferedImage buffImageFromIdObjectList(Idea idObjs) throws IOException {
-        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
+//        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(100,100,100));
+
 
         for (int i = 0; i < idObjs.getL().size(); i++) {
 //            Idea idObj = idObjs.getL().get(i);
@@ -164,7 +167,9 @@ public class ObjectProposerCodelet extends Codelet {
     }
 
     public BufferedImage buffImageFromCatObjectList(Idea idFrags, Idea idObjs, String timestamp) throws IOException {
-        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
+//        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(100,100,100));
+
 
         for (int i = 0; i < idFrags.getL().size(); i++) {
             Idea idObj = idFrags.getL().get(i);

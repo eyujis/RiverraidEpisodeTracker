@@ -77,7 +77,8 @@ public class EventTrackerCodelet extends Codelet {
 
 
     public BufferedImage getBuffImageFromEvents(Idea events) throws IOException {
-        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
+//        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(100,100,100));
 
         addTimestamp(frame, events.getValue().toString());
 

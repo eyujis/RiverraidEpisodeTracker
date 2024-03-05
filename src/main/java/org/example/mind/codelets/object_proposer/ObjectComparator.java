@@ -4,7 +4,7 @@ import br.unicamp.cst.representation.idea.Idea;
 import org.opencv.core.Point;
 
 public class ObjectComparator {
-    static final double MIN_CENTER_DISTANCE = 50;
+    static final double MIN_CENTER_DISTANCE = 30;
     static final double MIN_SHAPE_DIFF_RATIO= 0.5;
 
     public boolean closeCenterDistance(Idea f1, Idea f2) {
