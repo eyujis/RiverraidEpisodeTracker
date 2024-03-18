@@ -211,6 +211,8 @@ public class VectorEventCategory implements EventCategory {
         double bMag = vectorB.getNorm();
 
         double cosAngle = dotProduct/(aMag*bMag);
+        cosAngle = Math.max(-1.0, Math.min(cosAngle, 1.0)); // Clamp cosAngle to [-1, 1]
+
         double angleDiff = Math.acos(cosAngle);
 
         return Math.abs(angleDiff);
