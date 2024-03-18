@@ -1,9 +1,13 @@
 package org.example.mind.codelets.object_proposer;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.imgproc.Moments;
+
+import java.util.List;
 
 public class FragmentComparator {
     static final double MIN_CENTER_DISTANCE = 50;
@@ -11,13 +15,36 @@ public class FragmentComparator {
     static final double MIN_HUE_DIFF = 2;
 
     public double getHueDistance(Idea f1, Idea f2) {
-        MatOfPoint contour1 = (MatOfPoint) f1.get("externalContour").getValue();
-        MatOfPoint contour2 = (MatOfPoint) f2.get("externalContour").getValue();
+        List<MatOfPoint> contours1 = (List<MatOfPoint>) f1.get("contours").getValue();
+        List<MatOfPoint> contours2 = (List<MatOfPoint>) f2.get("contours").getValue();
 
-        return Imgproc.matchShapes(contour1,
-                                   contour2,
-                                   Imgproc.CV_CONTOURS_MATCH_I1,
-                          0.0);
+        double totalDistance = 0;
+
+        if(contours1.size() != contours2.size()) {
+            return Double.MAX_VALUE;
+        }
+
+        // Ensure that both lists have the same number of contours
+        int numContours = Math.min(contours1.size(), contours2.size());
+
+        for (int i = 0; i < numContours; i++) {
+            // Compute Hu moments for contours in the MatOfPoint hierarchies
+            Moments moments1 = Imgproc.moments(contours1.get(i));
+            Moments moments2 = Imgproc.moments(contours2.get(i));
+            Mat huMoments1 = new Mat();
+            Mat huMoments2 = new Mat();
+            Imgproc.HuMoments(moments1, huMoments1);
+            Imgproc.HuMoments(moments2, huMoments2);
+
+            // Compute Hu moments distance
+            double distance = Imgproc.matchShapes(huMoments1, huMoments2, Imgproc.CONTOURS_MATCH_I1, 0);
+            totalDistance += distance;
+        }
+
+        // Normalize the total distance
+        totalDistance /= numContours;
+
+        return totalDistance;
     }
 
 
