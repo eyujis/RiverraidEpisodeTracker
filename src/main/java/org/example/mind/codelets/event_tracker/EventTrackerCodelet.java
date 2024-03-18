@@ -96,8 +96,8 @@ public class EventTrackerCodelet extends Codelet {
                 Point start = new Point(x_start, y_start);
                 Point end = new Point(x_end, y_end);
                 Scalar color = category2Color.getColor(eventCategory);
-                int thickness = 2;
-                Imgproc.arrowedLine(frame, start, end, color, thickness);
+                int thickness = 1;
+                Imgproc.arrowedLine(frame, start, end, color, thickness, 8, 0, 5/Math.max(0.1, pointDistance(start, end)));
 
                 addTextId(frame, eventIdea, new Point((x_start+x_end)/2, (y_start+y_end)/2), color);
             }
@@ -154,5 +154,11 @@ public class EventTrackerCodelet extends Codelet {
         double fontScale = 0.5;
         int textThickness = 1;
         Imgproc.putText(frame, String.valueOf(timestamp), new Point(10,20), fontFace, fontScale, new Scalar(255,255,255), textThickness);
+    }
+
+    public double pointDistance(Point p1, Point p2) {
+        double xSquared = Math.pow(p1.x-p2.x,2);
+        double ySquared = Math.pow(p1.y-p2.y,2);
+        return (Math.sqrt(xSquared+ySquared));
     }
 }
