@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class VectorEventsProcessor {
-    double MIN_ANGLE_DIFF = 0.1;
+    double MIN_ANGLE_DIFF = 0.5 * Math.PI; // 45 degree angle
 
     Idea resultVectorEvents;
     ArrayList<EventPair> eventVectorPairsToBeExtended;
