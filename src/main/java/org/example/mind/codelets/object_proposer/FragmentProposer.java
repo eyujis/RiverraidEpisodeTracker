@@ -37,7 +37,7 @@ public class FragmentProposer {
 
         unFragsCF = new Idea("DetectedFragments", "", 0);
 
-//        //Assigning and assimilating categories
+        //Assigning and assimilating categories
         for(Idea possibleFragment: possibleFragments.getL()) {
             Optional<Idea> matchedCategory = fragmentCategories.getL().stream()
                     .filter(categoryIdea -> ((FragmentCategory) categoryIdea.getValue()).membership(possibleFragment)==1)

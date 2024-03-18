@@ -63,6 +63,10 @@ public class ObjectFactory {
             return null;
         }
 
+        if(!isBoundingBoxBoundToTheFieldLimits(objectIdea)) {
+            return null;
+        }
+
 
 //        Idea objectCategoryIdea = new Idea("objectCategory", null);
 //        objectIdea.add(objectCategoryIdea);
@@ -181,6 +185,22 @@ public class ObjectFactory {
 
         o1.get("center.x").setValue(o2.get("center.x").getValue());
         o1.get("center.y").setValue(o2.get("center.y").getValue());
+    }
+
+    public static boolean isBoundingBoxBoundToTheFieldLimits(Idea object) {
+        double width = 304;
+        double height = 322;
+
+        double tlX = (double) object.get("boundRect.tl.x").getValue();
+        double tlY = (double) object.get("boundRect.tl.y").getValue();
+        double brX = (double) object.get("boundRect.br.x").getValue();
+        double brY = (double) object.get("boundRect.br.y").getValue();
+
+        if (brX <= 0 || tlX >= width || brY >= height || tlY <= 0) {
+            return false;
+        }
+
+        return true;
     }
 
 }
