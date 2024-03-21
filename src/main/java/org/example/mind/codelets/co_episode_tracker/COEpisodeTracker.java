@@ -21,7 +21,6 @@ public class COEpisodeTracker {
     public Idea updateRelations(Idea sOEpisodes, Idea cOEpisodeCategories, Idea previousCOEpisodes) {
         cOEpisodeCategoryFactory = new COEpisodeCategoryFactory();
         Idea cOEpisodes = sOEpisodes.clone();
-        // TODO initialize with previous relations!
         initializeRelations(cOEpisodes);
         duplicateRelations(cOEpisodes, previousCOEpisodes);
 
@@ -121,19 +120,19 @@ public class COEpisodeTracker {
 
     private boolean assignPreviousRelationsIfThereAre(Idea e1, Idea e2, Idea previousCOEpisodes) {
         Optional<Idea> pe1 = previousCOEpisodes.getL().stream()
-                .filter(episode -> episode.get("eventId").getValue()==e1.get("eventId").getValue())
+                .filter(episode -> (int) episode.get("eventId").getValue()== (int) e1.get("eventId").getValue())
                 .findFirst();
 
         Optional<Idea> pe2 = previousCOEpisodes.getL().stream()
-                .filter(episode -> episode.get("eventId").getValue()==e2.get("eventId").getValue())
+                .filter(episode -> (int) episode.get("eventId").getValue()== (int) e2.get("eventId").getValue())
                 .findFirst();
 
         if(pe1.isPresent() && pe2.isPresent()) {
 
             Optional<Idea> pe1Rpe2 = pe1.get().get("relations").getL().stream()
-                    .filter(relation -> relation.get("eventId").getValue()==pe2.get().get("eventId").getValue()).findFirst();
+                    .filter(relation -> (int) relation.get("eventId").getValue()== (int) pe2.get().get("eventId").getValue()).findFirst();
             Optional<Idea> pe2Rpe1 = pe2.get().get("relations").getL().stream()
-                    .filter(relation -> relation.get("eventId").getValue()==pe1.get().get("eventId").getValue()).findFirst();
+                    .filter(relation -> (int) relation.get("eventId").getValue()== (int) pe1.get().get("eventId").getValue()).findFirst();
 
             if(pe1Rpe2.isPresent() && pe2Rpe1.isPresent()) {
 //                e1.get("relations").getL().add(pe1Rpe2.get().clone());
