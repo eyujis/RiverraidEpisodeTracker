@@ -85,7 +85,7 @@ public class COEpisodeTracker {
 
         for(Idea cOEpisode : cOEpisodes.getL()) {
 //            System.out.println(cOEpisode.toStringFull());
-            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation->relation.get("eventId").getValue()).collect(Collectors.toList()));
+            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation-> ((String) relation.get("relationType").getValue() + ((Integer) relation.get("eventId").getValue()).toString())).collect(Collectors.toList()));
         }
 
         return cOEpisodes;

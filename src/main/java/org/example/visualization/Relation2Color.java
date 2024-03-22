@@ -6,18 +6,18 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class Relation2Color {
-    static HashMap<String, Scalar> categoryColors;
+    static HashMap<Integer, Scalar> categoryColors;
 
     public Relation2Color() {
-        categoryColors = new HashMap<String, Scalar>();
+        categoryColors = new HashMap<Integer, Scalar>();
     }
 
-    public Scalar getColor(String categoryName) {
-        if(categoryColors.get(categoryName) == null) {
-            categoryColors.put(categoryName, generateRandomColor());
+    public Scalar getColor(Integer sourceEventId) {
+        if(categoryColors.get(sourceEventId) == null) {
+            categoryColors.put(sourceEventId, generateRandomColor());
         }
 
-        return categoryColors.get(categoryName);
+        return categoryColors.get(sourceEventId);
     }
 
     private Scalar generateRandomColor() {

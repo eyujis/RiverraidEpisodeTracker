@@ -6,26 +6,22 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class RelationMToRelationMI {
-    static HashMap<String, Scalar> categoryColors;
+    static HashMap<Integer, Integer> relationsHashMap;
 
     public RelationMToRelationMI() {
-        categoryColors = new HashMap<String, Scalar>();
+        relationsHashMap = new HashMap<Integer, Integer>();
     }
 
-    public Scalar getColor(String sourceEventId) {
-        if(categoryColors.get(sourceEventId) == null) {
-            categoryColors.put(sourceEventId, generateRandomColor());
+    public void putRelationIds(Integer eventM, Integer eventMI) {
+        if(relationsHashMap.get(eventMI)!=null) {
+            relationsHashMap.put(eventM, relationsHashMap.get(eventMI));
+        } else {
+            relationsHashMap.put(eventM, eventMI);
         }
-
-        return categoryColors.get(sourceEventId);
     }
 
-    private Scalar generateRandomColor() {
-        Random rng = new Random();
-        // Random colors closer to white for avoiding dark contours with black background.
-        return new Scalar(rng.nextInt(231) + 25,
-                rng.nextInt(231) + 25,
-                rng.nextInt(231) + 25);
+    public Integer getRootMIId(Integer eventM) {
+        return relationsHashMap.get(eventM);
     }
 
 }
