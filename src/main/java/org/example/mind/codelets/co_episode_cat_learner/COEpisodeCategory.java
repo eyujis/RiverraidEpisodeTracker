@@ -55,7 +55,7 @@ public class COEpisodeCategory implements Category {
 
         String rcvRelationType = new COEpisodeRelationIdentifier().identifyRelationType(sOEpisodeX, sOEpisodeY);
 
-        if(rectDistance>=MIN_RECT_DISTANCE
+        if(rectDistance<=MIN_RECT_DISTANCE
                 && sOEpisodeCategoryX.equals(sOEventCatX)
                 && sOEpisodeCategoryY.equals(sOEventCatY)
                 && relationType.equals(rcvRelationType)) {
