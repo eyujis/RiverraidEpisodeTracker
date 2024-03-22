@@ -6,8 +6,12 @@ import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategory;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategoryFactory;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeRelationIdentifier;
 import org.example.mind.codelets.object_proposer.ObjectComparator;
+import org.example.visualization.Category2Color;
+import org.example.visualization.Relation2Color;
+import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -79,6 +83,11 @@ public class COEpisodeTracker {
 //        TODO: uncomment the line below when creating the forgetting mechanism.
 //        cOEpisodes.getL().addAll(cOEpisodesNotPresentInCurrentsOEpisodes);
 
+        for(Idea cOEpisode : cOEpisodes.getL()) {
+//            System.out.println(cOEpisode.toStringFull());
+            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation->relation.get("eventId").getValue()).collect(Collectors.toList()));
+        }
+
         return cOEpisodes;
     }
 
@@ -120,19 +129,19 @@ public class COEpisodeTracker {
 
     private boolean assignPreviousRelationsIfThereAre(Idea e1, Idea e2, Idea previousCOEpisodes) {
         Optional<Idea> pe1 = previousCOEpisodes.getL().stream()
-                .filter(episode -> (int) episode.get("eventId").getValue()== (int) e1.get("eventId").getValue())
+                .filter(episode -> (int) episode.get("eventId").getValue() == (int) e1.get("eventId").getValue())
                 .findFirst();
 
         Optional<Idea> pe2 = previousCOEpisodes.getL().stream()
-                .filter(episode -> (int) episode.get("eventId").getValue()== (int) e2.get("eventId").getValue())
+                .filter(episode -> (int) episode.get("eventId").getValue() == (int) e2.get("eventId").getValue())
                 .findFirst();
 
         if(pe1.isPresent() && pe2.isPresent()) {
 
             Optional<Idea> pe1Rpe2 = pe1.get().get("relations").getL().stream()
-                    .filter(relation -> (int) relation.get("eventId").getValue()== (int) pe2.get().get("eventId").getValue()).findFirst();
+                    .filter(relation -> (int) relation.get("eventId").getValue() == (int) pe2.get().get("eventId").getValue()).findFirst();
             Optional<Idea> pe2Rpe1 = pe2.get().get("relations").getL().stream()
-                    .filter(relation -> (int) relation.get("eventId").getValue()== (int) pe1.get().get("eventId").getValue()).findFirst();
+                    .filter(relation -> (int) relation.get("eventId").getValue() == (int) pe1.get().get("eventId").getValue()).findFirst();
 
             if(pe1Rpe2.isPresent() && pe2Rpe1.isPresent()) {
 //                e1.get("relations").getL().add(pe1Rpe2.get().clone());
