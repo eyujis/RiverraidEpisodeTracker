@@ -67,6 +67,9 @@ public class VectorEventsProcessor {
         int currentTimestamp = (int) currentVectorEvent.get("currentTimestamp").getValue();
         extendedVectorEvent.get("currentTimestamp").setValue(currentTimestamp);
 
+        //update lastObjectState
+        extendedVectorEvent.get("lastObjectState").setL(currentVectorEvent.get("lastObjectState").clone().getL());
+
         Idea previousEventInitialState = previousVectorEvent.get("initialPropertyState");
 
         Idea currentEventInitialState = currentVectorEvent.get("initialPropertyState");
