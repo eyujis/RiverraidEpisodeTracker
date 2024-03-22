@@ -212,6 +212,7 @@ public class COEpisodeTrackerCodelet extends Codelet {
 
         return relationColor;
     }
+
     public double pointDistance(Point p1, Point p2) {
         double xSquared = Math.pow(p1.x-p2.x,2);
         double ySquared = Math.pow(p1.y-p2.y,2);
