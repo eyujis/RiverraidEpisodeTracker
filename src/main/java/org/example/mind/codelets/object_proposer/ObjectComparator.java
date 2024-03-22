@@ -78,13 +78,13 @@ public class ObjectComparator {
         } else if(right && top) {
             return pointDistance(new Point(x1br, y1br), new Point(x2tl, y2tl));
         } else if(left) {
-            return x1tl - x2br;
+            return Math.abs(x1tl - x2br);
         } else if(right) {
-            return x2tl - x1br;
+            return Math.abs(x2tl - x1br);
         } else if(bottom) {
-            return y1tl - y2br;
+            return Math.abs(y1tl - y2br);
         } else if(top) {
-            return y2tl - y1br;
+            return Math.abs(y2tl - y1br);
         } else {
             return 0;
         }
