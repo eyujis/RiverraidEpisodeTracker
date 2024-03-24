@@ -14,7 +14,7 @@ public class VectorEventCategory implements EventCategory {
     private double[] eventVector;
     double relevance;
 
-    double MIN_ANGLE_DIFF = 0.1;
+    double MIN_ANGLE_DIFF = 0.25 * Math.PI; // 45 degree angle
     double MIN_MAG_DIFF = 5;
     // hypotenuse of the rectangle triangle
     double MIN_DIST_DIFF = Math.sqrt(Math.pow(MIN_MAG_DIFF,2)+Math.pow(MIN_MAG_DIFF,2));
@@ -211,6 +211,8 @@ public class VectorEventCategory implements EventCategory {
         double bMag = vectorB.getNorm();
 
         double cosAngle = dotProduct/(aMag*bMag);
+        cosAngle = Math.max(-1.0, Math.min(cosAngle, 1.0)); // Clamp cosAngle to [-1, 1]
+
         double angleDiff = Math.acos(cosAngle);
 
         return Math.abs(angleDiff);

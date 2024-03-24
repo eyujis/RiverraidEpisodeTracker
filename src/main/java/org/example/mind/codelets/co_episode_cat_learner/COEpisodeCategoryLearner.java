@@ -12,7 +12,7 @@ public class COEpisodeCategoryLearner {
     double INCREMENT_FACTOR = 2;
     double DECREMENT_FACTOR = 1;
     double MINIMUM_RELEVANCE = 0;
-    double MIN_RECT_DISTANCE = 5;
+    double MIN_RECT_DISTANCE = 2;
 
     COEpisodeCategoryFactory cOEpisodeCategoryFactory;
 

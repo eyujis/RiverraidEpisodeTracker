@@ -60,9 +60,6 @@ public class ObjectTracker {
             //remove fragments from last frame that disappeared in the current frame
             if(assignment[i][1] <= unObjsCF.getL().size()-1) {
                 //new fragments in the current frame that where not present in the previous frame
-                // TODO there is an error here, sometimes the algorithm is assigning objects which are not close from
-                // each other; I fixed using the minimum distance. However there is other ways to fix it in a more elegant
-                // manner. Or creating a minimum criteria in the object comparator, or changing the Hungarian Algorithm;
                 if(assignment[i][0] > objsPF.getL().size()-1 || !objectComparator.closeCenterDistance(objsPF.getL().get(assignment[i][0]), unObjsCF.getL().get(assignment[i][1]))
 //                || !objectComparator.haveSimilarRectShape(objsPF.getL().get(assignment[i][0]), unObjsCF.getL().get(assignment[i][1]))
                 ) {
@@ -76,8 +73,8 @@ public class ObjectTracker {
         }
 
         if(newUnObjsCF.getL().size()>0) {
-            for(Idea newUnObjCF : objectFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
-                idObjsCF.add(newUnObjCF);
+            for(Idea newIdObjCF : objectFactory.createIdObjsFromUnObjs(newUnObjsCF).getL()) {
+                idObjsCF.add(newIdObjCF);
             }
         }
 

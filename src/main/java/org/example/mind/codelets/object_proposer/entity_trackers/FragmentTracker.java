@@ -49,9 +49,10 @@ public class FragmentTracker {
                 if(closeCenterDistance
 //                        && hueDistance<=MIN_HUE_DIFF
                         && similarRectShape
-                        && sameColor) {
-//                    dataMatrix[i][j] = centerDistance/100 + hueDistance;
-                    dataMatrix[i][j] = centerDistance;
+                        && sameColor
+                ) {
+                    dataMatrix[i][j] = centerDistance/100 + hueDistance;
+//                    dataMatrix[i][j] = centerDistance;
                 }
             }
         }
@@ -64,8 +65,9 @@ public class FragmentTracker {
             //remove fragments from last frame that disappeared in the current frame
             if(assignment[i][1] <= unFragsCF.getL().size()-1) {
                 //new fragments in the current frame that where not present in the previous frame
-                if(assignment[i][0] > fragsPF.getL().size()-1 || !fragComparator.closeCenterDistance(fragsPF.getL().get(assignment[i][0]), unFragsCF.getL().get(assignment[i][1])) ||
-                !fragComparator.haveSimilarRectShape(fragsPF.getL().get(assignment[i][0]), unFragsCF.getL().get(assignment[i][1]))) {
+                if(assignment[i][0] > fragsPF.getL().size()-1 || !fragComparator.closeCenterDistance(fragsPF.getL().get(assignment[i][0]), unFragsCF.getL().get(assignment[i][1]))
+                        || !fragComparator.haveSimilarRectShape(fragsPF.getL().get(assignment[i][0]), unFragsCF.getL().get(assignment[i][1]))
+                ) {
                     newUnFragsCF.getL().add(unFragsCF.getL().get(assignment[i][1]));
                     //assigns fragments in the previous frame to fragments in the current frame
                 } else {

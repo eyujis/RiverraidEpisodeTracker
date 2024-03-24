@@ -153,7 +153,7 @@ public class ObjectProposerCodelet extends Codelet {
 
             Scalar colorId = (Scalar) idObjs.getL().get(i).get("colorId").getValue();
 
-            Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 1);
+            Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, -1);
 //            Imgproc.drawContours(frame,
 //                    (List<MatOfPoint>) idObj.get("contours").getValue(),
 //                    -1,

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class VectorEventsProcessor {
-    double MIN_ANGLE_DIFF = 0.1;
+    double MIN_ANGLE_DIFF = 0.5 * Math.PI; // 45 degree angle
 
     Idea resultVectorEvents;
     ArrayList<EventPair> eventVectorPairsToBeExtended;
@@ -66,6 +66,9 @@ public class VectorEventsProcessor {
         //update timestamp
         int currentTimestamp = (int) currentVectorEvent.get("currentTimestamp").getValue();
         extendedVectorEvent.get("currentTimestamp").setValue(currentTimestamp);
+
+        //update lastObjectState
+        extendedVectorEvent.get("lastObjectState").setL(currentVectorEvent.get("lastObjectState").clone().getL());
 
         Idea previousEventInitialState = previousVectorEvent.get("initialPropertyState");
 
@@ -162,6 +165,8 @@ public class VectorEventsProcessor {
         double bMag = vectorB.getNorm();
 
         double cosAngle = dotProduct/(aMag*bMag);
+        cosAngle = Math.max(-1.0, Math.min(cosAngle, 1.0)); // Clamp cosAngle to [-1, 1]
+
         double angleDiff = Math.acos(cosAngle);
 
         return Math.abs(angleDiff);

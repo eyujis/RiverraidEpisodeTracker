@@ -22,7 +22,7 @@ public class Main {
         firstJFrame.setVisible(true);
         secondJFrame.setVisible(true);
 
-        RiverRaidEnv riverRaidEnv = new RiverRaidDataset();
+        RiverRaidEnv riverRaidEnv = new RiverRaidPyGame();
         AgentMind agentMind = new AgentMind(riverRaidEnv, firstJFrame, secondJFrame);
     }
 

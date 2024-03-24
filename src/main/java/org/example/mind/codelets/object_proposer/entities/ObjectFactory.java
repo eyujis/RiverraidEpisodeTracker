@@ -58,13 +58,12 @@ public class ObjectFactory {
         Idea centerIdea = getCenterFromBoundRect(boundRectIdea);
         objectIdea.add(centerIdea);
 
-//        if((double)sizeIdea.get("height").getValue()<5
-//                && (double)sizeIdea.get("width").getValue()<5) {
-//            return null;
-//        }
-
         if((double)sizeIdea.get("height").getValue()<5
                 || (double)sizeIdea.get("width").getValue()<5) {
+            return null;
+        }
+
+        if(!isBoundingBoxBoundToTheFieldLimits(objectIdea)) {
             return null;
         }
 
@@ -186,6 +185,22 @@ public class ObjectFactory {
 
         o1.get("center.x").setValue(o2.get("center.x").getValue());
         o1.get("center.y").setValue(o2.get("center.y").getValue());
+    }
+
+    public static boolean isBoundingBoxBoundToTheFieldLimits(Idea object) {
+        double width = 304;
+        double height = 364;
+
+        double tlX = (double) object.get("boundRect.tl.x").getValue();
+        double tlY = (double) object.get("boundRect.tl.y").getValue();
+        double brX = (double) object.get("boundRect.br.x").getValue();
+        double brY = (double) object.get("boundRect.br.y").getValue();
+
+        if (brX <= 0 || tlX >= width || brY >= height || tlY <= 0) {
+            return false;
+        }
+
+        return true;
     }
 
 }

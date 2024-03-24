@@ -13,7 +13,7 @@ public class COEpisodeCategory implements Category {
     String sOEpisodeCategoryX;
     String sOEpisodeCategoryY;
     double relevance;
-    double MIN_RECT_DISTANCE = 5;
+    double MIN_RECT_DISTANCE = 2;
 
 
     public COEpisodeCategory(String relationType, String sOEpisodeCategoryX, String sOEpisodeCategoryY, double relevance) {
@@ -55,7 +55,7 @@ public class COEpisodeCategory implements Category {
 
         String rcvRelationType = new COEpisodeRelationIdentifier().identifyRelationType(sOEpisodeX, sOEpisodeY);
 
-        if(rectDistance>=MIN_RECT_DISTANCE
+        if(rectDistance<=MIN_RECT_DISTANCE
                 && sOEpisodeCategoryX.equals(sOEventCatX)
                 && sOEpisodeCategoryY.equals(sOEventCatY)
                 && relationType.equals(rcvRelationType)) {
