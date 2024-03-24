@@ -58,6 +58,9 @@ public class ObjectFactory {
         Idea centerIdea = getCenterFromBoundRect(boundRectIdea);
         objectIdea.add(centerIdea);
 
+        Idea isAgentIdea = getIsAgent(fragmentCluster);
+        objectIdea.add(isAgentIdea);
+
         if((double)sizeIdea.get("height").getValue()<5
                 || (double)sizeIdea.get("width").getValue()<5) {
             return null;
@@ -67,17 +70,20 @@ public class ObjectFactory {
             return null;
         }
 
-
-//        Idea objectCategoryIdea = new Idea("objectCategory", null);
-//        objectIdea.add(objectCategoryIdea);
-
-//        Idea objectFragments = new Idea("fragments", null);
-//        objectIdea.add(objectFragments);
-
-
         return objectIdea;
     }
 
+    private Idea getIsAgent(Idea fragmentCluster) {
+        if(fragmentCluster.getL().size()==1
+                && (double) fragmentCluster.getL().get(0).get("color.B").getValue() == 84
+                && (double) fragmentCluster.getL().get(0).get("color.G").getValue() == 252
+                && (double) fragmentCluster.getL().get(0).get("color.R").getValue() == 252
+        ) {
+            return new Idea("isAgent", true);
+        } else {
+            return new Idea("isAgent", false);
+        }
+    }
 
     private Idea getClusterOutsideRect(Idea fragmentCluster) {
         Idea resultRect = fragmentCluster.getL().get(0).get("boundRect");

@@ -20,18 +20,26 @@ import java.io.IOException;
 
 
 public class AgentMind extends Mind {
+    JLabel rawDataBufferImgJLabel = null;
+    JLabel objectsImgJLabel = null;
+    JLabel mergedObjectsImgJLabel = null;
+    JLabel categoriesImgJLabel = null;
+    JLabel eventImgJLabel = null;
+    JLabel forgettingSOEpisodeImgJLabel = null;
+
     public AgentMind(RiverRaidEnv env, FirstJFrame firstJFrame, SecondJFrame secondJFrame) throws IOException {
         super();
 
-        JLabel rawDataBufferImgJLabel = firstJFrame.getRawDataBufferImgJLabel();
-        JLabel objectsImgJLabel = firstJFrame.getObjectsImgJLabel();
-        JLabel mergedObjectsImgJLabel = firstJFrame.getMergedObjectsImgJLabel();
-        JLabel categoriesImgJLabel = firstJFrame.getCategoriesImgJLabel();
-
-        JLabel eventImgJLabel = secondJFrame.getEventTrackerImgJLabel();
-        JLabel forgettingSOEpisodeImgJLabel = secondJFrame.getForgettingSOEpisodesImgJLabel();
-
-        JLabel cOEpisodesImgJLabel = secondJFrame.getcOEpisodesImgJLabel();
+        if(firstJFrame!=null) {
+             rawDataBufferImgJLabel = firstJFrame.getRawDataBufferImgJLabel();
+             objectsImgJLabel = firstJFrame.getObjectsImgJLabel();
+             mergedObjectsImgJLabel = firstJFrame.getMergedObjectsImgJLabel();
+             categoriesImgJLabel = firstJFrame.getCategoriesImgJLabel();
+        }
+        if(secondJFrame!=null) {
+            eventImgJLabel = secondJFrame.getEventTrackerImgJLabel();
+            forgettingSOEpisodeImgJLabel = secondJFrame.getForgettingSOEpisodesImgJLabel();
+        }
 
         Memory rawDataBufferMO;
         Memory detectedFragmentsMO;
@@ -130,34 +138,8 @@ public class AgentMind extends Mind {
         Codelet forgettingSOEpisodesCodelet = new ForgettingSOEpisodesCodelet(forgettingSOEpisodeImgJLabel);
         forgettingSOEpisodesCodelet.addInput(detectedEventsMO);
         forgettingSOEpisodesCodelet.addOutput(detectedEventsMO);
-//        forgettingSOEpisodesCodelet.setIsMemoryObserver(true);
-//        detectedEventsMO.addMemoryObserver(forgettingSOEpisodesCodelet);
         forgettingSOEpisodesCodelet.setName("ForgettingSOEpisodes");
         insertCodelet(forgettingSOEpisodesCodelet);
-
-        Codelet cOEpisodeCategoryLearnerCodelet = new COEpisodeCategoryLearnerCodelet();
-        cOEpisodeCategoryLearnerCodelet.addInput(detectedEventsMO);
-        cOEpisodeCategoryLearnerCodelet.addInput(cOEpisodeCategoriesMO);
-        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
-        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesMO);
-        cOEpisodeCategoryLearnerCodelet.addOutput(cOEpisodeCategoriesTSMO);
-        cOEpisodeCategoryLearnerCodelet.setIsMemoryObserver(true);
-        detectedEventsMO.addMemoryObserver(cOEpisodeCategoryLearnerCodelet);
-        cOEpisodeCategoryLearnerCodelet.setName("COEpisodeCategoryLearner");
-        insertCodelet(cOEpisodeCategoryLearnerCodelet);
-
-        Codelet cOEpisodeTrackerCodelet = new COEpisodeTrackerCodelet(cOEpisodesImgJLabel);
-        cOEpisodeTrackerCodelet.addInput(detectedEventsMO);
-        cOEpisodeTrackerCodelet.addInput(cOEpisodeCategoriesMO);
-        cOEpisodeTrackerCodelet.addOutput(cOEpisodeCategoriesMO);
-        cOEpisodeTrackerCodelet.addInput(cOEpisodeTrackerTSMO);
-        cOEpisodeTrackerCodelet.addOutput(cOEpisodeTrackerTSMO);
-        cOEpisodeTrackerCodelet.addOutput(detectedCOEpisodesMO);
-        cOEpisodeTrackerCodelet.setIsMemoryObserver(true);
-        detectedEventsMO.addMemoryObserver(cOEpisodeTrackerCodelet);
-        cOEpisodeTrackerCodelet.setName("COEpisodeTracker");
-        insertCodelet(cOEpisodeTrackerCodelet);
-
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
@@ -171,7 +153,7 @@ public class AgentMind extends Mind {
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())
-            c.setTimeStep(100);
+            c.setTimeStep(1);
 
         // Start Cognitive Cycle
         start();

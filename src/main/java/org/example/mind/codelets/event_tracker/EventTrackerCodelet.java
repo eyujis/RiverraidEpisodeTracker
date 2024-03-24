@@ -61,10 +61,12 @@ public class EventTrackerCodelet extends Codelet {
             eventCategories.getL().addAll(eventTracker.getAssimilatedCategories().getL());
             eventCategoriesMO.setI(eventCategories);
         }
-        try {
-            updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(eventImgJLabel!=null) {
+            try {
+                updateJLabelImg(eventImgJLabel, getBuffImageFromEvents(eventTracker.getDetectedEvents()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -78,7 +80,7 @@ public class EventTrackerCodelet extends Codelet {
 
     public BufferedImage getBuffImageFromEvents(Idea events) throws IOException {
 //        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
-        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(100,100,100));
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(0,0,0));
 
         addTimestamp(frame, events.getValue().toString());
 

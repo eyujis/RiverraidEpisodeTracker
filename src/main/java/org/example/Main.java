@@ -1,6 +1,5 @@
 package org.example;
 
-import org.example.environment.RiverRaidDataset;
 import org.example.environment.RiverRaidEnv;
 import org.example.environment.RiverRaidPyGame;
 import org.example.mind.AgentMind;
@@ -12,15 +11,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
         loadOpenCVLibraryFromCurrentPath();
+        boolean IS_PRODUCTION = false;
 
-        FirstJFrame firstJFrame = new FirstJFrame();
-        SecondJFrame secondJFrame = new SecondJFrame();
+        FirstJFrame firstJFrame = null;
+        SecondJFrame secondJFrame = null;
 
+        if(!IS_PRODUCTION) {
+            firstJFrame = new FirstJFrame();
+            secondJFrame = new SecondJFrame();
 
-        firstJFrame.setVisible(true);
-        secondJFrame.setVisible(true);
+            firstJFrame.setVisible(true);
+            secondJFrame.setVisible(true);
+        }
 
         RiverRaidEnv riverRaidEnv = new RiverRaidPyGame();
         AgentMind agentMind = new AgentMind(riverRaidEnv, firstJFrame, secondJFrame);

@@ -90,13 +90,17 @@ public class ObjectProposerCodelet extends Codelet {
         }
 
 //          ----------visualization----------
+        if(this.objectsImgJLabel==null || this.mergedObjectsImgJLabel==null
+                || this.categoriesImgJLabel==null) {
+            return;
+        }
         try {
             Idea unFrags = fragmentProposer.getUnFrags();
             BufferedImage unFragsBuffImg = buffImageFromUnObjectList(unFrags);
             updateJLabelImg(this.objectsImgJLabel, unFragsBuffImg);
 
             Idea idFrags = fragmentProposer.getDetectedFragmentsCF();
-            BufferedImage idFragsBuffImg = buffImageFromIdObjectList(idFrags);
+            BufferedImage idFragsBuffImg = buffImageFromIdFragmentList(idFrags);
             updateJLabelImg(this.mergedObjectsImgJLabel, idFragsBuffImg);
 
             Idea idObjs = objectProposer.getDetectedObjectsCF();
@@ -137,10 +141,30 @@ public class ObjectProposerCodelet extends Codelet {
         return bufferedImage;
     }
 
-    public BufferedImage buffImageFromIdObjectList(Idea idObjs) throws IOException {
-//        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
-        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(100,100,100));
+    public BufferedImage buffImageFromIdFragmentList(Idea idObjs) throws IOException {
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(0,0,0));
 
+        for (int i = 0; i < idObjs.getL().size(); i++) {
+//            Idea idObj = idObjs.getL().get(i);
+            Idea boundRectIdea = idObjs.getL().get(i).get("boundRect");
+
+            double tl_x = (double) boundRectIdea.get("tl.x").getValue();
+            double tl_y = (double) boundRectIdea.get("tl.y").getValue();
+            double br_x = (double) boundRectIdea.get("br.x").getValue();
+            double br_y = (double) boundRectIdea.get("br.y").getValue();
+
+            Scalar colorId = new Scalar(255,255,255);
+
+            Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, -1);
+        }
+
+        BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
+
+        return bufferedImage;
+    }
+
+    public BufferedImage buffImageFromIdObjectList(Idea idObjs) throws IOException {
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(0,0,0));
 
         for (int i = 0; i < idObjs.getL().size(); i++) {
 //            Idea idObj = idObjs.getL().get(i);
@@ -154,11 +178,6 @@ public class ObjectProposerCodelet extends Codelet {
             Scalar colorId = (Scalar) idObjs.getL().get(i).get("colorId").getValue();
 
             Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, -1);
-//            Imgproc.drawContours(frame,
-//                    (List<MatOfPoint>) idObj.get("contours").getValue(),
-//                    -1,
-//                    (Scalar) idObj.get("colorId").getValue(),
-//                    -1);
         }
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
@@ -167,8 +186,7 @@ public class ObjectProposerCodelet extends Codelet {
     }
 
     public BufferedImage buffImageFromCatObjectList(Idea idFrags, Idea idObjs, String timestamp) throws IOException {
-//        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
-        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(100,100,100));
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(0,0,0));
 
 
         for (int i = 0; i < idFrags.getL().size(); i++) {

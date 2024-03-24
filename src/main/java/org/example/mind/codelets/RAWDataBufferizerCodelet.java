@@ -45,7 +45,7 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
 
 //        Visualization
-        if(rawDataBufferMO.getI() instanceof Idea) {
+        if(rawDataBufferMO.getI() instanceof Idea && rawDataBufferImgJLabel!=null) {
             Idea rawDataBufferIdea = (Idea) rawDataBufferMO.getI();
             BufferedImage imageToUpdate = (BufferedImage) rawDataBufferIdea.getL().get(0).get("image").getValue();;
             updateJLabelImg(this.rawDataBufferImgJLabel, imageToUpdate);

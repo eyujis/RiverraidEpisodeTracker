@@ -57,10 +57,17 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
                 filteredSOEpisodes.getL().addAll(filteredSOEpisodesList);
                 sOEpisodesMO.setI(filteredSOEpisodes);
 
-                try {
-                    updateJLabelImg(forgettingSOEpisodesImgJLabel, getBuffImageFromEvents(filteredSOEpisodes));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                System.out.println("============="+filteredSOEpisodes.getValue()+"=============");
+                for(Idea filteredSOEpisode : filteredSOEpisodes.getL()) {
+                    System.out.println(filteredSOEpisode.toStringFull());
+                }
+
+                if(forgettingSOEpisodesImgJLabel!=null) {
+                    try {
+                        updateJLabelImg(forgettingSOEpisodesImgJLabel, getBuffImageFromEvents(filteredSOEpisodes));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -87,7 +94,7 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
 
     public BufferedImage getBuffImageFromEvents(Idea events) throws IOException {
 //        Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
-        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(100,100,100));
+        Mat frame = new Mat(new Size(304, 364), CvType.CV_8UC3, new Scalar(0,0,0));
 
         addTimestamp(frame, events.getValue().toString());
 

@@ -13,7 +13,7 @@ import java.util.Optional;
 public class FragmentProposer {
 
     private VSSketchpad vsSketchpad;
-    private FragmentTracker fragmentTracker;
+//    private FragmentTracker fragmentTracker;
     private FragmentComparator fragmentComparator;
     FragmentFactory fragmentFactory;
     EntityCategoryFactory entityCategoryFactory;
@@ -28,7 +28,7 @@ public class FragmentProposer {
         vsSketchpad = new VSSketchpad();
         fragmentFactory = new FragmentFactory();
         entityCategoryFactory = new EntityCategoryFactory();
-        fragmentTracker = new FragmentTracker();
+//        fragmentTracker = new FragmentTracker();
         fragmentComparator = new FragmentComparator();
     }
 
@@ -55,7 +55,8 @@ public class FragmentProposer {
             }
         }
 
-        idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
+//        idFragsCF = fragmentTracker.identifyBetweenFrames(unFragsCF);
+        idFragsCF = unFragsCF;
     }
 
     public void assignObjectCategories(Idea objectCategories) {
