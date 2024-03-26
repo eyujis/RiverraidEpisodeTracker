@@ -27,6 +27,7 @@ public class COEpisodeTracker {
         Idea cOEpisodes = sOEpisodes.clone();
         initializeRelations(cOEpisodes);
         duplicateRelations(cOEpisodes, previousCOEpisodes);
+        int currentTimestamp = (int) sOEpisodes.getValue();
 
         // compare each sOEpisode;
         for (int i = 0; i < cOEpisodes.getL().size(); i++) {
@@ -37,7 +38,8 @@ public class COEpisodeTracker {
                 // check if is there a previous relation between SOEpisodes;
                 boolean alreadyInARelation = assignPreviousRelationsIfThereAre(ex, ey, previousCOEpisodes);
 
-                if(!alreadyInARelation) {
+                if(!alreadyInARelation
+                        && areEventsWithinTheCurrentTimeTransition(ex, ey, currentTimestamp)) {
                     boolean foundCategory = false;
                     boolean foundICategory = false;
 
@@ -85,7 +87,10 @@ public class COEpisodeTracker {
 
         for(Idea cOEpisode : cOEpisodes.getL()) {
 //            System.out.println(cOEpisode.toStringFull());
-            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation-> ((String) relation.get("relationType").getValue() + ((Integer) relation.get("eventId").getValue()).toString())).collect(Collectors.toList()));
+            if(cOEpisode.get("relations").getL().stream()
+                    .filter(relation->relation.get("relationType").getValue().equals("mi")).collect(Collectors.toList()).size()>1) {
+                System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation-> ((String) relation.get("relationType").getValue() + ((Integer) relation.get("eventId").getValue()).toString())).collect(Collectors.toList()));
+            }
         }
 
         return cOEpisodes;
@@ -194,5 +199,13 @@ public class COEpisodeTracker {
         COEpisodeRelationIdentifier relationIdentifier = new COEpisodeRelationIdentifier();
         String relation = relationIdentifier.identifyRelationType(sOEpisode1, sOEpisode2);
         return relation;
+    }
+
+    public boolean areEventsWithinTheCurrentTimeTransition(Idea ex, Idea ey, int currentTimestamp) {
+        int exCurrentTimestamp = (int) ex.get("currentTimestamp").getValue();
+        int eyCurrentTimestamp = (int) ey.get("currentTimestamp").getValue();
+
+        return Math.max(exCurrentTimestamp, eyCurrentTimestamp) == currentTimestamp
+                && Math.min(exCurrentTimestamp, eyCurrentTimestamp) >= currentTimestamp-1;
     }
 }
