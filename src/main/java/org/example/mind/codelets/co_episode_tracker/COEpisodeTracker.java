@@ -96,7 +96,6 @@ public class COEpisodeTracker {
         return cOEpisodes;
     }
 
-
     public boolean verifyAndCreateRelationship(Idea ex, Idea ey, Idea categoryIdea) {
         String categoryName = categoryIdea.getName();
         COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
@@ -156,7 +155,6 @@ public class COEpisodeTracker {
         }
         return false;
     }
-
 
     private ArrayList<Integer> getEpisodeIds(Idea episodesIdea) {
         // add previousCOEpisodes that are not in the current timestamp;
