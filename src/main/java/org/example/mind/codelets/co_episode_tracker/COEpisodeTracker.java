@@ -58,7 +58,7 @@ public class COEpisodeTracker {
                         double rectDistance = new ObjectComparator().rectDistance(ex.get("lastObjectState") ,
                                 ey.get("lastObjectState"));
 
-                        if(relationType != null && rectDistance <= MIN_RECT_DISTANCE) {
+                        if(relationType != null && (rectDistance <= MIN_RECT_DISTANCE || sameObjectId(ex, ey))) {
                             Idea newCategoryIdea = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                             COEpisodeCategory newCategory = (COEpisodeCategory) newCategoryIdea.getValue();
 
@@ -205,5 +205,12 @@ public class COEpisodeTracker {
 
         return Math.max(exCurrentTimestamp, eyCurrentTimestamp) == currentTimestamp
                 && Math.min(exCurrentTimestamp, eyCurrentTimestamp) >= currentTimestamp-1;
+    }
+
+    public boolean sameObjectId(Idea ex, Idea ey) {
+        int objectIdx = (int) ex.get("objectId").getValue();
+        int objectIdy = (int) ey.get("objectId").getValue();
+
+        return objectIdx==objectIdy;
     }
 }

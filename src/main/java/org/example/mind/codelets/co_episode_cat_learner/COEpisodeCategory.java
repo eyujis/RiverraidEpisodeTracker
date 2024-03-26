@@ -55,7 +55,7 @@ public class COEpisodeCategory implements Category {
 
         String rcvRelationType = new COEpisodeRelationIdentifier().identifyRelationType(sOEpisodeX, sOEpisodeY);
 
-        if(rectDistance<=MIN_RECT_DISTANCE
+        if((rectDistance<=MIN_RECT_DISTANCE || sameObjectId(sOEpisodeX, sOEpisodeY))
                 && sOEpisodeCategoryX.equals(sOEventCatX)
                 && sOEpisodeCategoryY.equals(sOEventCatY)
                 && relationType.equals(rcvRelationType)) {
@@ -87,5 +87,12 @@ public class COEpisodeCategory implements Category {
 
     public String getSOEpisodeCategoryY() {
         return sOEpisodeCategoryY;
+    }
+
+    public boolean sameObjectId(Idea ex, Idea ey) {
+        int objectIdx = (int) ex.get("objectId").getValue();
+        int objectIdy = (int) ey.get("objectId").getValue();
+
+        return objectIdx==objectIdy;
     }
 }

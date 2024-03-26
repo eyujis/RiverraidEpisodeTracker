@@ -59,7 +59,8 @@ public class COEpisodeCategoryLearner {
                 double rectDistance = new ObjectComparator().rectDistance(e1.get("lastObjectState") ,
                         e2.get("lastObjectState"));
 
-                if(relationType != null && rectDistance <= MIN_RECT_DISTANCE) {
+                if(relationType != null
+                        && (rectDistance <= MIN_RECT_DISTANCE || sameObjectId(e1, e2))) {
                     Idea newCategory = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                     rcvCOEpisodeCategories.getL().add(newCategory);
                 }
@@ -115,4 +116,10 @@ public class COEpisodeCategoryLearner {
         }
     }
 
+    public boolean sameObjectId(Idea ex, Idea ey) {
+        int objectIdx = (int) ex.get("objectId").getValue();
+        int objectIdy = (int) ey.get("objectId").getValue();
+
+        return objectIdx==objectIdy;
+    }
 }
