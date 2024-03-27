@@ -85,15 +85,17 @@ public class COEpisodeTrackerCodelet extends Codelet {
                             cOEpisodeCategories,
                             previousCOEpisodes);
 
-                    for(Idea cOEpisode : cOEpisodes.getL()) {
-                   System.out.println(cOEpisode.toStringFull());
-//                        if(cOEpisode.get("relations").getL().stream()
-//                                .filter(relation->relation.get("relationType").getValue().equals("mi")).collect(Collectors.toList()).size()>1) {
-//                            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation-> ((String) relation.get("relationType").getValue() + ((Integer) relation.get("eventId").getValue()).toString())).collect(Collectors.toList()));
-//                        }
-                    }
-
                     detectedCOEpisodesMO.setI(cOEpisodes);
+
+                    //Visualization
+                    System.out.println("==========="+ cOEpisodes.getValue().toString() +"===========");
+                    for(Idea cOEpisode : cOEpisodes.getL()) {
+//                   System.out.println(cOEpisode.toStringFull());
+                        if(cOEpisode.get("relations").getL().stream()
+                                .filter(relation->relation.get("relationType").getValue().equals("mi")).collect(Collectors.toList()).size()>1) {
+                            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation-> ((String) relation.get("relationType").getValue() + ((Integer) relation.get("eventId").getValue()).toString())).collect(Collectors.toList()));
+                        }
+                    }
 
                     updateJLabelImg(coEpisodeImgJLabel, getBuffImageFromEvents(cOEpisodes));
                 }
@@ -113,7 +115,6 @@ public class COEpisodeTrackerCodelet extends Codelet {
         Mat frame = new Mat(new Size(304, 322), CvType.CV_8UC3, new Scalar(0,0,0));
 
         addTimestamp(frame, events.getValue().toString());
-        System.out.println("==========="+ events.getValue().toString() +"===========");
 
         for(Idea eventIdea : events.getL()) {
             if(((String) eventIdea.get("eventCategory").getValue()).startsWith("VectorEventCategory")
