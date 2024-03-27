@@ -39,6 +39,7 @@ public class VectorEventsProcessor {
         ArrayList<Idea> currentEventsNotExtended = (ArrayList<Idea>) currentVectorEvents.getL().stream()
                 .filter(event -> !currentEventIdsInEventsToBeExtended.contains(event.get("eventId").getValue()))
                 .collect(Collectors.toList());
+
         resultVectorEvents.getL().addAll(previousEventsNotExtended);
         resultVectorEvents.getL().addAll(currentEventsNotExtended);
 
