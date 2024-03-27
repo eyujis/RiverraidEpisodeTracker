@@ -85,6 +85,14 @@ public class COEpisodeTrackerCodelet extends Codelet {
                             cOEpisodeCategories,
                             previousCOEpisodes);
 
+                    for(Idea cOEpisode : cOEpisodes.getL()) {
+                   System.out.println(cOEpisode.toStringFull());
+//                        if(cOEpisode.get("relations").getL().stream()
+//                                .filter(relation->relation.get("relationType").getValue().equals("mi")).collect(Collectors.toList()).size()>1) {
+//                            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation-> ((String) relation.get("relationType").getValue() + ((Integer) relation.get("eventId").getValue()).toString())).collect(Collectors.toList()));
+//                        }
+                    }
+
                     detectedCOEpisodesMO.setI(cOEpisodes);
 
                     updateJLabelImg(coEpisodeImgJLabel, getBuffImageFromEvents(cOEpisodes));
