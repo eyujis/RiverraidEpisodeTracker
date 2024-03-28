@@ -39,6 +39,7 @@ public class VectorEventsProcessor {
         ArrayList<Idea> currentEventsNotExtended = (ArrayList<Idea>) currentVectorEvents.getL().stream()
                 .filter(event -> !currentEventIdsInEventsToBeExtended.contains(event.get("eventId").getValue()))
                 .collect(Collectors.toList());
+
         resultVectorEvents.getL().addAll(previousEventsNotExtended);
         resultVectorEvents.getL().addAll(currentEventsNotExtended);
 
@@ -66,6 +67,9 @@ public class VectorEventsProcessor {
         //update timestamp
         int currentTimestamp = (int) currentVectorEvent.get("currentTimestamp").getValue();
         extendedVectorEvent.get("currentTimestamp").setValue(currentTimestamp);
+
+        //update lastObjectState
+        extendedVectorEvent.get("lastObjectState").setL(currentVectorEvent.get("lastObjectState").clone().getL());
 
         Idea previousEventInitialState = previousVectorEvent.get("initialPropertyState");
 

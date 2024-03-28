@@ -6,8 +6,12 @@ import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategory;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategoryFactory;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeRelationIdentifier;
 import org.example.mind.codelets.object_proposer.ObjectComparator;
+import org.example.visualization.Category2Color;
+import org.example.visualization.Relation2Color;
+import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,9 +25,9 @@ public class COEpisodeTracker {
     public Idea updateRelations(Idea sOEpisodes, Idea cOEpisodeCategories, Idea previousCOEpisodes) {
         cOEpisodeCategoryFactory = new COEpisodeCategoryFactory();
         Idea cOEpisodes = sOEpisodes.clone();
-        // TODO initialize with previous relations!
         initializeRelations(cOEpisodes);
         duplicateRelations(cOEpisodes, previousCOEpisodes);
+        int currentTimestamp = (int) sOEpisodes.getValue();
 
         // compare each sOEpisode;
         for (int i = 0; i < cOEpisodes.getL().size(); i++) {
@@ -34,7 +38,8 @@ public class COEpisodeTracker {
                 // check if is there a previous relation between SOEpisodes;
                 boolean alreadyInARelation = assignPreviousRelationsIfThereAre(ex, ey, previousCOEpisodes);
 
-                if(!alreadyInARelation) {
+                if(!alreadyInARelation
+                        && areEventsWithinTheCurrentTimeTransition(ex, ey, currentTimestamp)) {
                     boolean foundCategory = false;
                     boolean foundICategory = false;
 
@@ -50,10 +55,10 @@ public class COEpisodeTracker {
                         String c1 = (String) ex.get("eventCategory").getValue();
                         String c2 = (String) ey.get("eventCategory").getValue();
 
-                        double rectDistance = new ObjectComparator().rectDistance(ex.get("lastObjectState") ,
-                                ey.get("lastObjectState"));
+//                        double rectDistance = new ObjectComparator().rectDistance(ex.get("lastObjectState") ,
+//                                ey.get("lastObjectState"));
 
-                        if(relationType != null && rectDistance <= MIN_RECT_DISTANCE) {
+                        if(relationType != null && Coupling.haveCouplingConditions(ex, ey, relationType)) {
                             Idea newCategoryIdea = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                             COEpisodeCategory newCategory = (COEpisodeCategory) newCategoryIdea.getValue();
 
@@ -82,7 +87,6 @@ public class COEpisodeTracker {
 
         return cOEpisodes;
     }
-
 
     public boolean verifyAndCreateRelationship(Idea ex, Idea ey, Idea categoryIdea) {
         String categoryName = categoryIdea.getName();
@@ -121,19 +125,19 @@ public class COEpisodeTracker {
 
     private boolean assignPreviousRelationsIfThereAre(Idea e1, Idea e2, Idea previousCOEpisodes) {
         Optional<Idea> pe1 = previousCOEpisodes.getL().stream()
-                .filter(episode -> episode.get("eventId").getValue()==e1.get("eventId").getValue())
+                .filter(episode -> (int) episode.get("eventId").getValue() == (int) e1.get("eventId").getValue())
                 .findFirst();
 
         Optional<Idea> pe2 = previousCOEpisodes.getL().stream()
-                .filter(episode -> episode.get("eventId").getValue()==e2.get("eventId").getValue())
+                .filter(episode -> (int) episode.get("eventId").getValue() == (int) e2.get("eventId").getValue())
                 .findFirst();
 
         if(pe1.isPresent() && pe2.isPresent()) {
 
             Optional<Idea> pe1Rpe2 = pe1.get().get("relations").getL().stream()
-                    .filter(relation -> relation.get("eventId").getValue()==pe2.get().get("eventId").getValue()).findFirst();
+                    .filter(relation -> (int) relation.get("eventId").getValue() == (int) pe2.get().get("eventId").getValue()).findFirst();
             Optional<Idea> pe2Rpe1 = pe2.get().get("relations").getL().stream()
-                    .filter(relation -> relation.get("eventId").getValue()==pe1.get().get("eventId").getValue()).findFirst();
+                    .filter(relation -> (int) relation.get("eventId").getValue() == (int) pe1.get().get("eventId").getValue()).findFirst();
 
             if(pe1Rpe2.isPresent() && pe2Rpe1.isPresent()) {
 //                e1.get("relations").getL().add(pe1Rpe2.get().clone());
@@ -143,7 +147,6 @@ public class COEpisodeTracker {
         }
         return false;
     }
-
 
     private ArrayList<Integer> getEpisodeIds(Idea episodesIdea) {
         // add previousCOEpisodes that are not in the current timestamp;
@@ -186,5 +189,20 @@ public class COEpisodeTracker {
         COEpisodeRelationIdentifier relationIdentifier = new COEpisodeRelationIdentifier();
         String relation = relationIdentifier.identifyRelationType(sOEpisode1, sOEpisode2);
         return relation;
+    }
+
+    public boolean areEventsWithinTheCurrentTimeTransition(Idea ex, Idea ey, int currentTimestamp) {
+        int exCurrentTimestamp = (int) ex.get("currentTimestamp").getValue();
+        int eyCurrentTimestamp = (int) ey.get("currentTimestamp").getValue();
+
+        return Math.max(exCurrentTimestamp, eyCurrentTimestamp) == currentTimestamp
+                && Math.min(exCurrentTimestamp, eyCurrentTimestamp) >= currentTimestamp-1;
+    }
+
+    public boolean sameObjectId(Idea ex, Idea ey) {
+        int objectIdx = (int) ex.get("objectId").getValue();
+        int objectIdy = (int) ey.get("objectId").getValue();
+
+        return objectIdx==objectIdy;
     }
 }

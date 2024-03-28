@@ -176,9 +176,16 @@ public class EventTracker {
         currentTimestamp.setName("currentTimestamp");
         eventIdea.add(currentTimestamp);
 
+        Idea initialObjectState = objectTransition.get("timeSteps").getL().get(0).get("idObject").clone();
+        initialObjectState.setName("initialObjectState");
+        eventIdea.add(initialObjectState);
+
         Idea currentObjectState = objectTransition.get("timeSteps").getL().get(nSteps-1).get("idObject").clone();
         currentObjectState.setName("lastObjectState");
         eventIdea.add(currentObjectState);
+
+        double[] speedVector = ((VectorEventCategory) eventCategoryIdea.getValue()).getEventVector();
+        eventIdea.add(new Idea("categoryVector", speedVector));
 
         double[] eventVector = extractEventVector(objectTransition.get("timeSteps"), propertyName);
         eventIdea.add(new Idea("eventVector", eventVector));

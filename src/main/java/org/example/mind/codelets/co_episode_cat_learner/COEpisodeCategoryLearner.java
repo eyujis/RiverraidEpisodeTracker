@@ -1,6 +1,7 @@
 package org.example.mind.codelets.co_episode_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.co_episode_tracker.Coupling;
 import org.example.mind.codelets.object_proposer.ObjectComparator;
 
 import java.util.stream.Collectors;
@@ -12,7 +13,7 @@ public class COEpisodeCategoryLearner {
     double INCREMENT_FACTOR = 2;
     double DECREMENT_FACTOR = 1;
     double MINIMUM_RELEVANCE = 0;
-    double MIN_RECT_DISTANCE = 5;
+    double MIN_RECT_DISTANCE = 2;
 
     COEpisodeCategoryFactory cOEpisodeCategoryFactory;
 
@@ -59,7 +60,8 @@ public class COEpisodeCategoryLearner {
                 double rectDistance = new ObjectComparator().rectDistance(e1.get("lastObjectState") ,
                         e2.get("lastObjectState"));
 
-                if(relationType != null && rectDistance <= MIN_RECT_DISTANCE) {
+                if(relationType != null
+                        && (Coupling.haveCouplingConditions(e1, e2, relationType) || sameObjectId(e1, e2))) {
                     Idea newCategory = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                     rcvCOEpisodeCategories.getL().add(newCategory);
                 }
@@ -115,4 +117,10 @@ public class COEpisodeCategoryLearner {
         }
     }
 
+    public boolean sameObjectId(Idea ex, Idea ey) {
+        int objectIdx = (int) ex.get("objectId").getValue();
+        int objectIdy = (int) ey.get("objectId").getValue();
+
+        return objectIdx==objectIdy;
+    }
 }

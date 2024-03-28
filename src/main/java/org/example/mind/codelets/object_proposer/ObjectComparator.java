@@ -89,4 +89,44 @@ public class ObjectComparator {
             return 0;
         }
     }
+
+    public boolean areBoundingRectAdjacent(Idea o1, Idea o2) {
+        double x1tl = (double) o1.get("boundRect.tl.x").getValue();
+        double y1tl = (double) o1.get("boundRect.tl.y").getValue();
+        double x1br = (double) o1.get("boundRect.br.x").getValue();
+        double y1br = (double) o1.get("boundRect.br.y").getValue();
+        double x2tl = (double) o2.get("boundRect.tl.x").getValue();
+        double y2tl = (double) o2.get("boundRect.tl.y").getValue();
+        double x2br = (double) o2.get("boundRect.br.x").getValue();
+        double y2br = (double) o2.get("boundRect.br.y").getValue();
+        return areRectanglesAdjacent(x1tl, y1tl, x1br, y1br, x2tl, y2tl, x2br, y2br);
+    }
+
+    boolean areRectanglesAdjacent(double x1tl, double y1tl, double x1br, double y1br,
+                                  double x2tl, double y2tl, double x2br, double y2br) {
+        // Check if there is overlap in the x-axis
+        boolean overlapX = x1tl <= x2br && x1br >= x2tl;
+
+        // Check if there is overlap in the y-axis
+        boolean overlapY = y1tl <= y2br && y1br >= y2tl;
+
+        // Check if the rectangles are adjacent
+        if (overlapX && overlapY) {
+            // Rectangles are adjacent if there is overlap in both axes
+            return true;
+        }
+
+        // Check if the rectangles are adjacent horizontally
+        if ((x1tl == x2br || x1br == x2tl) && overlapY) {
+            return true;
+        }
+
+        // Check if the rectangles are adjacent vertically
+        if ((y1tl == y2br || y1br == y2tl) && overlapX) {
+            return true;
+        }
+
+        // If none of the above conditions met, rectangles are not adjacent
+        return false;
+    }
 }

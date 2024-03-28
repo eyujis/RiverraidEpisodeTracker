@@ -2,6 +2,7 @@ package org.example.mind.codelets.co_episode_cat_learner;
 
 import br.unicamp.cst.representation.idea.Category;
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.co_episode_tracker.Coupling;
 import org.example.mind.codelets.object_proposer.ObjectComparator;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public class COEpisodeCategory implements Category {
     String sOEpisodeCategoryX;
     String sOEpisodeCategoryY;
     double relevance;
-    double MIN_RECT_DISTANCE = 5;
+    double MIN_RECT_DISTANCE = 2;
 
 
     public COEpisodeCategory(String relationType, String sOEpisodeCategoryX, String sOEpisodeCategoryY, double relevance) {
@@ -55,7 +56,7 @@ public class COEpisodeCategory implements Category {
 
         String rcvRelationType = new COEpisodeRelationIdentifier().identifyRelationType(sOEpisodeX, sOEpisodeY);
 
-        if(rectDistance>=MIN_RECT_DISTANCE
+        if((Coupling.haveCouplingConditions(sOEpisodeX, sOEpisodeY, rcvRelationType) || sameObjectId(sOEpisodeX, sOEpisodeY))
                 && sOEpisodeCategoryX.equals(sOEventCatX)
                 && sOEpisodeCategoryY.equals(sOEventCatY)
                 && relationType.equals(rcvRelationType)) {
@@ -87,5 +88,12 @@ public class COEpisodeCategory implements Category {
 
     public String getSOEpisodeCategoryY() {
         return sOEpisodeCategoryY;
+    }
+
+    public boolean sameObjectId(Idea ex, Idea ey) {
+        int objectIdx = (int) ex.get("objectId").getValue();
+        int objectIdy = (int) ey.get("objectId").getValue();
+
+        return objectIdx==objectIdy;
     }
 }
