@@ -2,6 +2,7 @@ package org.example.mind.codelets.co_episode_cat_learner;
 
 import br.unicamp.cst.representation.idea.Category;
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.co_episode_tracker.Coupling;
 import org.example.mind.codelets.object_proposer.ObjectComparator;
 
 import java.util.List;
@@ -55,7 +56,7 @@ public class COEpisodeCategory implements Category {
 
         String rcvRelationType = new COEpisodeRelationIdentifier().identifyRelationType(sOEpisodeX, sOEpisodeY);
 
-        if((rectDistance<=MIN_RECT_DISTANCE || sameObjectId(sOEpisodeX, sOEpisodeY))
+        if((Coupling.haveCouplingConditions(sOEpisodeX, sOEpisodeY, rcvRelationType) || sameObjectId(sOEpisodeX, sOEpisodeY))
                 && sOEpisodeCategoryX.equals(sOEventCatX)
                 && sOEpisodeCategoryY.equals(sOEventCatY)
                 && relationType.equals(rcvRelationType)) {

@@ -1,6 +1,7 @@
 package org.example.mind.codelets.co_episode_cat_learner;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.co_episode_tracker.Coupling;
 import org.example.mind.codelets.object_proposer.ObjectComparator;
 
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class COEpisodeCategoryLearner {
                         e2.get("lastObjectState"));
 
                 if(relationType != null
-                        && (rectDistance <= MIN_RECT_DISTANCE || sameObjectId(e1, e2))) {
+                        && (Coupling.haveCouplingConditions(e1, e2, relationType) || sameObjectId(e1, e2))) {
                     Idea newCategory = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                     rcvCOEpisodeCategories.getL().add(newCategory);
                 }
