@@ -163,11 +163,11 @@ public class AgentMind extends Mind {
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectsBufferizerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())
