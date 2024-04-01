@@ -55,9 +55,6 @@ public class COEpisodeTracker {
                         String c1 = (String) ex.get("eventCategory").getValue();
                         String c2 = (String) ey.get("eventCategory").getValue();
 
-//                        double rectDistance = new ObjectComparator().rectDistance(ex.get("lastObjectState") ,
-//                                ey.get("lastObjectState"));
-
                         if(relationType != null && Coupling.haveCouplingConditions(ex, ey, relationType)) {
                             Idea newCategoryIdea = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                             COEpisodeCategory newCategory = (COEpisodeCategory) newCategoryIdea.getValue();

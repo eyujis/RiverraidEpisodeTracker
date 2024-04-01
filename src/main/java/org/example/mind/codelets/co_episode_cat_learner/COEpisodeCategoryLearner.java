@@ -57,9 +57,6 @@ public class COEpisodeCategoryLearner {
                 String c1 = (String) e1.get("eventCategory").getValue();
                 String c2 = (String) e2.get("eventCategory").getValue();
 
-                double rectDistance = new ObjectComparator().rectDistance(e1.get("lastObjectState") ,
-                        e2.get("lastObjectState"));
-
                 if(relationType != null
                         && (Coupling.haveCouplingConditions(e1, e2, relationType) || sameObjectId(e1, e2))) {
                     Idea newCategory = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);

@@ -14,7 +14,6 @@ public class COEpisodeCategory implements Category {
     String sOEpisodeCategoryX;
     String sOEpisodeCategoryY;
     double relevance;
-    double MIN_RECT_DISTANCE = 2;
 
 
     public COEpisodeCategory(String relationType, String sOEpisodeCategoryX, String sOEpisodeCategoryY, double relevance) {
