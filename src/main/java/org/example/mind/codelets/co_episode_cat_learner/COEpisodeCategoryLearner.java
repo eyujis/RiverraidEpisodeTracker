@@ -8,12 +8,10 @@ import java.util.stream.Collectors;
 
 public class COEpisodeCategoryLearner {
     double RELEVANCE_THRESHOLD = 3;
-//    double INIT_RELEVANCE = 1;
     double INIT_RELEVANCE = 5;
     double INCREMENT_FACTOR = 2;
-    double DECREMENT_FACTOR = 1;
+    double DECREMENT_FACTOR = 0;
     double MINIMUM_RELEVANCE = 0;
-    double MIN_RECT_DISTANCE = 2;
 
     COEpisodeCategoryFactory cOEpisodeCategoryFactory;
 
