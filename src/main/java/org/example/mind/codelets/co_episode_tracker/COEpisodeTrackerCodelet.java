@@ -81,11 +81,16 @@ public class COEpisodeTrackerCodelet extends Codelet {
                         cOEpisodeTrackerTSMO.setI(currentTimestamp);
                     }
 
-                    Idea cOEpisodes = new COEpisodeTracker().updateRelations(sOEpisodes,
+                    COEpisodeTracker cOEpisodeTracker = new COEpisodeTracker();
+                    Idea cOEpisodes = cOEpisodeTracker.updateRelations(sOEpisodes,
                             cOEpisodeCategories,
                             previousCOEpisodes);
 
+
                     detectedCOEpisodesMO.setI(cOEpisodes);
+
+                    cOEpisodeCategories.getL().addAll(cOEpisodeTracker.getAssimilatedCategories().getL());
+                    cOEpisodeCategoriesMO.setI(cOEpisodeCategories);
 
                     //Visualization
                     System.out.println("==========="+ cOEpisodes.getValue().toString() +"===========");

@@ -20,10 +20,17 @@ public class COEpisodeTracker {
     double MIN_RECT_DISTANCE = 2;
     double INIT_RELEVANCE = 5;
 
+    Idea assimilatedCategories;
     COEpisodeCategoryFactory cOEpisodeCategoryFactory;
+
+    public COEpisodeTracker() {
+        assimilatedCategories = new Idea("AssimilatedCategories", "", 0);
+        cOEpisodeCategoryFactory = new COEpisodeCategoryFactory();
+    }
 
     public Idea updateRelations(Idea sOEpisodes, Idea cOEpisodeCategories, Idea previousCOEpisodes) {
         cOEpisodeCategoryFactory = new COEpisodeCategoryFactory();
+        assimilatedCategories = new Idea("AssimilatedCategories", "", 0);
         Idea cOEpisodes = sOEpisodes.clone();
         initializeRelations(cOEpisodes);
         duplicateRelations(cOEpisodes, previousCOEpisodes);
@@ -66,6 +73,7 @@ public class COEpisodeTracker {
                                 addRelation(ex, ey, newCategoryIdea.getName(), newCategory.getRelationType());
                                 addRelation(ey, ex, newCategoryIdea.getName(), newCategory.getRelationType()+"i");
                             }
+                            assimilatedCategories.getL().add(newCategoryIdea);
                         }
                     }
                 }
@@ -196,10 +204,7 @@ public class COEpisodeTracker {
                 && Math.min(exCurrentTimestamp, eyCurrentTimestamp) >= currentTimestamp-1;
     }
 
-    public boolean sameObjectId(Idea ex, Idea ey) {
-        int objectIdx = (int) ex.get("objectId").getValue();
-        int objectIdy = (int) ey.get("objectId").getValue();
-
-        return objectIdx==objectIdy;
+    public Idea getAssimilatedCategories() {
+        return assimilatedCategories;
     }
 }

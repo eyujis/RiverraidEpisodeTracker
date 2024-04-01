@@ -47,15 +47,13 @@ public class COEpisodeCategory implements Category {
         Idea sOEpisodeX = idea.getL().get(0);
         Idea sOEpisodeY = idea.getL().get(1);
 
-        double rectDistance = new ObjectComparator().rectDistance(sOEpisodeX.get("lastObjectState") ,
-                sOEpisodeY.get("lastObjectState"));
-
         String sOEventCatX = (String) sOEpisodeX.get("eventCategory").getValue();
         String sOEventCatY = (String) sOEpisodeY.get("eventCategory").getValue();
 
         String rcvRelationType = new COEpisodeRelationIdentifier().identifyRelationType(sOEpisodeX, sOEpisodeY);
 
-        if((Coupling.haveCouplingConditions(sOEpisodeX, sOEpisodeY, rcvRelationType) || sameObjectId(sOEpisodeX, sOEpisodeY))
+        if(relationType != null
+                && (Coupling.haveCouplingConditions(sOEpisodeX, sOEpisodeY, rcvRelationType) || sameObjectId(sOEpisodeX, sOEpisodeY))
                 && sOEpisodeCategoryX.equals(sOEventCatX)
                 && sOEpisodeCategoryY.equals(sOEventCatY)
                 && relationType.equals(rcvRelationType)) {
