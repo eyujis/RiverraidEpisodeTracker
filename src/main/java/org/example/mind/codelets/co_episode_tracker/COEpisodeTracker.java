@@ -52,9 +52,12 @@ public class COEpisodeTracker {
 
                     // check if there is a membership across cOEpisodeCategories;
                     for(Idea categoryIdea : cOEpisodeCategories.getL()) {
-                        // assign necessary relations;
-                        foundCategory = verifyAndCreateRelationship(ex, ey, categoryIdea);
-                        foundICategory = verifyAndCreateRelationship(ey, ex, categoryIdea);
+                        if(verifyAndCreateRelationship(ex, ey, categoryIdea)) {
+                            foundCategory = true;
+                        }
+                        if(verifyAndCreateRelationship(ey, ex, categoryIdea)) {
+                            foundICategory = true;
+                        }
                     }
 
                     if(!foundCategory && !foundICategory) {
