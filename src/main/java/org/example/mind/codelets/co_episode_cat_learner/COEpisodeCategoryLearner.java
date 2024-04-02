@@ -27,8 +27,8 @@ public class COEpisodeCategoryLearner {
                 Idea ey = sOEpisodes.getL().get(j);
 
                 for(Idea categoryIdea : cOEpisodeCategories.getL()) {
-                    if(isMember(ex, ey, categoryIdea)
-                    || isMember(ey, ex, categoryIdea)) {
+                    if(isMember(ex, ey, categoryIdea, sOEpisodes)
+                    || isMember(ey, ex, categoryIdea, sOEpisodes)) {
                         COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
                         if(category.getRelevance() < RELEVANCE_THRESHOLD) {
                             category.incrementRelevance(INCREMENT_FACTOR);
@@ -67,19 +67,20 @@ public class COEpisodeCategoryLearner {
         return relevance < MINIMUM_RELEVANCE;
     }
 
-    public boolean isMember(Idea ex, Idea ey, Idea categoryIdea) {
+    public boolean isMember(Idea ex, Idea ey, Idea categoryIdea, Idea rcvEpisodes) {
         COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
 
-        Idea membershipParameters = createMembershipParameters(ex, ey);
+        Idea membershipParameters = createMembershipParameters(ex, ey, rcvEpisodes);
         double isMember = category.membership(membershipParameters);
 
         return isMember == 1;
     }
 
-    private Idea createMembershipParameters(Idea ex, Idea ey) {
+    private Idea createMembershipParameters(Idea ex, Idea ey, Idea previousEpisodes) {
         Idea membershipParameters = new Idea("hasRelation", "", 0);
         membershipParameters.getL().add(ex);
         membershipParameters.getL().add(ey);
+        membershipParameters.getL().add(previousEpisodes);
 
         return membershipParameters;
     }

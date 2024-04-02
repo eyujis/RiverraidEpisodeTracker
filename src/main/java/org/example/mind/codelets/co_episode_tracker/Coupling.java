@@ -3,12 +3,18 @@ package org.example.mind.codelets.co_episode_tracker;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.object_proposer.ObjectComparator;
 
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 public class Coupling {
     // spatial relations
-    public static boolean haveCouplingConditions(Idea eventX, Idea eventY, String relationType) {
+    public static boolean haveCouplingConditions(Idea eventX, Idea eventY, String relationType, Idea rcvSOEpisodes) {
         if(relationType == null) {
             return false;
         }
+
 
         // if the object is the same, it attends a spatial relation with itself
         if(sameObjectId(eventX, eventY)) {
@@ -25,8 +31,16 @@ public class Coupling {
             event2 = eventY.clone();
         }
 
+        Idea previousObjectVectorEvent2 = previousObjectVectorEvent(event2, rcvSOEpisodes);
+
+        boolean isObject2FromPreviousEvent = false;
+        if(previousObjectVectorEvent2!=null) {
+            isObject2FromPreviousEvent = true;
+            event2 = previousObjectVectorEvent2;
+        }
+
         Idea object1 = getObject1(event1);
-        Idea object2 = getObject2(event2);
+        Idea object2 = getObject2(event2, isObject2FromPreviousEvent);
 
         if(new ObjectComparator().areBoundingRectAdjacent(object1, object2)){
             return true;
@@ -42,11 +56,10 @@ public class Coupling {
         double dx = speedVector1[0]-speedVector2[0];
         double dy = speedVector1[1]-speedVector2[1];
 
-        return detectSweptAABBCollision(boundRect1, boundRect2, dx, dy, event1, event2);
+        return detectSweptAABBCollision(boundRect1, boundRect2, dx, dy);
     }
 
-    private static boolean detectSweptAABBCollision(BoundRect boundRect1, BoundRect boundRect2, double dx, double dy,
-                                                    Idea event1, Idea event2) {
+    private static boolean detectSweptAABBCollision(BoundRect boundRect1, BoundRect boundRect2, double dx, double dy) {
         double xInvEntry, yInvEntry;
         double xInvExit, yInvExit;
 
@@ -103,8 +116,8 @@ public class Coupling {
         return new double[] {0.0, 0.0};
     }
 
-    private static Idea getObject2(Idea event) {
-        if(isVectorCategory(event)) {
+    private static Idea getObject2(Idea event, boolean fromPreviousEvent) {
+        if(isVectorCategory(event) && !fromPreviousEvent) {
             return event.get("initialObjectState");
         } else {
             return event.get("lastObjectState");
@@ -137,4 +150,25 @@ public class Coupling {
         return objectIdx==objectIdy;
     }
 
+    private static Idea previousObjectVectorEvent(Idea event2, Idea rcvSOEpisodes) {
+        int objectId = (int) event2.get("objectId").getValue();
+        int eventId = (int) event2.get("eventId").getValue();
+        int currentTimestamp = (int) event2.get("currentTimestamp").getValue();
+        int previousTimestamp = currentTimestamp - 1;
+
+        List<Idea> previousObjectVectorEvents= rcvSOEpisodes.getL().stream()
+                .filter(episode -> (int) episode.get("objectId").getValue() == objectId
+                && (int) episode.get("eventId").getValue() != eventId
+                && (int) episode.get("currentTimestamp").getValue() == previousTimestamp
+                && isVectorCategory(episode)).collect(Collectors.toList());
+
+        if(previousObjectVectorEvents.size()>1) {
+            Logger.getLogger(Coupling.class.getName()).log(Level.SEVERE,
+                    "The object from the event2 has more than one previous event.");
+        } else if(previousObjectVectorEvents.size()==1) {
+            return previousObjectVectorEvents.get(0);
+        }
+
+        return null;
+    }
 }

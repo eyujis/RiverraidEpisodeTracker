@@ -37,6 +37,7 @@ public class COEpisodeCategory implements Category {
     public double membership(Idea idea) {
         Idea sOEpisodeX = idea.getL().get(0);
         Idea sOEpisodeY = idea.getL().get(1);
+        Idea rcvEpisodes = idea.getL().get(2);
 
         String sOEventCatX = (String) sOEpisodeX.get("eventCategory").getValue();
         String sOEventCatY = (String) sOEpisodeY.get("eventCategory").getValue();
@@ -44,7 +45,8 @@ public class COEpisodeCategory implements Category {
         String rcvRelationType = new COEpisodeRelationIdentifier().identifyRelationType(sOEpisodeX, sOEpisodeY);
 
         if(relationType != null
-                && (Coupling.haveCouplingConditions(sOEpisodeX, sOEpisodeY, rcvRelationType) || sameObjectId(sOEpisodeX, sOEpisodeY))
+                && (Coupling.haveCouplingConditions(sOEpisodeX, sOEpisodeY, rcvRelationType, rcvEpisodes)
+                || sameObjectId(sOEpisodeX, sOEpisodeY))
                 && sOEpisodeCategoryX.equals(sOEventCatX)
                 && sOEpisodeCategoryY.equals(sOEventCatY)
                 && relationType.equals(rcvRelationType)) {

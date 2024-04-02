@@ -50,10 +50,10 @@ public class COEpisodeTracker {
 
                     // check if there is a membership across cOEpisodeCategories;
                     for(Idea categoryIdea : cOEpisodeCategories.getL()) {
-                        if(verifyAndCreateRelationship(ex, ey, categoryIdea)) {
+                        if(verifyAndCreateRelationship(ex, ey, categoryIdea, previousCOEpisodes)) {
                             foundCategory = true;
                         }
-                        if(verifyAndCreateRelationship(ey, ex, categoryIdea)) {
+                        if(verifyAndCreateRelationship(ey, ex, categoryIdea, previousCOEpisodes)) {
                             foundICategory = true;
                         }
                     }
@@ -63,7 +63,7 @@ public class COEpisodeTracker {
                         String c1 = (String) ex.get("eventCategory").getValue();
                         String c2 = (String) ey.get("eventCategory").getValue();
 
-                        if(Coupling.haveCouplingConditions(ex, ey, relationType)) {
+                        if(Coupling.haveCouplingConditions(ex, ey, relationType, cOEpisodes)) {
                             Idea newCategoryIdea = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                             COEpisodeCategory newCategory = (COEpisodeCategory) newCategoryIdea.getValue();
 
@@ -94,11 +94,11 @@ public class COEpisodeTracker {
         return cOEpisodes;
     }
 
-    public boolean verifyAndCreateRelationship(Idea ex, Idea ey, Idea categoryIdea) {
+    public boolean verifyAndCreateRelationship(Idea ex, Idea ey, Idea categoryIdea, Idea rcvEpisodes) {
         String categoryName = categoryIdea.getName();
         COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
 
-        Idea membershipParameters = createMembershipParameters(ex, ey);
+        Idea membershipParameters = createMembershipParameters(ex, ey, rcvEpisodes);
         double isMember = category.membership(membershipParameters);
 
         if(isMember==1) {
@@ -109,10 +109,11 @@ public class COEpisodeTracker {
         return false;
     }
 
-    private Idea createMembershipParameters(Idea ex, Idea ey) {
+    private Idea createMembershipParameters(Idea ex, Idea ey, Idea previousEpisodes) {
         Idea membershipParameters = new Idea("hasRelation", "", 0);
         membershipParameters.getL().add(ex);
         membershipParameters.getL().add(ey);
+        membershipParameters.getL().add(previousEpisodes);
 
         return membershipParameters;
     }
