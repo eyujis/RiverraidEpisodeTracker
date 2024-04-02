@@ -34,6 +34,6 @@ public class Main {
     public static void loadOpenCVLibraryFromCurrentPath()   {
         Path currentRelativePath = Paths.get("");
         String s = currentRelativePath.toAbsolutePath().toString();
-        System.load(s+"/libs/libopencv_java455.so");
+        System.load(s+"\\libs\\OpenCVWindows\\java\\x64\\opencv_java455.dll");
     }
 }
