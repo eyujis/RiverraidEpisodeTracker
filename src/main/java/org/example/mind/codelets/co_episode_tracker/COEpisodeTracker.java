@@ -16,14 +16,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class COEpisodeTracker {
-    double RELEVANCE_THRESHOLD = 3;
-    double MIN_RECT_DISTANCE = 2;
     double INIT_RELEVANCE = 5;
 
+    Idea assimilatedCategories;
     COEpisodeCategoryFactory cOEpisodeCategoryFactory;
+
+    public COEpisodeTracker() {
+        assimilatedCategories = new Idea("AssimilatedCategories", "", 0);
+        cOEpisodeCategoryFactory = new COEpisodeCategoryFactory();
+    }
 
     public Idea updateRelations(Idea sOEpisodes, Idea cOEpisodeCategories, Idea previousCOEpisodes) {
         cOEpisodeCategoryFactory = new COEpisodeCategoryFactory();
+        assimilatedCategories = new Idea("AssimilatedCategories", "", 0);
         Idea cOEpisodes = sOEpisodes.clone();
         initializeRelations(cOEpisodes);
         duplicateRelations(cOEpisodes, previousCOEpisodes);
@@ -45,9 +50,12 @@ public class COEpisodeTracker {
 
                     // check if there is a membership across cOEpisodeCategories;
                     for(Idea categoryIdea : cOEpisodeCategories.getL()) {
-                        // assign necessary relations;
-                        foundCategory = verifyAndCreateRelationship(ex, ey, categoryIdea);
-                        foundICategory = verifyAndCreateRelationship(ey, ex, categoryIdea);
+                        if(verifyAndCreateRelationship(ex, ey, categoryIdea)) {
+                            foundCategory = true;
+                        }
+                        if(verifyAndCreateRelationship(ey, ex, categoryIdea)) {
+                            foundICategory = true;
+                        }
                     }
 
                     if(!foundCategory && !foundICategory) {
@@ -55,10 +63,7 @@ public class COEpisodeTracker {
                         String c1 = (String) ex.get("eventCategory").getValue();
                         String c2 = (String) ey.get("eventCategory").getValue();
 
-//                        double rectDistance = new ObjectComparator().rectDistance(ex.get("lastObjectState") ,
-//                                ey.get("lastObjectState"));
-
-                        if(relationType != null && Coupling.haveCouplingConditions(ex, ey, relationType)) {
+                        if(Coupling.haveCouplingConditions(ex, ey, relationType)) {
                             Idea newCategoryIdea = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                             COEpisodeCategory newCategory = (COEpisodeCategory) newCategoryIdea.getValue();
 
@@ -69,6 +74,7 @@ public class COEpisodeTracker {
                                 addRelation(ex, ey, newCategoryIdea.getName(), newCategory.getRelationType());
                                 addRelation(ey, ex, newCategoryIdea.getName(), newCategory.getRelationType()+"i");
                             }
+                            assimilatedCategories.getL().add(newCategoryIdea);
                         }
                     }
                 }
@@ -91,10 +97,6 @@ public class COEpisodeTracker {
     public boolean verifyAndCreateRelationship(Idea ex, Idea ey, Idea categoryIdea) {
         String categoryName = categoryIdea.getName();
         COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
-
-        if (category.getRelevance() < RELEVANCE_THRESHOLD) {
-            return false;
-        }
 
         Idea membershipParameters = createMembershipParameters(ex, ey);
         double isMember = category.membership(membershipParameters);
@@ -199,10 +201,7 @@ public class COEpisodeTracker {
                 && Math.min(exCurrentTimestamp, eyCurrentTimestamp) >= currentTimestamp-1;
     }
 
-    public boolean sameObjectId(Idea ex, Idea ey) {
-        int objectIdx = (int) ex.get("objectId").getValue();
-        int objectIdy = (int) ey.get("objectId").getValue();
-
-        return objectIdx==objectIdy;
+    public Idea getAssimilatedCategories() {
+        return assimilatedCategories;
     }
 }

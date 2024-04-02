@@ -6,6 +6,10 @@ import org.example.mind.codelets.object_proposer.ObjectComparator;
 public class Coupling {
     // spatial relations
     public static boolean haveCouplingConditions(Idea eventX, Idea eventY, String relationType) {
+        if(relationType == null) {
+            return false;
+        }
+
         // if the object is the same, it attends a spatial relation with itself
         if(sameObjectId(eventX, eventY)) {
             return true;

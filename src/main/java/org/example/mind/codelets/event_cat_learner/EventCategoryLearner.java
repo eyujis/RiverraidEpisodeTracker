@@ -13,8 +13,6 @@ public class EventCategoryLearner {
     ObjectsTransitionsExtractor objectsTransitionsExtractor;
 
     double RELEVANCE_THRESHOLD = 5;
-//    double INIT_RELEVANCE = 1;
-    double INIT_RELEVANCE = 5;
     double INCREMENT_FACTOR = 2.2;
     double DECREMENT_FACTOR = 0.5;
     double MINIMUM_RELEVANCE = 0.5;
@@ -29,20 +27,6 @@ public class EventCategoryLearner {
         this.eventCategories = eventCategories;
 
         Idea objectsTransitions = objectsTransitionsExtractor.extract(objectsBuffer);
-
-        // Remember categories based on category similarity
-//        Idea rcvEventCats = extractEventCategories(objectsTransitions);
-//
-//        for (Idea rcvCat : rcvEventCats.getL()) {
-//            int equalCatIdx = this.equalCategoryIdx(rcvCat);
-//
-//            if (equalCatIdx != -1) {
-//                EventCategory eventCat = (EventCategory) eventCategories.getL().get(equalCatIdx).getValue();
-//                if (eventCat.getRelevance()<RELEVANCE_THRESHOLD) {
-//                    eventCat.incrementRelevance(INCREMENT_FACTOR);
-//                }
-//            }
-//        }
 
         // Remember categories based on membership
         for (Idea objectTransition : objectsTransitions.getL()) {
@@ -59,30 +43,6 @@ public class EventCategoryLearner {
         }
         decrementCategoriesRelevance();
         removeIrrelevantCategories();
-    }
-
-    public Idea extractEventCategories(Idea objectsTransitions) {
-        Idea rcvEventCats = new Idea("extractedEventCategories", "", 0);
-        for (Idea objectTransition: objectsTransitions.getL()) {
-
-            String eventType = findEventType(objectTransition);
-
-            switch (eventType) {
-                case "VectorEventCategory":
-                    //TODO this restrain our implementation for only detecting changes on these properties;
-                    String[] propertyNames = {"center"};
-                    for(String propertyName: propertyNames) {
-                        Idea eventCategory = eventCatFactory.createVectorEventCategory(propertyName, objectTransition, INIT_RELEVANCE);
-                        rcvEventCats.getL().add(eventCategory);
-                    }
-                    break;
-                case "AppearanceEventCategory":
-                    Idea eventCategory = eventCatFactory.createAppearanceEventCategory(objectTransition, INIT_RELEVANCE);
-                    rcvEventCats.getL().add(eventCategory);
-                    break;
-            }
-        }
-        return rcvEventCats;
     }
 
     public int equalCategoryIdx(Idea categoryFromInstance) {
