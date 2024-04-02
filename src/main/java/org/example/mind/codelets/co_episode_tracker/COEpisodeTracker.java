@@ -16,8 +16,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class COEpisodeTracker {
-    double RELEVANCE_THRESHOLD = 3;
-    double MIN_RECT_DISTANCE = 2;
     double INIT_RELEVANCE = 5;
 
     Idea assimilatedCategories;
@@ -65,7 +63,7 @@ public class COEpisodeTracker {
                         String c1 = (String) ex.get("eventCategory").getValue();
                         String c2 = (String) ey.get("eventCategory").getValue();
 
-                        if(relationType != null && Coupling.haveCouplingConditions(ex, ey, relationType)) {
+                        if(Coupling.haveCouplingConditions(ex, ey, relationType)) {
                             Idea newCategoryIdea = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
                             COEpisodeCategory newCategory = (COEpisodeCategory) newCategoryIdea.getValue();
 
