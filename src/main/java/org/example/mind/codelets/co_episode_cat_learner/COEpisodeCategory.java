@@ -28,15 +28,6 @@ public class COEpisodeCategory implements Category {
         }
     }
 
-    public boolean sameCategory(COEpisodeCategory c2) {
-        if (this.relationType.equals(c2.getRelationType())
-                && this.sOEpisodeCategoryX.equals(c2.getsOEpisodeCategoryX())
-                && this.sOEpisodeCategoryY.equals(c2.getSOEpisodeCategoryY())) {
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public Idea getInstance(List<Idea> constraints) {
         return null;

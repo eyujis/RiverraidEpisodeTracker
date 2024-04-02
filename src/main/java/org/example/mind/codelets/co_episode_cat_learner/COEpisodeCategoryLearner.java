@@ -43,48 +43,6 @@ public class COEpisodeCategoryLearner {
         return updatedCategories;
     }
 
-    public Idea extractCOEpisodeCategories(Idea sOEpisodes) {
-        Idea rcvCOEpisodeCategories = new Idea("extractedCOEpisodeCategories", "", 0);
-
-        for (int i = 0; i < sOEpisodes.getL().size(); i++) {
-            for (int j = i + 1; j < sOEpisodes.getL().size(); j++) {
-                Idea e1 = sOEpisodes.getL().get(i);
-                Idea e2 = sOEpisodes.getL().get(j);
-
-                String relationType = identifyCOEpisodeCategoryRelation(e1, e2);
-                String c1 = (String) e1.get("eventCategory").getValue();
-                String c2 = (String) e2.get("eventCategory").getValue();
-
-                if(relationType != null
-                        && (Coupling.haveCouplingConditions(e1, e2, relationType) || sameObjectId(e1, e2))) {
-                    Idea newCategory = cOEpisodeCategoryFactory.createCOEpisodeCategory(relationType, c1, c2, INIT_RELEVANCE);
-                    rcvCOEpisodeCategories.getL().add(newCategory);
-                }
-            }
-        }
-        return rcvCOEpisodeCategories;
-    }
-
-    public String identifyCOEpisodeCategoryRelation(Idea sOEpisode1, Idea sOEpisode2) {
-        COEpisodeRelationIdentifier relationIdentifier = new COEpisodeRelationIdentifier();
-        String relation = relationIdentifier.identifyRelationType(sOEpisode1, sOEpisode2);
-        return relation;
-    }
-
-    public int equalCategoryIdx(Idea categoryFromInstance, Idea listOfCategories) {
-        int idx = -1;
-
-        for(int i = 0; i < listOfCategories.getL().size(); i++) {
-            COEpisodeCategory cat = (COEpisodeCategory) listOfCategories.getL().get(i).getValue();
-            COEpisodeCategory instanceCat = (COEpisodeCategory) categoryFromInstance.getValue();
-
-            if(cat.sameCategory(instanceCat) == true) {
-                idx = i;
-            }
-        }
-        return idx;
-    }
-
     public void decrementCategoriesRelevance(Idea categoryList) {
         for(Idea categoryIdea: categoryList.getL()) {
             COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();

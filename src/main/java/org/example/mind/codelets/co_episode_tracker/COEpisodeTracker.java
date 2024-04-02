@@ -100,10 +100,6 @@ public class COEpisodeTracker {
         String categoryName = categoryIdea.getName();
         COEpisodeCategory category = (COEpisodeCategory) categoryIdea.getValue();
 
-        if (category.getRelevance() < RELEVANCE_THRESHOLD) {
-            return false;
-        }
-
         Idea membershipParameters = createMembershipParameters(ex, ey);
         double isMember = category.membership(membershipParameters);
 
