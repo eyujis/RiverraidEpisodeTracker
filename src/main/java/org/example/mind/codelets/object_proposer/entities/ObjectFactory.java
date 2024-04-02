@@ -46,6 +46,8 @@ public class ObjectFactory {
 
         Idea objectIdea = new Idea("unObject","",0);
 
+        objectIdea.add(fragmentCluster);
+
         Idea objectCategoryIdea = new Idea("objectCategory", objectCategory.getName(), 1);
         objectIdea.add(objectCategoryIdea);
 
@@ -66,13 +68,6 @@ public class ObjectFactory {
         if(!isBoundingBoxBoundToTheFieldLimits(objectIdea)) {
             return null;
         }
-
-
-//        Idea objectCategoryIdea = new Idea("objectCategory", null);
-//        objectIdea.add(objectCategoryIdea);
-
-//        Idea objectFragments = new Idea("fragments", null);
-//        objectIdea.add(objectFragments);
 
 
         return objectIdea;
