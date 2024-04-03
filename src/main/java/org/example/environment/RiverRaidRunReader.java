@@ -1,21 +1,19 @@
 package org.example.environment;
 
-import org.example.environment.socket.SocketFrameRcvr;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class RiverRaidDataset implements RiverRaidEnv {
+public class RiverRaidRunReader implements RiverRaidEnv {
     int nStep = 0;
     BufferedImage image;
 
-    public RiverRaidDataset() throws IOException {
+    public RiverRaidRunReader() throws IOException {
     }
 
     public BufferedImage step() {
-        String filePath = "src/main/datasets/dataset_0/" + nStep + ".tiff";
+        String filePath = "src/main/datasets/dataset_1/" + nStep + ".tiff";
 
         try {
             File file = new File(filePath);
