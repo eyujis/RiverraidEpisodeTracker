@@ -74,7 +74,6 @@ public class ObjectFactory {
             return null;
         }
 
-
         return objectIdea;
     }
 
