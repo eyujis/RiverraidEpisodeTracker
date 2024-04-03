@@ -88,5 +88,17 @@ public class CompLabelMatcher extends TemplateLabelMatcher {
             this.bridgeLightYellowCount+=1;
             return;
         }
+        if(colorLabel.equals("jetBlue1")) {
+            this.jetBlue1Count+=1;
+            return;
+        }
+        if(colorLabel.equals("jetBlue2")) {
+            this.jetBlue2Count+=1;
+            return;
+        }
+        if(colorLabel.equals("jetPurple")) {
+            this.jetPurpleCount+=1;
+            return;
+        }
     }
 }

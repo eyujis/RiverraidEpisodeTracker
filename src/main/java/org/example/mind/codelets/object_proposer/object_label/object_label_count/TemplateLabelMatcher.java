@@ -21,6 +21,9 @@ public class TemplateLabelMatcher {
     public int bridgeDarkYellowCount = 0;
     public int bridgeNormalYellowCount = 0;
     public int bridgeLightYellowCount = 0;
+    public int jetBlue1Count = 0;
+    public int jetBlue2Count = 0;
+    public int jetPurpleCount = 0;
 
 
     public String ifMatchGetLabel(CompLabelMatcher other) {
@@ -50,6 +53,9 @@ public class TemplateLabelMatcher {
                 && this.bridgeDarkGreyCount == other.bridgeDarkGreyCount
                 && this.bridgeDarkYellowCount == other.bridgeDarkYellowCount
                 && this.bridgeNormalYellowCount == other.bridgeNormalYellowCount
-                && this.bridgeLightYellowCount == other.bridgeLightYellowCount;
+                && this.bridgeLightYellowCount == other.bridgeLightYellowCount
+                && this.jetBlue1Count == other.jetBlue1Count
+                && this.jetBlue2Count == other.jetBlue2Count
+                && this.jetPurpleCount == other.jetPurpleCount;
     }
 }

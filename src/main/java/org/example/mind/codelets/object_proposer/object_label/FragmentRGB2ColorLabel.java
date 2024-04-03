@@ -5,7 +5,7 @@ import br.unicamp.cst.representation.idea.Idea;
 import java.util.HashMap;
 
 public class FragmentRGB2ColorLabel {
-    public HashMap<String, String> rbg2ColorLabel = new HashMap<>();
+    public HashMap<String, String> rgb2ColorLabel = new HashMap<>();
     String helicopterYellowRGB = "210,164,74";
     String helicopterGreenRGB = "0,64,48";
     String helicopterBlueRGB = "0,0,148";
@@ -16,36 +16,38 @@ public class FragmentRGB2ColorLabel {
     String tankerBlueRGB = "84,160,197";
     String treeGreenRGB = "158,208,101";
     String treeBrownRGB = "72,72,0";
-    String shipOrMissileYellowRGB = "232,232,74"; //2
-    String bridgeLightGreyRGB = "111,111,111"; //4
-    String bridgeBrownRGB = "124,44,0"; //2
-    String bridgeDarkGreyRGB = "170,170,170"; //4
-    String bridgeDarkYellowRGB = "105,105,15"; //4
-    String bridgeNormalYellowRGB = "134,134,29"; //4
-    String bridgeLightYellowRGB = "187,187,53"; //1
-
-
+    String shipOrMissileYellowRGB = "232,232,74";
+    String bridgeLightGreyRGB = "111,111,111";
+    String bridgeBrownRGB = "124,44,0";
+    String bridgeDarkGreyRGB = "170,170,170";
+    String bridgeDarkYellowRGB = "105,105,15";
+    String bridgeNormalYellowRGB = "134,134,29";
+    String bridgeLightYellowRGB = "187,187,53";
+    String jetBlue1RGB = "117,204,235";
+    String jetBlue2RGB = "117,181,239";
+    String jetPurpleRGB = "117,128,240";
 
     public FragmentRGB2ColorLabel() {
-        rbg2ColorLabel.put(helicopterYellowRGB, "helicopterYellow");
-        rbg2ColorLabel.put(helicopterGreenRGB, "helicopterGreen");
-        rbg2ColorLabel.put(helicopterBlueRGB, "helicopterBlue");
-        rbg2ColorLabel.put(fuelOrHouseWhiteRGB, "fuelOrHouseWhite");
-        rbg2ColorLabel.put(fuelRedRGB, "fuelRed");
-        rbg2ColorLabel.put(tankerOrHouseBlackRGB, "tankerOrHouseBlack");
-        rbg2ColorLabel.put(tankerRedRGB, "tankerRed");
-        rbg2ColorLabel.put(tankerBlueRGB, "tankerBlue");
-        rbg2ColorLabel.put(treeGreenRGB, "treeGreen");
-        rbg2ColorLabel.put(treeBrownRGB, "treeBrown");
-        rbg2ColorLabel.put(shipOrMissileYellowRGB, "shipOrMissileYellow");
-        rbg2ColorLabel.put(bridgeLightGreyRGB, "bridgeLightGrey");
-        rbg2ColorLabel.put(bridgeBrownRGB, "bridgeBrown");
-        rbg2ColorLabel.put(bridgeDarkGreyRGB, "bridgeDarkGrey");
-        rbg2ColorLabel.put(bridgeDarkYellowRGB, "bridgeDarkYellow");
-        rbg2ColorLabel.put(bridgeNormalYellowRGB, "bridgeNormalYellow");
-        rbg2ColorLabel.put(bridgeLightYellowRGB, "bridgeLightYellow");
-
-
+        rgb2ColorLabel.put(helicopterYellowRGB, "helicopterYellow");
+        rgb2ColorLabel.put(helicopterGreenRGB, "helicopterGreen");
+        rgb2ColorLabel.put(helicopterBlueRGB, "helicopterBlue");
+        rgb2ColorLabel.put(fuelOrHouseWhiteRGB, "fuelOrHouseWhite");
+        rgb2ColorLabel.put(fuelRedRGB, "fuelRed");
+        rgb2ColorLabel.put(tankerOrHouseBlackRGB, "tankerOrHouseBlack");
+        rgb2ColorLabel.put(tankerRedRGB, "tankerRed");
+        rgb2ColorLabel.put(tankerBlueRGB, "tankerBlue");
+        rgb2ColorLabel.put(treeGreenRGB, "treeGreen");
+        rgb2ColorLabel.put(treeBrownRGB, "treeBrown");
+        rgb2ColorLabel.put(shipOrMissileYellowRGB, "shipOrMissileYellow");
+        rgb2ColorLabel.put(bridgeLightGreyRGB, "bridgeLightGrey");
+        rgb2ColorLabel.put(bridgeBrownRGB, "bridgeBrown");
+        rgb2ColorLabel.put(bridgeDarkGreyRGB, "bridgeDarkGrey");
+        rgb2ColorLabel.put(bridgeDarkYellowRGB, "bridgeDarkYellow");
+        rgb2ColorLabel.put(bridgeNormalYellowRGB, "bridgeNormalYellow");
+        rgb2ColorLabel.put(bridgeLightYellowRGB, "bridgeLightYellow");
+        rgb2ColorLabel.put(jetBlue1RGB, "jetBlue1");
+        rgb2ColorLabel.put(jetBlue2RGB, "jetBlue2");
+        rgb2ColorLabel.put(jetPurpleRGB, "jetPurple");
     }
 
     public String getColorLabel(Idea color) {
@@ -57,6 +59,6 @@ public class FragmentRGB2ColorLabel {
                 + String.valueOf((int) g)+","
                 + String.valueOf((int) b);
 
-        return rbg2ColorLabel.get(rbgString);
+        return rgb2ColorLabel.get(rbgString);
     }
 }

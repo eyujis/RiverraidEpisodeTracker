@@ -16,6 +16,7 @@ public class LabelMatchers {
         labelMatchers.add(new ShipLabelMatcher());
         labelMatchers.add(new MissileLabelMatcher());
         labelMatchers.add(new BridgeLabelMatcher());
+        labelMatchers.add(new JetLabelMatcher());
     }
 
     public String getLabel(CompLabelMatcher other) {
