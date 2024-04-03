@@ -109,7 +109,6 @@ public class ObjectProposer {
             }
         }
 
-
         return fragmentClusters;
     }
 

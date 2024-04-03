@@ -1,6 +1,7 @@
 package org.example.mind.codelets.object_proposer.entities;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_proposer.object_label.ObjectLabelAssigner;
 import org.opencv.core.*;
 
 import java.util.Random;
@@ -46,6 +47,12 @@ public class ObjectFactory {
 
         Idea objectIdea = new Idea("unObject","",0);
 
+        objectIdea.add(fragmentCluster);
+
+        Idea objectLabelIdea = new Idea("objectLabel", ObjectLabelAssigner.getLabel(objectCategory.getName(),
+                fragmentCluster));
+        objectIdea.add(objectLabelIdea);
+
         Idea objectCategoryIdea = new Idea("objectCategory", objectCategory.getName(), 1);
         objectIdea.add(objectCategoryIdea);
 
@@ -66,14 +73,6 @@ public class ObjectFactory {
         if(!isBoundingBoxBoundToTheFieldLimits(objectIdea)) {
             return null;
         }
-
-
-//        Idea objectCategoryIdea = new Idea("objectCategory", null);
-//        objectIdea.add(objectCategoryIdea);
-
-//        Idea objectFragments = new Idea("fragments", null);
-//        objectIdea.add(objectFragments);
-
 
         return objectIdea;
     }
@@ -196,7 +195,7 @@ public class ObjectFactory {
         double brX = (double) object.get("boundRect.br.x").getValue();
         double brY = (double) object.get("boundRect.br.y").getValue();
 
-        if (brX <= 0 || tlX >= width || brY >= height || tlY <= 0) {
+        if(brX >= width || tlX <= 0 || brY >= height || tlY <= 0) {
             return false;
         }
 

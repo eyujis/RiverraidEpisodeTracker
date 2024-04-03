@@ -6,7 +6,6 @@ import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.util.MatBufferedImageConverter;
 import org.example.visualization.Category2Color;
-import org.example.visualization.JLabelImgUpdater;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
@@ -156,6 +155,14 @@ public class ObjectProposerCodelet extends Codelet {
 //                    -1,
 //                    (Scalar) idObj.get("colorId").getValue(),
 //                    -1);
+            String text = idObjs.getL().get(i).get("id").getValue().toString();
+            Point textOrg = new Point(tl_x, tl_y);
+            int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+            double fontScale = 0.5;
+            Scalar textColor = colorId;
+            int textThickness = 1;
+
+            Imgproc.putText(frame, text, textOrg, fontFace, fontScale, textColor, textThickness);
         }
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
@@ -201,7 +208,8 @@ public class ObjectProposerCodelet extends Codelet {
 
                 Imgproc.rectangle(frame, new Point(tl_x, tl_y), new Point(br_x, br_y), colorId, 1);
 
-                String text = idObjs.getL().get(i).get("id").getValue().toString();
+                String text = idObjs.getL().get(i).get("objectLabel").getValue().toString().substring(0,2)
+                        + idObjs.getL().get(i).get("id").getValue().toString();
                 Point textOrg = new Point(tl_x, tl_y);
                 int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
                 double fontScale = 0.5;
