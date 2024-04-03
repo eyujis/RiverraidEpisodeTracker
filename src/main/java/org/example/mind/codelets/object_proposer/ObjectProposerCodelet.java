@@ -13,7 +13,9 @@ import org.opencv.imgproc.Imgproc;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ObjectProposerCodelet extends Codelet {
     Memory rawDataMO;
@@ -86,6 +88,19 @@ public class ObjectProposerCodelet extends Codelet {
             detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
             detectedObjects.add(rawDataBufferIdea.getL().get(buffSize - 1).get("timestamp"));
             detectedObjects.get("idObjsCF").setName("objects");
+
+//            System.out.println(detectedObjects.toStringFull());
+            Optional<Idea> helicopter = detectedObjects.get("objects").getL().stream()
+                            .filter(object -> (int) object.get("id").getValue() == 51).findFirst();
+            if(helicopter.isPresent()) {
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                System.out.println(helicopter.get().get("objectLabel").getValue());
+                System.out.println(helicopter.get().get("fragmentCluster").getL().size());
+                for(Idea fragment: helicopter.get().get("fragmentCluster").getL()) {
+                    System.out.println(fragment.get("color").toStringFull());
+                }
+            }
+
             detectedObjectsMO.setI(detectedObjects);
         }
 
