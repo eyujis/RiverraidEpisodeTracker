@@ -1,8 +1,8 @@
 package org.example;
 
-import org.example.environment.RiverRaidDataset;
-import org.example.environment.RiverRaidEnv;
 import org.example.environment.RiverRaidPyGame;
+import org.example.environment.RiverRaidRunReader;
+import org.example.environment.RiverRaidEnv;
 import org.example.mind.AgentMind;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
@@ -22,7 +22,7 @@ public class Main {
         firstJFrame.setVisible(true);
         secondJFrame.setVisible(true);
 
-        RiverRaidEnv riverRaidEnv = new RiverRaidDataset();
+        RiverRaidEnv riverRaidEnv = new RiverRaidRunReader();
         AgentMind agentMind = new AgentMind(riverRaidEnv, firstJFrame, secondJFrame);
     }
 
