@@ -21,7 +21,7 @@ public class Main {
         firstJFrame.setVisible(true);
         secondJFrame.setVisible(true);
 
-        RiverRaidEnv riverRaidEnv = new RiverRaidDataset();
+        RiverRaidEnv riverRaidEnv = new RiverRaidRunReader();
         AgentMind agentMind = new AgentMind(riverRaidEnv, firstJFrame, secondJFrame);
     }
 

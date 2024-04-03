@@ -5,11 +5,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class RiverRaidDataset implements RiverRaidEnv {
+public class RiverRaidRunReader implements RiverRaidEnv {
     int nStep = 0;
     BufferedImage image;
 
-    public RiverRaidDataset() throws IOException {
+    public RiverRaidRunReader() throws IOException {
     }
 
     public BufferedImage step() {
