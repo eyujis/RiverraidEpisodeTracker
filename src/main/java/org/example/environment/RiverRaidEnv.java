@@ -1,10 +1,16 @@
 package org.example.environment;
 
+import org.example.util.RawEnvInput;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public interface RiverRaidEnv {
-    public BufferedImage step();
+    public RawEnvInput step();
+
+    public void communicateAction(List<Integer> action);
 
     public int getNStep();
 }

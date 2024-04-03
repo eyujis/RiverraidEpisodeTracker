@@ -6,6 +6,7 @@ import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.environment.RiverRaidEnv;
 import org.example.environment.RiverRaidPyGame;
+import org.example.util.RawEnvInput;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
@@ -13,11 +14,13 @@ import java.io.IOException;
 
 public class RAWDataBufferizerCodelet extends Codelet {
     private RiverRaidEnv env;
-    private Memory rawDataBufferMO;
+    private Memory imageBufferMO;
+    private Memory rewardBufferMO;
+    private Memory terminalBufferMO;
     private final int BUFFER_SIZE = 2;
 //    private Idea ideaBuffer = initializeIdeaBuffer();
     private JLabel rawDataBufferImgJLabel;
-    Idea rawDataBuffer = new Idea("rawDataBuffer", "", 0);
+    Idea imageBuffer = new Idea("rawImageBuffer", "", 0);
 
 
     public RAWDataBufferizerCodelet(RiverRaidEnv env, JLabel rawDataBufferImgJLabel) {
@@ -27,27 +30,26 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        rawDataBufferMO=(MemoryObject)this.getOutput("RAW_DATA_BUFFER");
+        imageBufferMO=(MemoryObject)this.getOutput("IMAGE_BUFFER");
+        rewardBufferMO=(MemoryObject)this.getOutput("REWARD_BUFFER");
+        terminalBufferMO=(MemoryObject)this.getOutput("TERMINAL_BUFFER");
     }
 
     @Override
     public void proc() {
-        BufferedImage image = null;
-        image = this.env.step();
+        RawEnvInput input = this.env.step();
+        addElement(input.bufferedImage, this.env.getNStep());
 
-        int timestamp = this.env.getNStep();
-
-        addElement(image, timestamp);
-
-        if(rawDataBuffer.getL().size()>=BUFFER_SIZE) {
-            rawDataBufferMO.setI(rawDataBuffer);
+        if(imageBuffer.getL().size()>=BUFFER_SIZE) {
+            imageBufferMO.setI(imageBuffer);
         }
-
+        rewardBufferMO.setI(input.reward);
+        terminalBufferMO.setI(input.terminal);
 
 //        Visualization
-        if(rawDataBufferMO.getI() instanceof Idea && rawDataBufferImgJLabel!=null) {
-            Idea rawDataBufferIdea = (Idea) rawDataBufferMO.getI();
-            BufferedImage imageToUpdate = (BufferedImage) rawDataBufferIdea.getL().get(0).get("image").getValue();;
+        if(imageBufferMO.getI() instanceof Idea && rawDataBufferImgJLabel!=null) {
+            Idea rawDataBufferIdea = (Idea) imageBufferMO.getI();
+            BufferedImage imageToUpdate = (BufferedImage) rawDataBufferIdea.getL().get(0).get("image").getValue();
             updateJLabelImg(this.rawDataBufferImgJLabel, imageToUpdate);
         }
     }
@@ -58,15 +60,15 @@ public class RAWDataBufferizerCodelet extends Codelet {
     }
 
     public void addElement(BufferedImage image, int timestamp) {
-        if(rawDataBuffer.getL().size()>=BUFFER_SIZE) {
-            rawDataBuffer.getL().remove(0);
+        if(imageBuffer.getL().size()>=BUFFER_SIZE) {
+            imageBuffer.getL().remove(0);
         }
 
         Idea rawData = new Idea("rawData", "", 0);
         rawData.add(new Idea("image", image));
         rawData.add(new Idea("timestamp", timestamp));
 
-        rawDataBuffer.getL().add(rawData);
+        imageBuffer.getL().add(rawData);
     }
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToUpdate) {
