@@ -1,6 +1,7 @@
 package org.example.mind.codelets.object_proposer.entities;
 
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.mind.codelets.object_proposer.object_label.ObjectLabelAssigner;
 import org.opencv.core.*;
 
 import java.util.Random;
@@ -47,6 +48,10 @@ public class ObjectFactory {
         Idea objectIdea = new Idea("unObject","",0);
 
         objectIdea.add(fragmentCluster);
+
+        Idea objectLabelIdea = new Idea("objectLabel", ObjectLabelAssigner.getLabel(objectCategory.getName(),
+                fragmentCluster));
+        objectIdea.add(objectLabelIdea);
 
         Idea objectCategoryIdea = new Idea("objectCategory", objectCategory.getName(), 1);
         objectIdea.add(objectCategoryIdea);

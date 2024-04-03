@@ -1,9 +1,7 @@
 package org.example.mind.codelets.object_proposer.object_label.object_label_count;
 
-import org.example.mind.codelets.object_proposer.object_label.ObjectLabelMatcher;
-
-public class TankerMatcher extends ObjectLabelMatcher {
-    public TankerMatcher() {
+public class TankerLabelMatcher extends TemplateLabelMatcher {
+    public TankerLabelMatcher() {
         super();
         this.labelName = "tanker";
         this.nFragments = 3;

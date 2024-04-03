@@ -1,8 +1,6 @@
-package org.example.mind.codelets.object_proposer.object_label;
+package org.example.mind.codelets.object_proposer.object_label.object_label_count;
 
-import org.example.mind.codelets.object_proposer.object_label.object_label_count.CompMatcherObject;
-
-public class ObjectLabelMatcher {
+public class TemplateLabelMatcher {
     public String labelName = null;
     public int nFragments = -1;
     public int helicopterYellowCount = 0;
@@ -15,8 +13,17 @@ public class ObjectLabelMatcher {
     public int tankerBlueCount = 0;
     public int treeGreenCount = 0;
     public int treeBrownCount = 0;
+    public int shipOrMissileYellowCount = 0;
+    public int shipOrMissileContourPointCount = -1;
+    public int bridgeLightGreyCount = 0;
+    public int bridgeBrownCount = 0;
+    public int bridgeDarkGreyCount = 0;
+    public int bridgeDarkYellowCount = 0;
+    public int bridgeNormalYellowCount = 0;
+    public int bridgeLightYellowCount = 0;
 
-    public String ifMatchGetLabel(CompMatcherObject other) {
+
+    public String ifMatchGetLabel(CompLabelMatcher other) {
         if(isMatch(other)) {
             return this.labelName;
         } else {
@@ -24,8 +31,8 @@ public class ObjectLabelMatcher {
         }
     }
 
-    public boolean isMatch(ObjectLabelMatcher other) {
-        return  this.nFragments == other.nFragments && this.nFragments != -1
+    public boolean isMatch(TemplateLabelMatcher other) {
+        return this.nFragments == other.nFragments && this.nFragments != -1
                 && this.helicopterYellowCount == other.helicopterYellowCount
                 && this.helicopterGreenCount == other.helicopterGreenCount
                 && this.helicopterBlueCount == other.helicopterBlueCount
@@ -35,6 +42,14 @@ public class ObjectLabelMatcher {
                 && this.tankerRedCount == other.tankerRedCount
                 && this.tankerBlueCount == other.tankerBlueCount
                 && this.treeGreenCount == other.treeGreenCount
-                && this.treeBrownCount == other.treeBrownCount;
+                && this.treeBrownCount == other.treeBrownCount
+                && this.shipOrMissileYellowCount == other.shipOrMissileYellowCount
+                && this.shipOrMissileContourPointCount == other.shipOrMissileContourPointCount
+                && this.bridgeLightGreyCount == other.bridgeLightGreyCount
+                && this.bridgeBrownCount == other.bridgeBrownCount
+                && this.bridgeDarkGreyCount == other.bridgeDarkGreyCount
+                && this.bridgeDarkYellowCount == other.bridgeDarkYellowCount
+                && this.bridgeNormalYellowCount == other.bridgeNormalYellowCount
+                && this.bridgeLightYellowCount == other.bridgeLightYellowCount;
     }
 }

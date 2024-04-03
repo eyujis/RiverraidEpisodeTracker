@@ -1,21 +1,25 @@
-package org.example.mind.codelets.object_proposer.object_label.object_label_count;
+package org.example.mind.codelets.object_proposer.object_label;
 
-import org.example.mind.codelets.object_proposer.object_label.ObjectLabelMatcher;
+import org.example.mind.codelets.object_proposer.object_label.object_label_count.*;
 
 import java.util.ArrayList;
 
 public class LabelMatchers {
-    public static ArrayList<ObjectLabelMatcher> labelMatches;
+    public static ArrayList<TemplateLabelMatcher> labelMatchers;
     static {
-        labelMatches = new ArrayList<>();
-        labelMatches.add(new HelicopterLabelMatcher());
-        labelMatches.add(new FuelLabelMatcher());
-        labelMatches.add(new TankerMatcher());
-        labelMatches.add(new HouseLabelMatcher());
+        labelMatchers = new ArrayList<>();
+        labelMatchers.add(new HelicopterLabelMatcher());
+        labelMatchers.add(new FuelLabelMatcher());
+        labelMatchers.add(new TankerLabelMatcher());
+        labelMatchers.add(new HouseLabelMatcher());
+        labelMatchers.add(new TreeLabelMatcher());
+        labelMatchers.add(new ShipLabelMatcher());
+        labelMatchers.add(new MissileLabelMatcher());
+        labelMatchers.add(new BridgeLabelMatcher());
     }
 
-    public String getLabel(CompMatcherObject other) {
-        for(ObjectLabelMatcher labelMatch: labelMatches) {
+    public String getLabel(CompLabelMatcher other) {
+        for(TemplateLabelMatcher labelMatch: labelMatchers) {
             String matchedLabel = labelMatch.ifMatchGetLabel(other);
             if(matchedLabel!=null) {
                 return matchedLabel;

@@ -1,12 +1,11 @@
 package org.example.mind.codelets.object_proposer.object_label.object_label_count;
 
 import br.unicamp.cst.representation.idea.Idea;
-import org.example.mind.codelets.object_proposer.object_label.ObjectLabelMatcher;
 
 import static org.example.mind.codelets.object_proposer.object_label.ObjectLabelAssigner.fragmentRgb2ColorLabel;
 
-public class CompMatcherObject extends ObjectLabelMatcher {
-    public CompMatcherObject() {
+public class CompLabelMatcher extends TemplateLabelMatcher {
+    public CompLabelMatcher() {
         super();
     }
 
@@ -59,6 +58,34 @@ public class CompMatcherObject extends ObjectLabelMatcher {
         }
         if(colorLabel.equals("treeBrown")) {
             this.treeBrownCount+=1;
+            return;
+        }
+        if(colorLabel.equals("shipOrMissileYellow")) {
+            this.shipOrMissileYellowCount+=1;
+            return;
+        }
+        if(colorLabel.equals("bridgeLightGrey")) {
+            this.bridgeLightGreyCount+=1;
+            return;
+        }
+        if(colorLabel.equals("bridgeBrown")) {
+            this.bridgeBrownCount+=1;
+            return;
+        }
+        if(colorLabel.equals("bridgeDarkGrey")) {
+            this.bridgeDarkGreyCount+=1;
+            return;
+        }
+        if(colorLabel.equals("bridgeDarkYellow")) {
+            this.bridgeDarkYellowCount+=1;
+            return;
+        }
+        if(colorLabel.equals("bridgeNormalYellow")) {
+            this.bridgeNormalYellowCount+=1;
+            return;
+        }
+        if(colorLabel.equals("bridgeLightYellow")) {
+            this.bridgeLightYellowCount+=1;
             return;
         }
     }

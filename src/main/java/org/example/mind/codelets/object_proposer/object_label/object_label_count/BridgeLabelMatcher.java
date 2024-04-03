@@ -3,9 +3,14 @@ package org.example.mind.codelets.object_proposer.object_label.object_label_coun
 public class BridgeLabelMatcher extends TemplateLabelMatcher {
     public BridgeLabelMatcher() {
         super();
-        this.labelName = "house";
-        this.nFragments = 2;
-        this.fuelOrHouseWhiteCount = 1;
-        this.tankerOrHouseBlackCount = 1;
+        this.labelName = "bridge";
+        this.nFragments = 21;
+        this.shipOrMissileYellowCount = 2;
+        this.bridgeLightGreyCount = 4;
+        this.bridgeBrownCount = 2;
+        this.bridgeDarkGreyCount = 4;
+        this.bridgeDarkYellowCount = 4;
+        this.bridgeNormalYellowCount = 4;
+        this.bridgeLightYellowCount = 1;
     }
 }
