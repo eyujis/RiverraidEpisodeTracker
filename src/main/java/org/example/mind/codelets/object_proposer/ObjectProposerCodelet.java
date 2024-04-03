@@ -155,14 +155,6 @@ public class ObjectProposerCodelet extends Codelet {
 //                    -1,
 //                    (Scalar) idObj.get("colorId").getValue(),
 //                    -1);
-            String text = idObjs.getL().get(i).get("id").getValue().toString();
-            Point textOrg = new Point(tl_x, tl_y);
-            int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
-            double fontScale = 0.5;
-            Scalar textColor = colorId;
-            int textThickness = 1;
-
-            Imgproc.putText(frame, text, textOrg, fontFace, fontScale, textColor, textThickness);
         }
 
         BufferedImage bufferedImage = MatBufferedImageConverter.Mat2BufferedImage(frame);
