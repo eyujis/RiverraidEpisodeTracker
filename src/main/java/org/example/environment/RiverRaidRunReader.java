@@ -1,7 +1,5 @@
 package org.example.environment;
 
-import org.example.environment.socket.SocketFrameRcvr;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
