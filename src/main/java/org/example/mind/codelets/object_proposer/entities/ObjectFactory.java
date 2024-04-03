@@ -196,7 +196,7 @@ public class ObjectFactory {
         double brX = (double) object.get("boundRect.br.x").getValue();
         double brY = (double) object.get("boundRect.br.y").getValue();
 
-        if (brX <= 0 || tlX >= width || brY >= height || tlY <= 0) {
+        if(brX >= width || tlX <= 0 || brY >= height || tlY <= 0) {
             return false;
         }
 
