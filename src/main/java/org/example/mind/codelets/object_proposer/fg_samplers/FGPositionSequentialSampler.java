@@ -72,9 +72,10 @@ public class FGPositionSequentialSampler {
             for(MatOfPoint contourGrey : contoursGrey) {
                 Rect boundingRect = Imgproc.boundingRect(contourGrey);
 
+                boolean minimumSize = true;
                 // in the case the bounding rect is small (e.g. grey particle in an explosion)
                 if(boundingRect.width < 5 && boundingRect.height < 5) {
-                    break;
+                    minimumSize = false;
                 }
 
                 boolean touching = false;
@@ -83,11 +84,14 @@ public class FGPositionSequentialSampler {
                     for(Point greyPoint : contourGrey.toList()) {
                         double distance = Math.sqrt(Math.pow(yellowPoint.x - greyPoint.x, 2) + Math.pow(yellowPoint.y - greyPoint.y, 2));
 
-                        if(distance == 1) {
+                        if(distance <= 1 && minimumSize) {
                             Imgproc.drawContours(maskRemoveYellow, contoursYellow, contoursYellow.indexOf(contourYellow), Scalar.all(255), -1);
                             touching = true;
                             break;
                         }
+                    }
+                    if(touching) {
+                        break;
                     }
                 }
                 if(touching) {
