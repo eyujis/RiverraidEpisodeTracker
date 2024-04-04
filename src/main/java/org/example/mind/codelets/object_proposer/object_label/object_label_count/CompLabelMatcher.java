@@ -64,16 +64,8 @@ public class CompLabelMatcher extends TemplateLabelMatcher {
             this.shipOrMissileYellowCount+=1;
             return;
         }
-        if(colorLabel.equals("bridgeLightGrey")) {
-            this.bridgeLightGreyCount+=1;
-            return;
-        }
         if(colorLabel.equals("bridgeBrown")) {
             this.bridgeBrownCount+=1;
-            return;
-        }
-        if(colorLabel.equals("bridgeDarkGrey")) {
-            this.bridgeDarkGreyCount+=1;
             return;
         }
         if(colorLabel.equals("bridgeDarkYellow")) {

@@ -13,7 +13,7 @@ public class RiverRaidRunReader implements RiverRaidEnv {
     }
 
     public BufferedImage step() {
-        String filePath = "src/main/datasets/dataset_1/" + nStep + ".tiff";
+        String filePath = "src/main/datasets/dataset_0/" + nStep + ".tiff";
 
         try {
             File file = new File(filePath);

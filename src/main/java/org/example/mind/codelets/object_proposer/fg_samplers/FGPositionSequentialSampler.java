@@ -1,10 +1,9 @@
 package org.example.mind.codelets.object_proposer.fg_samplers;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FGPositionSequentialSampler {
@@ -14,18 +13,95 @@ public class FGPositionSequentialSampler {
     private Scalar lowerBoundGreen= new Scalar(24-5,95-5,53-5);
     private Scalar upperBoundGreen = new Scalar(64+5,156+5,111+5);
 
+    private Scalar lowerBoundYellow= new Scalar(74,232,232);
+    private Scalar upperBoundYellow = new Scalar(74,232,232);
+
+    private Scalar lowerBoundLightGrey = new Scalar(170,170,170);
+    private Scalar upperBoundLightGrey = new Scalar(170,170,170);
+
+    private Scalar lowerBoundDarkGrey = new Scalar(111,111,111);
+    private Scalar upperBoundDarkGrey = new Scalar(111,111,111);
+
+    private Scalar lowerBoundRed = new Scalar(26,26,167);
+    private Scalar upperBoundRed = new Scalar(26,26,167);
+
     Mat maskForeground = new Mat();
     Mat maskBackgroundBlue = new Mat();
     Mat maskBackgroundGreen = new Mat();
-    List<Point> samplePositions;
+    Mat maskBackgroundLightGrey = new Mat();
+    Mat maskBackgroundDarkGrey = new Mat();
+    Mat maskBackgroundRed = new Mat();
+
 
     public FGPositionSequentialSampler(Mat image) {
         Core.inRange(image, lowerBoundBlue, upperBoundBlue, maskBackgroundBlue);
         Core.inRange(image, lowerBoundGreen, upperBoundGreen, maskBackgroundGreen);
-        Core.add(maskBackgroundGreen, maskBackgroundBlue, maskForeground);
-        // Mask inversion
-        Core.bitwise_not(maskForeground, maskForeground);
+        Core.inRange(image, lowerBoundLightGrey, upperBoundLightGrey, maskBackgroundLightGrey);
+        Core.inRange(image, lowerBoundDarkGrey, upperBoundDarkGrey, maskBackgroundDarkGrey);
+        Core.inRange(image, lowerBoundRed, upperBoundRed, maskBackgroundRed);
 
+        Core.add(maskBackgroundGreen, maskBackgroundBlue, maskForeground);
+        Core.add(maskBackgroundLightGrey, maskForeground, maskForeground);
+        Core.add(maskBackgroundDarkGrey, maskForeground, maskForeground);
+        Core.add(maskBackgroundRed, maskForeground, maskForeground);
+
+        Core.bitwise_not(maskForeground, maskForeground);
+        removeYellowStripeFromStreet(image);
+    }
+
+    public void removeYellowStripeFromStreet(Mat image) {
+        // Create mask for yellow color
+        Mat maskYellow = new Mat();
+        Core.inRange(image, lowerBoundYellow, upperBoundYellow, maskYellow);
+
+        // Create mask for grey color
+        Mat maskGrey = new Mat();
+        Core.inRange(image, lowerBoundLightGrey, upperBoundLightGrey, maskGrey);
+        Mat hierarchy = new Mat();
+
+        // Find contours of yellow and grey objects
+        List<MatOfPoint> contoursYellow = new ArrayList<>();
+        List<MatOfPoint> contoursGrey = new ArrayList<>();
+        Imgproc.findContours(maskYellow, contoursYellow, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.findContours(maskGrey, contoursGrey, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        // Create a mask to cover yellow area if touching
+        Mat maskRemoveYellow = new Mat(image.size(), CvType.CV_8UC1, Scalar.all(0));
+
+        for(MatOfPoint contourYellow : contoursYellow) {
+            for(MatOfPoint contourGrey : contoursGrey) {
+                Rect boundingRect = Imgproc.boundingRect(contourGrey);
+
+                boolean minimumSize = true;
+                // in the case the bounding rect is small (e.g. grey particle in an explosion)
+                if(boundingRect.width < 5 && boundingRect.height < 5) {
+                    minimumSize = false;
+                }
+
+                boolean touching = false;
+
+                for(Point yellowPoint : contourYellow.toList()) {
+                    for(Point greyPoint : contourGrey.toList()) {
+                        double distance = Math.sqrt(Math.pow(yellowPoint.x - greyPoint.x, 2) + Math.pow(yellowPoint.y - greyPoint.y, 2));
+
+                        if(distance <= 1 && minimumSize) {
+                            Imgproc.drawContours(maskRemoveYellow, contoursYellow, contoursYellow.indexOf(contourYellow), Scalar.all(255), -1);
+                            touching = true;
+                            break;
+                        }
+                    }
+                    if(touching) {
+                        break;
+                    }
+                }
+                if(touching) {
+                    break;
+                }
+            }
+        }
+
+        Core.bitwise_not(maskRemoveYellow, maskRemoveYellow);
+        Core.bitwise_and(maskRemoveYellow, maskForeground, maskForeground);
     }
 
     public Point getFGPosition() {

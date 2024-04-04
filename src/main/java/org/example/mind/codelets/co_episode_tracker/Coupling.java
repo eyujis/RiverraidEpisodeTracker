@@ -15,7 +15,6 @@ public class Coupling {
             return false;
         }
 
-
         // if the object is the same, it attends a spatial relation with itself
         if(sameObjectId(eventX, eventY)) {
             return true;

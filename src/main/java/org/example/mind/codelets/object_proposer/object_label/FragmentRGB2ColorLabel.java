@@ -17,9 +17,7 @@ public class FragmentRGB2ColorLabel {
     String treeGreenRGB = "158,208,101";
     String treeBrownRGB = "72,72,0";
     String shipOrMissileYellowRGB = "232,232,74";
-    String bridgeLightGreyRGB = "111,111,111";
     String bridgeBrownRGB = "124,44,0";
-    String bridgeDarkGreyRGB = "170,170,170";
     String bridgeDarkYellowRGB = "105,105,15";
     String bridgeNormalYellowRGB = "134,134,29";
     String bridgeLightYellowRGB = "187,187,53";
@@ -39,9 +37,7 @@ public class FragmentRGB2ColorLabel {
         rgb2ColorLabel.put(treeGreenRGB, "treeGreen");
         rgb2ColorLabel.put(treeBrownRGB, "treeBrown");
         rgb2ColorLabel.put(shipOrMissileYellowRGB, "shipOrMissileYellow");
-        rgb2ColorLabel.put(bridgeLightGreyRGB, "bridgeLightGrey");
         rgb2ColorLabel.put(bridgeBrownRGB, "bridgeBrown");
-        rgb2ColorLabel.put(bridgeDarkGreyRGB, "bridgeDarkGrey");
         rgb2ColorLabel.put(bridgeDarkYellowRGB, "bridgeDarkYellow");
         rgb2ColorLabel.put(bridgeNormalYellowRGB, "bridgeNormalYellow");
         rgb2ColorLabel.put(bridgeLightYellowRGB, "bridgeLightYellow");
