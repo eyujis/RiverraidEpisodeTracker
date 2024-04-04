@@ -23,8 +23,6 @@ public class ObjectProposer {
 
     double INIT_RELEVANCE = 1;
 
-    private double MIN_CLUSTER_DISTANCE = 0;
-
     public ObjectProposer() {
         objectFactory = new ObjectFactory();
         objectTracker = new ObjectTracker();
@@ -80,7 +78,6 @@ public class ObjectProposer {
     }
 
     public Idea extractFragmentClusters(Idea fragmentInstances) {
-
         boolean[][] borderMatrix = initializeBooleanMatrix(fragmentInstances.getL().size());
 
         for(int i=0; i<fragmentInstances.getL().size(); i++) {
