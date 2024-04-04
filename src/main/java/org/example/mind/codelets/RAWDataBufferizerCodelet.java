@@ -5,17 +5,14 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.environment.RiverRaidEnv;
-import org.example.environment.RiverRaidPyGame;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class RAWDataBufferizerCodelet extends Codelet {
     private RiverRaidEnv env;
     private Memory rawDataBufferMO;
     private final int BUFFER_SIZE = 2;
-//    private Idea ideaBuffer = initializeIdeaBuffer();
     private JLabel rawDataBufferImgJLabel;
     Idea rawDataBuffer = new Idea("rawDataBuffer", "", 0);
 
@@ -42,7 +39,6 @@ public class RAWDataBufferizerCodelet extends Codelet {
         if(rawDataBuffer.getL().size()>=BUFFER_SIZE) {
             rawDataBufferMO.setI(rawDataBuffer);
         }
-
 
 //        Visualization
         if(rawDataBufferMO.getI() instanceof Idea) {

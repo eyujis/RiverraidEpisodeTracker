@@ -51,13 +51,7 @@ public class FGPositionSequentialSampler {
         // Create mask for grey color
         Mat maskGrey = new Mat();
         Core.inRange(image, lowerBoundLightGrey, upperBoundLightGrey, maskGrey);
-
-        // Find contours of green and blue backgrounds
-        List<MatOfPoint> contoursBlue = new ArrayList<>();
-        List<MatOfPoint> contoursGreen = new ArrayList<>();
         Mat hierarchy = new Mat();
-        Imgproc.findContours(maskBackgroundBlue, contoursBlue, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        Imgproc.findContours(maskBackgroundGreen, contoursGreen, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
         // Find contours of yellow and grey objects
         List<MatOfPoint> contoursYellow = new ArrayList<>();
