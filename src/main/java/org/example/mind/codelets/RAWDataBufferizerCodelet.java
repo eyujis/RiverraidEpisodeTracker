@@ -18,6 +18,8 @@ public class RAWDataBufferizerCodelet extends Codelet {
     private Memory rewardBufferMO;
     private Memory terminalBufferMO;
     private final int BUFFER_SIZE = 2;
+    private final int MINIMUM_IMAGES_FOR_REGULAR_UPDATE = 3;
+    private int totalImages = 0;
 //    private Idea ideaBuffer = initializeIdeaBuffer();
     private JLabel rawDataBufferImgJLabel;
     Idea imageBuffer = new Idea("rawImageBuffer", "", 0);
@@ -37,21 +39,25 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
     @Override
     public void proc() {
-        RawEnvInput input = this.env.step();
-        addElement(input.bufferedImage, this.env.getNStep());
+        do {
+            RawEnvInput input = this.env.step();
+            addElement(input.bufferedImage, this.env.getNStep());
 
-        if(imageBuffer.getL().size()>=BUFFER_SIZE) {
-            imageBufferMO.setI(imageBuffer);
-        }
-        rewardBufferMO.setI(input.reward);
-        terminalBufferMO.setI(input.terminal);
+            if (imageBuffer.getL().size() >= BUFFER_SIZE) {
+                imageBufferMO.setI(imageBuffer);
+            }
+            rewardBufferMO.setI(input.reward);
+            terminalBufferMO.setI(input.terminal);
 
-//        Visualization
-        if(imageBufferMO.getI() instanceof Idea && rawDataBufferImgJLabel!=null) {
-            Idea rawDataBufferIdea = (Idea) imageBufferMO.getI();
-            BufferedImage imageToUpdate = (BufferedImage) rawDataBufferIdea.getL().get(0).get("image").getValue();
-            updateJLabelImg(this.rawDataBufferImgJLabel, imageToUpdate);
-        }
+            //        Visualization
+            if (imageBufferMO.getI() instanceof Idea && rawDataBufferImgJLabel != null) {
+                Idea rawDataBufferIdea = (Idea) imageBufferMO.getI();
+                BufferedImage imageToUpdate = (BufferedImage) rawDataBufferIdea.getL().get(0).get("image").getValue();
+                updateJLabelImg(this.rawDataBufferImgJLabel, imageToUpdate);
+            }
+
+            totalImages += 1;
+        } while (totalImages < MINIMUM_IMAGES_FOR_REGULAR_UPDATE);
     }
 
     @Override

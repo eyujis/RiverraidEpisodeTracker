@@ -1,6 +1,8 @@
 package org.example.environment.socket;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
@@ -19,6 +21,13 @@ public class SocketFrameCommunicator {
         InputStream inputStream = socket.getInputStream();
         BufferedImage bufferedImage = ImageIO.read(inputStream);
         inputStream.close();
+
+        //JFrame frame = new JFrame();
+        //frame.getContentPane().setLayout(new FlowLayout());
+        //frame.getContentPane().add(new JLabel(new ImageIcon(bufferedImage)));
+        //frame.pack();
+        //frame.setVisible(true);
+
         socket.close();
 
         //TODO automatically create datasets when playing
@@ -48,11 +57,11 @@ public class SocketFrameCommunicator {
         return terminal;
     }
 
-    public void sendAction(List<Integer> action) throws IOException {
+    public void sendAction(int action) throws IOException {
         OutputStream outputStream = socket.getOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-        objectOutputStream.writeObject(action);
+        dataOutputStream.writeInt(action);
 
         socket.close();
     }

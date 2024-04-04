@@ -10,7 +10,7 @@ import java.util.List;
 public interface RiverRaidEnv {
     public RawEnvInput step();
 
-    public void communicateAction(List<Integer> action);
+    public void communicateAction(int action);
 
     public int getNStep();
 }

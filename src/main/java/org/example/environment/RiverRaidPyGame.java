@@ -31,7 +31,7 @@ public class RiverRaidPyGame implements RiverRaidEnv {
     }
 
     @Override
-    public void communicateAction(List<Integer> action) {
+    public void communicateAction(int action) {
         try {
             new SocketFrameCommunicator().sendAction(action);
         } catch (IOException e) {

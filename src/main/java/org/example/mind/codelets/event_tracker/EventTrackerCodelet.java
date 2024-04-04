@@ -14,6 +14,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 public class EventTrackerCodelet extends Codelet {
+    Codelet nextProc;
+
     Memory objectsBufferMO;
     Memory eventCategoriesMO;
     Memory detectedEventsMO;
@@ -22,8 +24,9 @@ public class EventTrackerCodelet extends Codelet {
     JLabel eventImgJLabel;
     Category2Color category2Color = new Category2Color();
 
-    public EventTrackerCodelet(JLabel eventImgJLabel) {
+    public EventTrackerCodelet(JLabel eventImgJLabel, Codelet nextProc) {
         this.eventImgJLabel = eventImgJLabel;
+        this.nextProc = nextProc;
     }
 
     @Override
@@ -41,7 +44,8 @@ public class EventTrackerCodelet extends Codelet {
     @Override
     public void proc() {
         if(objectsBufferMO.getI()=="" || eventCategoriesMO.getI()=="") {
-            return;
+            nextProc.accessMemoryObjects();
+            nextProc.proc();
         }
 
         synchronized (eventCategoriesMO) {
@@ -68,6 +72,9 @@ public class EventTrackerCodelet extends Codelet {
                 throw new RuntimeException(e);
             }
         }
+
+        nextProc.accessMemoryObjects();
+        nextProc.proc();
     }
 
     public void updateJLabelImg(JLabel jLabelToUpdate, BufferedImage imgToSet) {

@@ -6,10 +6,12 @@ import org.example.environment.RiverRaidEnv;
 import java.util.Arrays;
 
 public class ActionCommunicatorCodelet extends Codelet {
+    private Codelet nextProc;
     private RiverRaidEnv env;
 
-    public ActionCommunicatorCodelet(RiverRaidEnv env) {
+    public ActionCommunicatorCodelet(RiverRaidEnv env, Codelet nextProc) {
         this.env = env;
+        this.nextProc = nextProc;
     }
 
     @Override
@@ -24,6 +26,9 @@ public class ActionCommunicatorCodelet extends Codelet {
 
     @Override
     public void proc() {
-        env.communicateAction(Arrays.asList(2));
+        env.communicateAction(1);
+
+        nextProc.accessMemoryObjects();
+        nextProc.proc();
     }
 }

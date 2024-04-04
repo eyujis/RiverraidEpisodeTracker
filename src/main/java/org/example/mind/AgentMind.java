@@ -94,7 +94,8 @@ public class AgentMind extends Mind {
         rawDataBufferizerCodelet.addOutput(rewardBuffer);
         rawDataBufferizerCodelet.addOutput(terminalBuffer);
         rawDataBufferizerCodelet.setName("RAWDataBufferizer");
-        insertCodelet(rawDataBufferizerCodelet); // TODO: Should also be a memory observer!
+        rawDataBufferizerCodelet.setIsMemoryObserver(true);
+        insertCodelet(rawDataBufferizerCodelet);
 
         Codelet objectProposerCodelet = new ObjectProposerCodelet(objectsImgJLabel, mergedObjectsImgJLabel, categoriesImgJLabel);
         objectProposerCodelet.addInput(imageBuffer);
@@ -134,7 +135,9 @@ public class AgentMind extends Mind {
         eventCategoryLearnerCodelet.setName("EventCategoryLearner");
         insertCodelet(eventCategoryLearnerCodelet);
 
-        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel);
+        Codelet actionCommunicatorCodelet = new ActionCommunicatorCodelet(env, rawDataBufferizerCodelet);
+
+        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel, actionCommunicatorCodelet);
         eventTrackerCodelet.addInput(objectsBufferMO);
         eventTrackerCodelet.addInput(eventCategoriesMO);
         eventTrackerCodelet.addOutput(eventCategoriesMO);
@@ -148,11 +151,9 @@ public class AgentMind extends Mind {
         forgettingSOEpisodesCodelet.addInput(detectedEventsMO);
         forgettingSOEpisodesCodelet.addOutput(detectedEventsMO);
         forgettingSOEpisodesCodelet.setName("ForgettingSOEpisodes");
-        insertCodelet(forgettingSOEpisodesCodelet); // TODO: This not being a memory observer is probably going to result in some issues. How do we make it one?
+        insertCodelet(forgettingSOEpisodesCodelet);
 
-        Codelet actionCommunicatorCodelet = new ActionCommunicatorCodelet(env); // TODO: Complete RL Logic
-        actionCommunicatorCodelet.setIsMemoryObserver(true);
-        detectedEventsMO.addMemoryObserver(actionCommunicatorCodelet);
+        actionCommunicatorCodelet.setIsMemoryObserver(true); // TODO: Complete RL Logic
         insertCodelet(actionCommunicatorCodelet);
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
@@ -172,5 +173,7 @@ public class AgentMind extends Mind {
         // Start Cognitive Cycle
         start();
 
+        rawDataBufferizerCodelet.accessMemoryObjects();
+        rawDataBufferizerCodelet.proc();
     }
 }
