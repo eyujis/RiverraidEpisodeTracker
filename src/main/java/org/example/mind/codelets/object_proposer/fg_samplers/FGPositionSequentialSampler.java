@@ -22,22 +22,28 @@ public class FGPositionSequentialSampler {
     private Scalar lowerBoundDarkGrey = new Scalar(111,111,111);
     private Scalar upperBoundDarkGrey = new Scalar(111,111,111);
 
+    private Scalar lowerBoundRed = new Scalar(26,26,167);
+    private Scalar upperBoundRed = new Scalar(26,26,167);
+
     Mat maskForeground = new Mat();
     Mat maskBackgroundBlue = new Mat();
     Mat maskBackgroundGreen = new Mat();
-    Mat maskBackgroundYellow = new Mat();
     Mat maskBackgroundLightGrey = new Mat();
     Mat maskBackgroundDarkGrey = new Mat();
+    Mat maskBackgroundRed = new Mat();
+
 
     public FGPositionSequentialSampler(Mat image) {
         Core.inRange(image, lowerBoundBlue, upperBoundBlue, maskBackgroundBlue);
         Core.inRange(image, lowerBoundGreen, upperBoundGreen, maskBackgroundGreen);
         Core.inRange(image, lowerBoundLightGrey, upperBoundLightGrey, maskBackgroundLightGrey);
         Core.inRange(image, lowerBoundDarkGrey, upperBoundDarkGrey, maskBackgroundDarkGrey);
+        Core.inRange(image, lowerBoundRed, upperBoundRed, maskBackgroundRed);
 
         Core.add(maskBackgroundGreen, maskBackgroundBlue, maskForeground);
         Core.add(maskBackgroundLightGrey, maskForeground, maskForeground);
         Core.add(maskBackgroundDarkGrey, maskForeground, maskForeground);
+        Core.add(maskBackgroundRed, maskForeground, maskForeground);
 
         Core.bitwise_not(maskForeground, maskForeground);
         removeYellowStripeFromStreet(image);
