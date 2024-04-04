@@ -15,9 +15,7 @@ public class TemplateLabelMatcher {
     public int treeBrownCount = 0;
     public int shipOrMissileYellowCount = 0;
     public int shipOrMissileContourPointCount = -1;
-    public int bridgeLightGreyCount = 0;
     public int bridgeBrownCount = 0;
-    public int bridgeDarkGreyCount = 0;
     public int bridgeDarkYellowCount = 0;
     public int bridgeNormalYellowCount = 0;
     public int bridgeLightYellowCount = 0;
@@ -48,9 +46,7 @@ public class TemplateLabelMatcher {
                 && this.treeBrownCount == other.treeBrownCount
                 && this.shipOrMissileYellowCount == other.shipOrMissileYellowCount
                 && this.shipOrMissileContourPointCount == other.shipOrMissileContourPointCount
-                && this.bridgeLightGreyCount == other.bridgeLightGreyCount
                 && this.bridgeBrownCount == other.bridgeBrownCount
-                && this.bridgeDarkGreyCount == other.bridgeDarkGreyCount
                 && this.bridgeDarkYellowCount == other.bridgeDarkYellowCount
                 && this.bridgeNormalYellowCount == other.bridgeNormalYellowCount
                 && this.bridgeLightYellowCount == other.bridgeLightYellowCount
