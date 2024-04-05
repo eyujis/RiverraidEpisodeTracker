@@ -12,6 +12,7 @@ import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
 import org.example.mind.codelets.objects_bufferizer.ObjectsBufferizerCodelet;
 import org.example.mind.codelets.perfect_episodic_memory.PerfectEpisodicStorageCodelet;
+import org.example.mind.codelets.q_and_a.QuestionAndAnsweringCodelet;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
@@ -168,6 +169,11 @@ public class AgentMind extends Mind {
         perfectEpisodeStorageCodelet.setName("PerfectEpisodicStorage");
         insertCodelet(perfectEpisodeStorageCodelet);
 
+        Codelet questionAndAnsweringCodelet = new QuestionAndAnsweringCodelet(rawDataBufferizerCodelet);
+        questionAndAnsweringCodelet.addInput(perfectEpisodicMO);
+        questionAndAnsweringCodelet.setName("QuestionAndAnswering");
+        insertCodelet(questionAndAnsweringCodelet);
+
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
@@ -177,6 +183,8 @@ public class AgentMind extends Mind {
         registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(perfectEpisodeStorageCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(questionAndAnsweringCodelet, "EpisodeTrackerCodeletGroup");
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())
