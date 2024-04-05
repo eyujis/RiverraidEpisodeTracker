@@ -1,22 +1,24 @@
 package org.example.mind.codelets;
 
 import br.unicamp.cst.core.entities.Codelet;
+import br.unicamp.cst.core.entities.Memory;
 import org.example.environment.RiverRaidEnv;
 
 import java.util.Arrays;
 
 public class ActionCommunicatorCodelet extends Codelet {
-    private Codelet nextProc;
-    private RiverRaidEnv env;
+    private Memory actionTimestampMO;
 
-    public ActionCommunicatorCodelet(RiverRaidEnv env, Codelet nextProc) {
+    private RiverRaidEnv env;
+    private int timestamp = 0;
+
+    public ActionCommunicatorCodelet(RiverRaidEnv env) {
         this.env = env;
-        this.nextProc = nextProc;
     }
 
     @Override
     public void accessMemoryObjects() {
-
+        actionTimestampMO = getOutput("ACTION_TIMESTAMP");
     }
 
     @Override
@@ -28,7 +30,7 @@ public class ActionCommunicatorCodelet extends Codelet {
     public void proc() {
         env.communicateAction(1);
 
-        nextProc.accessMemoryObjects();
-        nextProc.proc();
+        timestamp += 1;
+        actionTimestampMO.setI(timestamp);
     }
 }

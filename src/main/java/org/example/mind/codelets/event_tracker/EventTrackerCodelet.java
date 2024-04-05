@@ -46,6 +46,7 @@ public class EventTrackerCodelet extends Codelet {
         if(objectsBufferMO.getI()=="" || eventCategoriesMO.getI()=="") {
             nextProc.accessMemoryObjects();
             nextProc.proc();
+            return;
         }
 
         synchronized (eventCategoriesMO) {

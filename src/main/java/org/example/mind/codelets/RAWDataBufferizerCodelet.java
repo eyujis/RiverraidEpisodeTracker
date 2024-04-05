@@ -14,12 +14,14 @@ import java.io.IOException;
 
 public class RAWDataBufferizerCodelet extends Codelet {
     private RiverRaidEnv env;
+    private Memory actionTimestampMO;
     private Memory imageBufferMO;
     private Memory rewardBufferMO;
     private Memory terminalBufferMO;
     private final int BUFFER_SIZE = 2;
     private final int MINIMUM_IMAGES_FOR_REGULAR_UPDATE = 3;
     private int totalImages = 0;
+    private int actionTimestamp = -1;
 //    private Idea ideaBuffer = initializeIdeaBuffer();
     private JLabel rawDataBufferImgJLabel;
     Idea imageBuffer = new Idea("rawImageBuffer", "", 0);
@@ -32,6 +34,7 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
+        actionTimestampMO=(MemoryObject)this.getInput("ACTION_TIMESTAMP");
         imageBufferMO=(MemoryObject)this.getOutput("IMAGE_BUFFER");
         rewardBufferMO=(MemoryObject)this.getOutput("REWARD_BUFFER");
         terminalBufferMO=(MemoryObject)this.getOutput("TERMINAL_BUFFER");
@@ -39,6 +42,11 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
     @Override
     public void proc() {
+        if (actionTimestamp >= (int) actionTimestampMO.getI()) {
+            return;
+        }
+        actionTimestamp = (int) actionTimestampMO.getI();
+
         do {
             RawEnvInput input = this.env.step();
             addElement(input.bufferedImage, this.env.getNStep());
@@ -46,6 +54,7 @@ public class RAWDataBufferizerCodelet extends Codelet {
             if (imageBuffer.getL().size() >= BUFFER_SIZE) {
                 imageBufferMO.setI(imageBuffer);
             }
+
             rewardBufferMO.setI(input.reward);
             terminalBufferMO.setI(input.terminal);
 
