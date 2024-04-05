@@ -13,18 +13,18 @@ public class RiverRaidPyGame implements RiverRaidEnv {
     public RiverRaidPyGame() throws IOException {
     }
     
-    public BufferedImage step()  {
+    public Observation step()  {
+        Observation observation = new Observation();
+        observation.done = false;
+
         try {
-            rcvImage = new SocketFrameRcvr().receiveImage();
+            observation.image = new SocketFrameRcvr().receiveImage();
         } catch (IOException e) {
+            observation.done = true;
             e.printStackTrace();
         }
-
+        observation.timestamp = nStep;
         nStep++;
-        return rcvImage;
-    }
-
-    public int getNStep() {
-        return nStep;
+        return observation;
     }
 }

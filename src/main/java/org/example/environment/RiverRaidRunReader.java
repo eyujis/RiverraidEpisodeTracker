@@ -12,27 +12,28 @@ public class RiverRaidRunReader implements RiverRaidEnv {
     public RiverRaidRunReader() throws IOException {
     }
 
-    public BufferedImage step() {
+    public Observation step() {
+        Observation observation = new Observation();
+        observation.done = false;
+
         String filePath = "src/main/datasets/dataset_0/" + nStep + ".tiff";
+        File file = new File(filePath);
+
+        if(!file.exists() || nStep==20) {
+            observation.done = true;
+            return observation;
+        }
 
         try {
-            File file = new File(filePath);
-
             image = ImageIO.read(file);
-
-            if (image != null) {
-            } else {
-                System.out.println("Failed to read TIFF image.");
-            }
+            observation.image = image;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        observation.timestamp = nStep;
         nStep++;
-        return  image;
-    }
 
-    public int getNStep() {
-        return nStep;
+        return  observation;
     }
 }

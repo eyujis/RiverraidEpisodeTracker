@@ -4,6 +4,7 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.environment.Observation;
 import org.example.environment.RiverRaidEnv;
 
 import javax.swing.*;
@@ -29,10 +30,17 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
     @Override
     public void proc() {
-        BufferedImage image = null;
-        image = this.env.step();
+        Observation observation = this.env.step();
 
-        int timestamp = this.env.getNStep();
+        if(observation.done) {
+            this.stop();
+            return;
+        }
+
+        BufferedImage image = null;
+        image = observation.image;
+
+        int timestamp = observation.timestamp;
 
         addElement(image, timestamp);
 
