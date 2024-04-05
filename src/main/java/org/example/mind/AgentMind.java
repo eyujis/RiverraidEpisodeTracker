@@ -11,6 +11,7 @@ import org.example.mind.codelets.object_cat_learner.ObjectCategoryLearnerCodelet
 import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
 import org.example.mind.codelets.objects_bufferizer.ObjectsBufferizerCodelet;
+import org.example.mind.codelets.perfect_episodic_memory.PerfectEpisodicStorageCodelet;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
@@ -44,6 +45,7 @@ public class AgentMind extends Mind {
         Memory detectedCOEpisodesMO;
         Memory cOEpisodeCategoriesTSMO;
         Memory cOEpisodeTrackerTSMO;
+        Memory perfectEpisodicMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
@@ -60,6 +62,7 @@ public class AgentMind extends Mind {
         detectedCOEpisodesMO = createMemoryObject("DETECTED_CO_EPISODES", "");
         cOEpisodeCategoriesTSMO= createMemoryObject("CO_EPISODE_CATEGORIES_TS", "");
         cOEpisodeTrackerTSMO = createMemoryObject("CO_EPISODES_TS", "");
+        perfectEpisodicMO = createMemoryObject("PERFECT_EPISODIC_MEMORY", "");
 
         registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
@@ -72,6 +75,7 @@ public class AgentMind extends Mind {
         registerMemory(cOEpisodeCategoriesMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeCategoriesTSMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeTrackerTSMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(perfectEpisodicMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
         rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
@@ -155,6 +159,14 @@ public class AgentMind extends Mind {
         cOEpisodeTrackerCodelet.setName("COEpisodeTracker");
         insertCodelet(cOEpisodeTrackerCodelet);
 
+        Codelet perfectEpisodeStorageCodelet = new PerfectEpisodicStorageCodelet();
+        perfectEpisodeStorageCodelet.addInput(detectedCOEpisodesMO);
+        perfectEpisodeStorageCodelet.addInput(perfectEpisodicMO);
+        perfectEpisodeStorageCodelet.addOutput(perfectEpisodicMO);
+        perfectEpisodeStorageCodelet.setIsMemoryObserver(true);
+        detectedCOEpisodesMO.addMemoryObserver(perfectEpisodeStorageCodelet);
+        perfectEpisodeStorageCodelet.setName("PerfectEpisodicStorage");
+        insertCodelet(perfectEpisodeStorageCodelet);
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
