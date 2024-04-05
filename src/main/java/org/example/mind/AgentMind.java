@@ -8,10 +8,11 @@ import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
 import org.example.mind.codelets.event_tracker.EventTrackerCodelet;
 import org.example.mind.codelets.forgetting_so_episodes.ForgettingSOEpisodesCodelet;
 import org.example.mind.codelets.object_cat_learner.ObjectCategoryLearnerCodelet;
-import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
 import org.example.mind.codelets.objects_bufferizer.ObjectsBufferizerCodelet;
+import org.example.mind.codelets.perfect_episodic_memory.PerfectEpisodicStorageCodelet;
+import org.example.mind.codelets.q_and_a.QuestionAndAnsweringCodelet;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
@@ -45,6 +46,7 @@ public class AgentMind extends Mind {
         Memory detectedCOEpisodesMO;
         Memory cOEpisodeCategoriesTSMO;
         Memory cOEpisodeTrackerTSMO;
+        Memory perfectEpisodicMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
@@ -61,6 +63,7 @@ public class AgentMind extends Mind {
         detectedCOEpisodesMO = createMemoryObject("DETECTED_CO_EPISODES", "");
         cOEpisodeCategoriesTSMO= createMemoryObject("CO_EPISODE_CATEGORIES_TS", "");
         cOEpisodeTrackerTSMO = createMemoryObject("CO_EPISODES_TS", "");
+        perfectEpisodicMO = createMemoryObject("PERFECT_EPISODIC_MEMORY", "");
 
         registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
@@ -73,6 +76,7 @@ public class AgentMind extends Mind {
         registerMemory(cOEpisodeCategoriesMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeCategoriesTSMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeTrackerTSMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(perfectEpisodicMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
         rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
@@ -130,8 +134,6 @@ public class AgentMind extends Mind {
         Codelet forgettingSOEpisodesCodelet = new ForgettingSOEpisodesCodelet(forgettingSOEpisodeImgJLabel);
         forgettingSOEpisodesCodelet.addInput(detectedEventsMO);
         forgettingSOEpisodesCodelet.addOutput(detectedEventsMO);
-//        forgettingSOEpisodesCodelet.setIsMemoryObserver(true);
-//        detectedEventsMO.addMemoryObserver(forgettingSOEpisodesCodelet);
         forgettingSOEpisodesCodelet.setName("ForgettingSOEpisodes");
         insertCodelet(forgettingSOEpisodesCodelet);
 
@@ -158,6 +160,19 @@ public class AgentMind extends Mind {
         cOEpisodeTrackerCodelet.setName("COEpisodeTracker");
         insertCodelet(cOEpisodeTrackerCodelet);
 
+        Codelet perfectEpisodeStorageCodelet = new PerfectEpisodicStorageCodelet();
+        perfectEpisodeStorageCodelet.addInput(detectedCOEpisodesMO);
+        perfectEpisodeStorageCodelet.addInput(perfectEpisodicMO);
+        perfectEpisodeStorageCodelet.addOutput(perfectEpisodicMO);
+        perfectEpisodeStorageCodelet.setIsMemoryObserver(true);
+        detectedCOEpisodesMO.addMemoryObserver(perfectEpisodeStorageCodelet);
+        perfectEpisodeStorageCodelet.setName("PerfectEpisodicStorage");
+        insertCodelet(perfectEpisodeStorageCodelet);
+
+        Codelet questionAndAnsweringCodelet = new QuestionAndAnsweringCodelet(rawDataBufferizerCodelet);
+        questionAndAnsweringCodelet.addInput(perfectEpisodicMO);
+        questionAndAnsweringCodelet.setName("QuestionAndAnswering");
+        insertCodelet(questionAndAnsweringCodelet);
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
@@ -168,10 +183,12 @@ public class AgentMind extends Mind {
         registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(perfectEpisodeStorageCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(questionAndAnsweringCodelet, "EpisodeTrackerCodeletGroup");
 
         // Sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())
-            c.setTimeStep(100);
+            c.setTimeStep(1);
 
         // Start Cognitive Cycle
         start();

@@ -4,6 +4,7 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
+import org.example.environment.Observation;
 import org.example.environment.RiverRaidEnv;
 
 import javax.swing.*;
@@ -14,12 +15,14 @@ public class RAWDataBufferizerCodelet extends Codelet {
     private Memory rawDataBufferMO;
     private final int BUFFER_SIZE = 2;
     private JLabel rawDataBufferImgJLabel;
+    private boolean sleep;
     Idea rawDataBuffer = new Idea("rawDataBuffer", "", 0);
 
 
     public RAWDataBufferizerCodelet(RiverRaidEnv env, JLabel rawDataBufferImgJLabel) {
         this.env = env;
         this.rawDataBufferImgJLabel = rawDataBufferImgJLabel;
+        this.sleep = false;
     }
 
     @Override
@@ -29,10 +32,18 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
     @Override
     public void proc() {
-        BufferedImage image = null;
-        image = this.env.step();
+        Observation observation = this.env.step();
 
-        int timestamp = this.env.getNStep();
+        if(observation.done) {
+            this.stop();
+            this.sleep = true;
+            return;
+        }
+
+        BufferedImage image = null;
+        image = observation.image;
+
+        int timestamp = observation.timestamp;
 
         addElement(image, timestamp);
 
@@ -70,5 +81,9 @@ public class RAWDataBufferizerCodelet extends Codelet {
         jLabelToUpdate.revalidate();
         jLabelToUpdate.repaint();
         jLabelToUpdate.update(jLabelToUpdate.getGraphics());
+    }
+
+    public boolean isSleep() {
+        return sleep;
     }
 }

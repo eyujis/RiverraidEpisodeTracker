@@ -93,14 +93,14 @@ public class COEpisodeTrackerCodelet extends Codelet {
                     cOEpisodeCategoriesMO.setI(cOEpisodeCategories);
 
                     //Visualization
-                    System.out.println("==========="+ cOEpisodes.getValue().toString() +"===========");
-                    for(Idea cOEpisode : cOEpisodes.getL()) {
-//                   System.out.println(cOEpisode.toStringFull());
-                        if(cOEpisode.get("relations").getL().stream()
-                                .filter(relation->relation.get("relationType").getValue().equals("m")).collect(Collectors.toList()).size()>1) {
-                            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation-> ((String) relation.get("relationType").getValue() + ((Integer) relation.get("eventId").getValue()).toString())).collect(Collectors.toList()));
-                        }
-                    }
+//                    System.out.println("==========="+ cOEpisodes.getValue().toString() +"===========");
+//                    for(Idea cOEpisode : cOEpisodes.getL()) {
+////                   System.out.println(cOEpisode.toStringFull());
+//                        if(cOEpisode.get("relations").getL().stream()
+//                                .filter(relation->relation.get("relationType").getValue().equals("m")).collect(Collectors.toList()).size()>1) {
+//                            System.out.println(cOEpisode.get("eventId").getValue() +": "+ cOEpisode.get("relations").getL().stream().map(relation-> ((String) relation.get("relationType").getValue() + ((Integer) relation.get("eventId").getValue()).toString())).collect(Collectors.toList()));
+//                        }
+//                    }
 
                     updateJLabelImg(coEpisodeImgJLabel, getBuffImageFromEvents(cOEpisodes));
                 }
