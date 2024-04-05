@@ -15,12 +15,14 @@ public class RAWDataBufferizerCodelet extends Codelet {
     private Memory rawDataBufferMO;
     private final int BUFFER_SIZE = 2;
     private JLabel rawDataBufferImgJLabel;
+    private boolean sleep;
     Idea rawDataBuffer = new Idea("rawDataBuffer", "", 0);
 
 
     public RAWDataBufferizerCodelet(RiverRaidEnv env, JLabel rawDataBufferImgJLabel) {
         this.env = env;
         this.rawDataBufferImgJLabel = rawDataBufferImgJLabel;
+        this.sleep = false;
     }
 
     @Override
@@ -34,6 +36,7 @@ public class RAWDataBufferizerCodelet extends Codelet {
 
         if(observation.done) {
             this.stop();
+            this.sleep = true;
             return;
         }
 
@@ -78,5 +81,9 @@ public class RAWDataBufferizerCodelet extends Codelet {
         jLabelToUpdate.revalidate();
         jLabelToUpdate.repaint();
         jLabelToUpdate.update(jLabelToUpdate.getGraphics());
+    }
+
+    public boolean isSleep() {
+        return sleep;
     }
 }
