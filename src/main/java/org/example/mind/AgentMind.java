@@ -2,6 +2,7 @@ package org.example.mind;
 
 import br.unicamp.cst.core.entities.*;
 import org.example.environment.RiverRaidEnv;
+import org.example.mind.codelets.ActionCommunicatorCodelet;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategoryLearnerCodelet;
 import org.example.mind.codelets.co_episode_tracker.COEpisodeTrackerCodelet;
 import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
@@ -41,7 +42,9 @@ public class AgentMind extends Mind {
             forgettingSOEpisodeImgJLabel = secondJFrame.getForgettingSOEpisodesImgJLabel();
         }
 
-        Memory rawDataBufferMO;
+        Memory imageBuffer;
+        Memory rewardBuffer;
+        Memory terminalBuffer;
         Memory detectedFragmentsMO;
         Memory detectedObjectsMO;
         Memory fragmentCategoriesMO;
@@ -53,11 +56,14 @@ public class AgentMind extends Mind {
         Memory detectedCOEpisodesMO;
         Memory cOEpisodeCategoriesTSMO;
         Memory cOEpisodeTrackerTSMO;
+        Memory actionTimestampMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
 
-        rawDataBufferMO = createMemoryObject("RAW_DATA_BUFFER", "");
+        imageBuffer = createMemoryObject("IMAGE_BUFFER", "");
+        rewardBuffer = createMemoryObject("REWARD_BUFFER", "");
+        terminalBuffer = createMemoryObject("TERMINAL_BUFFER", "");
         detectedFragmentsMO = createMemoryObject("DETECTED_FRAGMENTS", "");
         detectedObjectsMO = createMemoryObject("DETECTED_OBJECTS", "");
         fragmentCategoriesMO = createMemoryObject("FRAGMENT_CATEGORIES", "");
@@ -69,8 +75,11 @@ public class AgentMind extends Mind {
         detectedCOEpisodesMO = createMemoryObject("DETECTED_CO_EPISODES", "");
         cOEpisodeCategoriesTSMO= createMemoryObject("CO_EPISODE_CATEGORIES_TS", "");
         cOEpisodeTrackerTSMO = createMemoryObject("CO_EPISODES_TS", "");
+        actionTimestampMO = createMemoryObject("ACTION_TIMESTAMP", 0);
 
-        registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(imageBuffer, "EpisodeTrackerMemoryGroup");
+        registerMemory(rewardBuffer, "EpisodeTrackerMemoryGroup");
+        registerMemory(terminalBuffer, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedObjectsMO, "EpisodeTrackerMemoryGroup");
         registerMemory(fragmentCategoriesMO, "EpisodeTrackerMemoryGroup");
@@ -83,12 +92,15 @@ public class AgentMind extends Mind {
         registerMemory(cOEpisodeTrackerTSMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
-        rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
+        rawDataBufferizerCodelet.addInput(actionTimestampMO);
+        rawDataBufferizerCodelet.addOutput(imageBuffer);
+        rawDataBufferizerCodelet.addOutput(rewardBuffer);
+        rawDataBufferizerCodelet.addOutput(terminalBuffer);
         rawDataBufferizerCodelet.setName("RAWDataBufferizer");
         insertCodelet(rawDataBufferizerCodelet);
 
         Codelet objectProposerCodelet = new ObjectProposerCodelet(objectsImgJLabel, mergedObjectsImgJLabel, categoriesImgJLabel);
-        objectProposerCodelet.addInput(rawDataBufferMO);
+        objectProposerCodelet.addInput(imageBuffer);
         objectProposerCodelet.addInput(fragmentCategoriesMO);
         objectProposerCodelet.addOutput(fragmentCategoriesMO);
         objectProposerCodelet.addInput(objectCategoriesMO);
@@ -96,7 +108,7 @@ public class AgentMind extends Mind {
         objectProposerCodelet.addOutput(detectedFragmentsMO);
         objectProposerCodelet.addOutput(detectedObjectsMO);
         objectProposerCodelet.setIsMemoryObserver(true);
-        rawDataBufferMO.addMemoryObserver(objectProposerCodelet);
+        imageBuffer.addMemoryObserver(objectProposerCodelet);
         objectProposerCodelet.setName("ObjectProposer");
         insertCodelet(objectProposerCodelet);
 
@@ -125,7 +137,9 @@ public class AgentMind extends Mind {
         eventCategoryLearnerCodelet.setName("EventCategoryLearner");
         insertCodelet(eventCategoryLearnerCodelet);
 
-        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel);
+        Codelet actionCommunicatorCodelet = new ActionCommunicatorCodelet(env);
+
+        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel, actionCommunicatorCodelet);
         eventTrackerCodelet.addInput(objectsBufferMO);
         eventTrackerCodelet.addInput(eventCategoriesMO);
         eventTrackerCodelet.addOutput(eventCategoriesMO);
@@ -140,6 +154,10 @@ public class AgentMind extends Mind {
         forgettingSOEpisodesCodelet.addOutput(detectedEventsMO);
         forgettingSOEpisodesCodelet.setName("ForgettingSOEpisodes");
         insertCodelet(forgettingSOEpisodesCodelet);
+
+        actionCommunicatorCodelet.addOutput(actionTimestampMO);
+        actionCommunicatorCodelet.setIsMemoryObserver(true); // TODO: Complete RL Logic
+        insertCodelet(actionCommunicatorCodelet);
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
@@ -157,6 +175,5 @@ public class AgentMind extends Mind {
 
         // Start Cognitive Cycle
         start();
-
     }
 }

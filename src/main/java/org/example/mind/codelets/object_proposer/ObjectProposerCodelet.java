@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class ObjectProposerCodelet extends Codelet {
-    Memory rawDataMO;
+    Memory imageBufferMO;
     Memory detectedFragmentsMO;
     Memory detectedObjectsMO;
     Memory fragmentCategoriesMO;
@@ -40,7 +40,7 @@ public class ObjectProposerCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        rawDataMO=(MemoryObject)this.getInput("RAW_DATA_BUFFER");
+        imageBufferMO=(MemoryObject)this.getInput("IMAGE_BUFFER");
         fragmentCategoriesMO =(MemoryObject)this.getInput("FRAGMENT_CATEGORIES");
         objectCategoriesMO=(MemoryObject)this.getOutput("OBJECT_CATEGORIES");
         detectedFragmentsMO =(MemoryObject)this.getOutput("DETECTED_FRAGMENTS");
@@ -54,7 +54,7 @@ public class ObjectProposerCodelet extends Codelet {
 
     @Override
     public void proc() {
-        Idea rawDataBufferIdea = (Idea) rawDataMO.getI();
+        Idea rawDataBufferIdea = (Idea) imageBufferMO.getI();
         int buffSize = rawDataBufferIdea.getL().size();
         BufferedImage buffImgFrame = (BufferedImage) rawDataBufferIdea.getL().get(buffSize - 1).get("image").getValue();
 
