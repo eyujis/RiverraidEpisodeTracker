@@ -16,10 +16,10 @@ public class RiverRaidRunReader implements RiverRaidEnv {
         Observation observation = new Observation();
         observation.done = false;
 
-        String filePath = "src/main/datasets/dataset_0/" + nStep + ".tiff";
+        String filePath = "src/main/datasets/dataset_1/" + nStep + ".tiff";
         File file = new File(filePath);
 
-        if(!file.exists() || nStep==20) {
+        if(!file.exists()) {
             observation.done = true;
             return observation;
         }

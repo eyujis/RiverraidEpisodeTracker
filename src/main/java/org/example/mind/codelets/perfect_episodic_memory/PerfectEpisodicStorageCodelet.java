@@ -30,7 +30,6 @@ public class PerfectEpisodicStorageCodelet extends Codelet {
             perfectEpisodicMO.setI(new Idea("episodicMemory", "", 0));
             return;
         }
-
         Idea detectedCOEpisodes = (Idea) detectedCOEpisodesMO.getI();
         int currentTimestamp = (int) detectedCOEpisodes.getValue();
         ArrayList<Idea> episodesToAdd = (ArrayList<Idea> ) detectedCOEpisodes.getL().stream()
