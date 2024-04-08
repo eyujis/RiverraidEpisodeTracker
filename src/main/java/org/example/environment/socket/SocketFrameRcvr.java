@@ -10,7 +10,6 @@ import java.net.Socket;
 public class SocketFrameRcvr {
     int port = 1025;
     Socket socket;
-//    static int imageId = 0;
 
     public SocketFrameRcvr() throws IOException {
         socket = new Socket("localhost", port);
