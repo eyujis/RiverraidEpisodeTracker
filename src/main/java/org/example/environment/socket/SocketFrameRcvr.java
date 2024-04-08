@@ -21,13 +21,6 @@ public class SocketFrameRcvr {
         inputStream.close();
         socket.close();
 
-        //TODO automatically create datasets when playing
-//        String filePath = "src/main/datasets/dataset_0/"+imageId+".tiff";
-//        File outputFile = new File(filePath);
-//        ImageIO.write(bufferedImage, "tiff", outputFile);
-
-//        imageId++;
-
         return bufferedImage;
     }
 }
