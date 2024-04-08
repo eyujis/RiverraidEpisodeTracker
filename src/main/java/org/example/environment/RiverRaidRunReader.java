@@ -16,7 +16,7 @@ public class RiverRaidRunReader implements RiverRaidEnv {
         Observation observation = new Observation();
         observation.done = false;
 
-        String filePath = "src/main/datasets/dataset_1/" + nStep + ".tiff";
+        String filePath = "src/main/datasets/dataset_3/" + nStep + ".tiff";
         File file = new File(filePath);
 
         if(!file.exists()) {

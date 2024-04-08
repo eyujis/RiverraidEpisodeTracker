@@ -10,7 +10,6 @@ import java.net.Socket;
 public class SocketFrameRcvr {
     int port = 1025;
     Socket socket;
-//    static int imageId = 0;
 
     public SocketFrameRcvr() throws IOException {
         socket = new Socket("localhost", port);
@@ -21,13 +20,6 @@ public class SocketFrameRcvr {
         BufferedImage bufferedImage = ImageIO.read(inputStream);
         inputStream.close();
         socket.close();
-
-        //TODO automatically create datasets when playing
-//        String filePath = "src/main/datasets/dataset_0/"+imageId+".tiff";
-//        File outputFile = new File(filePath);
-//        ImageIO.write(bufferedImage, "tiff", outputFile);
-
-//        imageId++;
 
         return bufferedImage;
     }
