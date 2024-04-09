@@ -9,6 +9,7 @@ import org.example.mind.codelets.RAWDataBufferizerCodelet;
 
 public class QuestionAndAnsweringCodelet extends Codelet {
     Memory perfectEpisodicMO;
+    Memory questionsAndAnswersMO;
     Codelet rawDataBufferizerCodelet;
     boolean hasAnswered = false;
 
@@ -19,6 +20,7 @@ public class QuestionAndAnsweringCodelet extends Codelet {
     @Override
     public void accessMemoryObjects() {
         perfectEpisodicMO=(MemoryObject)this.getInput("PERFECT_EPISODIC_MEMORY");
+        questionsAndAnswersMO=(MemoryObject)this.getOutput("QUESTIONS_AND_ANSWERS");
     }
 
     @Override
@@ -41,7 +43,7 @@ public class QuestionAndAnsweringCodelet extends Codelet {
             Answerer answerer = new Answerer();
             answerer.answerQuestions(questions, perfectEpisodicMemory);
 
-            System.out.println(questions.toStringFull());
+            questionsAndAnswersMO.setI(questions);
 
             hasAnswered = true;
         }

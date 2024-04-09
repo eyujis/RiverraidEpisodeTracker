@@ -4,6 +4,7 @@ import br.unicamp.cst.core.entities.*;
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategoryLearnerCodelet;
 import org.example.mind.codelets.co_episode_tracker.COEpisodeTrackerCodelet;
+import org.example.mind.codelets.evaluation.EvaluationCodelet;
 import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
 import org.example.mind.codelets.event_tracker.EventTrackerCodelet;
 import org.example.mind.codelets.forgetting_so_episodes.ForgettingSOEpisodesCodelet;
@@ -47,6 +48,7 @@ public class AgentMind extends Mind {
         Memory cOEpisodeCategoriesTSMO;
         Memory cOEpisodeTrackerTSMO;
         Memory perfectEpisodicMO;
+        Memory questionsAndAnswersMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
@@ -64,6 +66,7 @@ public class AgentMind extends Mind {
         cOEpisodeCategoriesTSMO= createMemoryObject("CO_EPISODE_CATEGORIES_TS", "");
         cOEpisodeTrackerTSMO = createMemoryObject("CO_EPISODES_TS", "");
         perfectEpisodicMO = createMemoryObject("PERFECT_EPISODIC_MEMORY", "");
+        questionsAndAnswersMO = createMemoryObject("QUESTIONS_AND_ANSWERS", "");
 
         registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
@@ -77,6 +80,7 @@ public class AgentMind extends Mind {
         registerMemory(cOEpisodeCategoriesTSMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeTrackerTSMO, "EpisodeTrackerMemoryGroup");
         registerMemory(perfectEpisodicMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(questionsAndAnswersMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
         rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
@@ -171,8 +175,16 @@ public class AgentMind extends Mind {
 
         Codelet questionAndAnsweringCodelet = new QuestionAndAnsweringCodelet(rawDataBufferizerCodelet);
         questionAndAnsweringCodelet.addInput(perfectEpisodicMO);
+        questionAndAnsweringCodelet.addOutput(questionsAndAnswersMO);
         questionAndAnsweringCodelet.setName("QuestionAndAnswering");
         insertCodelet(questionAndAnsweringCodelet);
+
+        Codelet evaluationCodelet = new EvaluationCodelet();
+        evaluationCodelet.addInput(questionsAndAnswersMO);
+        evaluationCodelet.setIsMemoryObserver(true);
+        questionsAndAnswersMO.addMemoryObserver(evaluationCodelet);
+        evaluationCodelet.setName("Evaluation");
+        insertCodelet(evaluationCodelet);
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
