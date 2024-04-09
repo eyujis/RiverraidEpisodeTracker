@@ -22,7 +22,7 @@ public class Main {
         firstJFrame.setVisible(true);
         secondJFrame.setVisible(true);
 
-        RiverRaidEnv riverRaidEnv = new RiverRaidRunReader();
+        RiverRaidEnv riverRaidEnv = new RiverRaidRunReader(0);
         AgentMind agentMind = new AgentMind(riverRaidEnv, firstJFrame, secondJFrame);
     }
 
