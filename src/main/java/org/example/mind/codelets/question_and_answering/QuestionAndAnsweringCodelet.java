@@ -34,13 +34,15 @@ public class QuestionAndAnsweringCodelet extends Codelet {
 
         if(((RAWDataBufferizerCodelet)rawDataBufferizerCodelet).isSleep() && !hasAnswered){
             Idea perfectEpisodicMemory = (Idea) perfectEpisodicMO.getI();
-            int numberOfHelicopters = (int) perfectEpisodicMemory.getL().stream()
-                    .map(episode-> episode.get("lastObjectState"))
-                    .filter(object->((String)object.get("objectLabel").getValue()).equals("jet"))
-                    .map(object-> (int) object.get("id").getValue())
-                    .distinct()
-                    .count();
-            System.out.println("Number of Jets: "+ numberOfHelicopters);
+
+            QuestionBuilder questionBuilder = new QuestionBuilder();
+            Idea questions = questionBuilder.build();
+
+            Answerer answerer = new Answerer();
+            answerer.answerQuestions(questions, perfectEpisodicMemory);
+
+            System.out.println(questions.toStringFull());
+
             hasAnswered = true;
         }
     }
