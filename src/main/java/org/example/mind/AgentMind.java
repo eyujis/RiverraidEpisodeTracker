@@ -12,7 +12,7 @@ import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
 import org.example.mind.codelets.objects_bufferizer.ObjectsBufferizerCodelet;
 import org.example.mind.codelets.perfect_episodic_memory.PerfectEpisodicStorageCodelet;
-import org.example.mind.codelets.q_and_a.QuestionAndAnsweringCodelet;
+import org.example.mind.codelets.question_and_answering.QuestionAndAnsweringCodelet;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
