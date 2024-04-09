@@ -2,7 +2,6 @@ package org.example.mind.codelets.question_and_answering;
 
 import br.unicamp.cst.representation.idea.Idea;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +43,6 @@ public class Answerer {
                             .setValue((int) whichObjectsDestroyedByMissiles.get(disappearedObjectLabel).getValue() + 1);
                 }
             }
-
         }
     }
 
