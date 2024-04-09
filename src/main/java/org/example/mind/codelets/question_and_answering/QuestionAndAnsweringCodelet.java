@@ -1,4 +1,4 @@
-package org.example.mind.codelets.q_and_a;
+package org.example.mind.codelets.question_and_answering;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
