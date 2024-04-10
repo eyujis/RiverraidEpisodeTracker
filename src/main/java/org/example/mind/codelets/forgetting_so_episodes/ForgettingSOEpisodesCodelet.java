@@ -57,10 +57,10 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
                 filteredSOEpisodes.getL().addAll(filteredSOEpisodesList);
                 sOEpisodesMO.setI(filteredSOEpisodes);
 
-                System.out.println("============="+filteredSOEpisodes.getValue()+"=============");
-                for(Idea filteredSOEpisode : filteredSOEpisodes.getL()) {
-                    System.out.println(filteredSOEpisode.toStringFull());
-                }
+//                System.out.println("============="+filteredSOEpisodes.getValue()+"=============");
+//                for(Idea filteredSOEpisode : filteredSOEpisodes.getL()) {
+//                    System.out.println(filteredSOEpisode.toStringFull());
+//                }
 
                 if(forgettingSOEpisodesImgJLabel!=null) {
                     try {

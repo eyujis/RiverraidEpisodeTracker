@@ -4,9 +4,11 @@ import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import org.example.environment.RiverRaidEnv;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ActionCommunicatorCodelet extends Codelet {
+    private Memory rlActionMO;
     private Memory actionTimestampMO;
 
     private RiverRaidEnv env;
@@ -18,6 +20,7 @@ public class ActionCommunicatorCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
+        rlActionMO = getInput("RLACTION");
         actionTimestampMO = getOutput("ACTION_TIMESTAMP");
     }
 
@@ -28,7 +31,7 @@ public class ActionCommunicatorCodelet extends Codelet {
 
     @Override
     public void proc() {
-        env.communicateAction(1);
+        env.communicateAction(((ArrayList<Double>) rlActionMO.getI()).get(0).intValue());
 
         timestamp += 1;
         actionTimestampMO.setI(timestamp);
