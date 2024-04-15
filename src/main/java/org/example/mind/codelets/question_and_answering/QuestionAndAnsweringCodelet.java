@@ -5,6 +5,9 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
+import org.example.results_writer.HowManyResultsFileWriter;
+
+import java.util.ArrayList;
 
 
 public class QuestionAndAnsweringCodelet extends Codelet {
@@ -43,9 +46,19 @@ public class QuestionAndAnsweringCodelet extends Codelet {
             Answerer answerer = new Answerer();
             answerer.answerQuestions(questions, perfectEpisodicMemory);
 
+            ArrayList<Integer> results = new ArrayList<>();
+            for(Idea answer : questions.get("howMany").getL()) {
+                results.add((int) answer.getValue());
+            }
+            new HowManyResultsFileWriter().writeLine(results);
+
+            System.out.println(questions.toStringFull());
+
             questionsAndAnswersMO.setI(questions);
 
             hasAnswered = true;
+
+            System.exit(0);
         }
     }
 }
