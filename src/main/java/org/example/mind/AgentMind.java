@@ -4,7 +4,6 @@ import br.unicamp.cst.core.entities.*;
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategoryLearnerCodelet;
 import org.example.mind.codelets.co_episode_tracker.COEpisodeTrackerCodelet;
-import org.example.mind.codelets.evaluation.EvaluationCodelet;
 import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
 import org.example.mind.codelets.event_tracker.EventTrackerCodelet;
 import org.example.mind.codelets.forgetting_so_episodes.ForgettingSOEpisodesCodelet;
@@ -178,13 +177,6 @@ public class AgentMind extends Mind {
         questionAndAnsweringCodelet.addOutput(questionsAndAnswersMO);
         questionAndAnsweringCodelet.setName("QuestionAndAnswering");
         insertCodelet(questionAndAnsweringCodelet);
-
-        Codelet evaluationCodelet = new EvaluationCodelet();
-        evaluationCodelet.addInput(questionsAndAnswersMO);
-        evaluationCodelet.setIsMemoryObserver(true);
-        questionsAndAnswersMO.addMemoryObserver(evaluationCodelet);
-        evaluationCodelet.setName("Evaluation");
-        insertCodelet(evaluationCodelet);
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
