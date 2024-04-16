@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io/api/java,gradle
 
+### Python ###
+.ipynb_checkpoints
+
 ### Java ###
 *.class
 
