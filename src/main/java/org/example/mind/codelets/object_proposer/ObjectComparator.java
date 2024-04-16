@@ -6,6 +6,7 @@ import org.opencv.core.Point;
 public class ObjectComparator {
     static final double MIN_CENTER_DISTANCE = 50;
     static final double MIN_SHAPE_DIFF_RATIO= 0.5;
+    static final double MAX_SHAPE_ABS_DIFF = 18;
 
     public boolean closeCenterDistance(Idea f1, Idea f2) {
         double centerDistance = getCenterDistance(f1, f2);
@@ -45,6 +46,27 @@ public class ObjectComparator {
         double widthSimilarity = calculateSimilarity(f1Width, f2Width);
 
         return (heightSimilarity + widthSimilarity) / 2.0;
+    }
+
+    public boolean haveSimilarAbsoluteRectShape(Idea f1, Idea f2) {
+        return rectShapeAbsoluteDifference(f1, f2) <= MAX_SHAPE_ABS_DIFF;
+    }
+
+    public double rectShapeAbsoluteDifference(Idea f1, Idea f2) {
+        double f1Height = (double) f1.get("size.height").getValue();
+        double f2Height = (double) f2.get("size.height").getValue();
+
+        double f1Width = (double) f1.get("size.width").getValue();
+        double f2Width = (double) f2.get("size.width").getValue();
+
+        double heightDiff = calculateAbsoluteDifference(f1Height, f2Height);
+        double widthDiff = calculateAbsoluteDifference(f1Width, f2Width);
+
+        return heightDiff + widthDiff;
+    }
+
+    private double calculateAbsoluteDifference(double len1, double len2) {
+        return Math.abs(len1 - len2);
     }
 
     private double calculateSimilarity(double len1, double len2) {

@@ -47,6 +47,7 @@ public class AgentMind extends Mind {
         Memory cOEpisodeCategoriesTSMO;
         Memory cOEpisodeTrackerTSMO;
         Memory perfectEpisodicMO;
+        Memory questionsAndAnswersMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
@@ -64,6 +65,7 @@ public class AgentMind extends Mind {
         cOEpisodeCategoriesTSMO= createMemoryObject("CO_EPISODE_CATEGORIES_TS", "");
         cOEpisodeTrackerTSMO = createMemoryObject("CO_EPISODES_TS", "");
         perfectEpisodicMO = createMemoryObject("PERFECT_EPISODIC_MEMORY", "");
+        questionsAndAnswersMO = createMemoryObject("QUESTIONS_AND_ANSWERS", "");
 
         registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
@@ -77,6 +79,7 @@ public class AgentMind extends Mind {
         registerMemory(cOEpisodeCategoriesTSMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeTrackerTSMO, "EpisodeTrackerMemoryGroup");
         registerMemory(perfectEpisodicMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(questionsAndAnswersMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
         rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
@@ -171,6 +174,7 @@ public class AgentMind extends Mind {
 
         Codelet questionAndAnsweringCodelet = new QuestionAndAnsweringCodelet(rawDataBufferizerCodelet);
         questionAndAnsweringCodelet.addInput(perfectEpisodicMO);
+        questionAndAnsweringCodelet.addOutput(questionsAndAnswersMO);
         questionAndAnsweringCodelet.setName("QuestionAndAnswering");
         insertCodelet(questionAndAnsweringCodelet);
 

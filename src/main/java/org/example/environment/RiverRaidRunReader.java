@@ -8,15 +8,17 @@ import java.io.IOException;
 public class RiverRaidRunReader implements RiverRaidEnv {
     int nStep = 0;
     BufferedImage image;
+    int runNumber;
 
-    public RiverRaidRunReader() throws IOException {
+    public RiverRaidRunReader(int runNumber) throws IOException {
+        this.runNumber = runNumber;
     }
 
     public Observation step() {
         Observation observation = new Observation();
         observation.done = false;
 
-        String filePath = "src/main/datasets/dataset_2/" + nStep + ".tiff";
+        String filePath = "src/main/datasets/dataset_"+runNumber+"/" + nStep + ".tiff";
         File file = new File(filePath);
 
         if(!file.exists()) {

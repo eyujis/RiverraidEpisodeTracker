@@ -5,10 +5,14 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
+import org.example.results_writer.ResultsFileWriter;
+
+import java.util.ArrayList;
 
 
 public class QuestionAndAnsweringCodelet extends Codelet {
     Memory perfectEpisodicMO;
+    Memory questionsAndAnswersMO;
     Codelet rawDataBufferizerCodelet;
     boolean hasAnswered = false;
 
@@ -19,6 +23,7 @@ public class QuestionAndAnsweringCodelet extends Codelet {
     @Override
     public void accessMemoryObjects() {
         perfectEpisodicMO=(MemoryObject)this.getInput("PERFECT_EPISODIC_MEMORY");
+        questionsAndAnswersMO=(MemoryObject)this.getOutput("QUESTIONS_AND_ANSWERS");
     }
 
     @Override
@@ -41,9 +46,26 @@ public class QuestionAndAnsweringCodelet extends Codelet {
             Answerer answerer = new Answerer();
             answerer.answerQuestions(questions, perfectEpisodicMemory);
 
+            ArrayList<Integer> howManyResults = new ArrayList<>();
+            for(Idea answer : questions.get("howMany").getL()) {
+                howManyResults.add((int) answer.getValue());
+            }
+            new ResultsFileWriter().writeLineHowMany(howManyResults);
+
+            ArrayList<Integer> whichExplodedResults = new ArrayList<>();
+            for(Idea answer : questions.get("whichObjectsDestroyedByMissiles").getL()) {
+                whichExplodedResults.add((int) answer.getValue());
+            }
+            new ResultsFileWriter().writeLineWhichDestroyed(whichExplodedResults);
+
+
             System.out.println(questions.toStringFull());
 
+            questionsAndAnswersMO.setI(questions);
+
             hasAnswered = true;
+
+            System.exit(0);
         }
     }
 }
