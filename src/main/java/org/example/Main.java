@@ -3,7 +3,7 @@ package org.example;
 import org.example.environment.RiverRaidRunReader;
 import org.example.environment.RiverRaidEnv;
 import org.example.mind.AgentMind;
-import org.example.results_writer.HowManyResultsFileWriter;
+import org.example.results_writer.ResultsFileWriter;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
@@ -20,7 +20,8 @@ public class Main {
         int runNumber = Integer.parseInt(args[0]);
 
         if(runNumber == 0) {
-            new HowManyResultsFileWriter().createHowManyResultsFile();
+            new ResultsFileWriter().createHowManyResultsFile();
+            new ResultsFileWriter().createWhichDestroyedResultsFile();
         }
 
         FirstJFrame firstJFrame = new FirstJFrame();

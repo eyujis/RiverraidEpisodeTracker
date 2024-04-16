@@ -5,7 +5,7 @@ import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
-import org.example.results_writer.HowManyResultsFileWriter;
+import org.example.results_writer.ResultsFileWriter;
 
 import java.util.ArrayList;
 
@@ -46,11 +46,18 @@ public class QuestionAndAnsweringCodelet extends Codelet {
             Answerer answerer = new Answerer();
             answerer.answerQuestions(questions, perfectEpisodicMemory);
 
-            ArrayList<Integer> results = new ArrayList<>();
+            ArrayList<Integer> howManyResults = new ArrayList<>();
             for(Idea answer : questions.get("howMany").getL()) {
-                results.add((int) answer.getValue());
+                howManyResults.add((int) answer.getValue());
             }
-            new HowManyResultsFileWriter().writeLine(results);
+            new ResultsFileWriter().writeLineHowMany(howManyResults);
+
+            ArrayList<Integer> whichExplodedResults = new ArrayList<>();
+            for(Idea answer : questions.get("whichObjectsDestroyedByMissiles").getL()) {
+                whichExplodedResults.add((int) answer.getValue());
+            }
+            new ResultsFileWriter().writeLineWhichDestroyed(whichExplodedResults);
+
 
             System.out.println(questions.toStringFull());
 
