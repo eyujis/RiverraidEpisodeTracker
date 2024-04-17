@@ -6,9 +6,15 @@ import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.representation.idea.Idea;
 import org.example.environment.Observation;
 import org.example.environment.RiverRaidEnv;
+import org.example.util.MatBufferedImageConverter;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class RAWDataBufferizerCodelet extends Codelet {
     private RiverRaidEnv env;
@@ -54,8 +60,14 @@ public class RAWDataBufferizerCodelet extends Codelet {
 //        Visualization
         if(rawDataBufferMO.getI() instanceof Idea) {
             Idea rawDataBufferIdea = (Idea) rawDataBufferMO.getI();
-            BufferedImage imageToUpdate = (BufferedImage) rawDataBufferIdea.getL().get(0).get("image").getValue();;
-            updateJLabelImg(this.rawDataBufferImgJLabel, imageToUpdate);
+            BufferedImage imageToUpdate = (BufferedImage) rawDataBufferIdea.getL().get(BUFFER_SIZE-1).get("image").getValue();
+            Mat frame = MatBufferedImageConverter.BufferedImage2Mat(imageToUpdate);
+            addTimestamp(frame, String.valueOf((int)rawDataBufferIdea.getL().get(BUFFER_SIZE-1).get("timestamp").getValue()));
+            try {
+                updateJLabelImg(this.rawDataBufferImgJLabel, MatBufferedImageConverter.Mat2BufferedImage(frame));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -81,6 +93,13 @@ public class RAWDataBufferizerCodelet extends Codelet {
         jLabelToUpdate.revalidate();
         jLabelToUpdate.repaint();
         jLabelToUpdate.update(jLabelToUpdate.getGraphics());
+    }
+
+    private void addTimestamp(Mat frame, String timestamp) {
+        int fontFace = Imgproc.FONT_HERSHEY_SIMPLEX;
+        double fontScale = 0.5;
+        int textThickness = 1;
+        Imgproc.putText(frame, String.valueOf(timestamp), new Point(10,20), fontFace, fontScale, new Scalar(255,255,255), textThickness);
     }
 
     public boolean isSleep() {
