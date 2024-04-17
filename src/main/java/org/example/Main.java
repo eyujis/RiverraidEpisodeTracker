@@ -22,6 +22,7 @@ public class Main {
         if(runNumber == 0) {
             new ResultsFileWriter().createHowManyResultsFile();
             new ResultsFileWriter().createWhichDestroyedResultsFile();
+            new ResultsFileWriter().createWhenSecondFuelResultsFile();
         }
 
         FirstJFrame firstJFrame = new FirstJFrame();

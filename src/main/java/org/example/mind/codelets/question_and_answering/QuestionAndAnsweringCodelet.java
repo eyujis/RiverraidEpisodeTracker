@@ -58,6 +58,12 @@ public class QuestionAndAnsweringCodelet extends Codelet {
             }
             new ResultsFileWriter().writeLineWhichDestroyed(whichExplodedResults);
 
+            ArrayList<Integer> whenSecondFuelResults = new ArrayList<>();
+            for(Idea answer : questions.get("whenSecondFuel").getL()) {
+                whenSecondFuelResults.add((int) answer.getValue());
+            }
+            new ResultsFileWriter().writeLineWhenSecondFuel(whenSecondFuelResults);
+
 
             System.out.println(questions.toStringFull());
 
