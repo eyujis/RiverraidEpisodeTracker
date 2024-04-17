@@ -8,6 +8,7 @@ public class QuestionBuilder {
         Idea questions = new Idea("questions", "", 0);
         questions.getL().add(buildHowManyQuestions());
         questions.getL().add(buildWhichObjectsDestroyedByMissiles());
+        questions.getL().add(buildWhenSecondFuelQuestions());
 
         return questions;
     }
@@ -34,5 +35,17 @@ public class QuestionBuilder {
         }
 
         return howMany;
+    }
+
+    private Idea buildWhenSecondFuelQuestions() {
+        Idea whenSecondFuel = new Idea("whenSecondFuel", "", 0);
+
+        String[] timestamps = {"moveStart", "moveEnd", "appeared", "disappeared"};
+
+        for(String timestamp : timestamps) {
+            whenSecondFuel.getL().add(new Idea(timestamp, ""));
+        }
+
+        return whenSecondFuel;
     }
 }

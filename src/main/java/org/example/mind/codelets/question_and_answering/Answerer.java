@@ -3,15 +3,18 @@ package org.example.mind.codelets.question_and_answering;
 import br.unicamp.cst.representation.idea.Idea;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Answerer {
 
     public Idea answerQuestions(Idea questions, Idea episodes) {
         answerHowManyQuestions(questions.get("howMany"), episodes);
         answerWhichObjectsDestroyedByMissiles(questions.get("whichObjectsDestroyedByMissiles"), episodes);
+        answerWhenSecondFuel(questions.get("whenSecondFuel"), episodes);
 
         return questions;
     }
@@ -77,5 +80,72 @@ public class Answerer {
                 .distinct()
                 .count();
         return nTypeObjects;
+    }
+
+    private void answerWhenSecondFuel(Idea whenSecondFuel, Idea episodes) {
+        int objectId = getIthObjectTypeInstanceId(2, "fuel", episodes);
+        int moveStart = getMovementTimestampWithObjectId(objectId, episodes, true);
+        int moveEnd = getMovementTimestampWithObjectId(objectId, episodes, false);
+        int appearTimestamp = getAppearanceTimestampWithObjectId(objectId, episodes, false);
+        int disappearTimestamp = getAppearanceTimestampWithObjectId(objectId, episodes, true);
+
+        whenSecondFuel.get("moveStart").setValue(moveStart);
+        whenSecondFuel.get("moveEnd").setValue(moveEnd);
+        whenSecondFuel.get("appeared").setValue(appearTimestamp);
+        whenSecondFuel.get("disappeared").setValue(disappearTimestamp);
+    }
+
+    private int getMovementTimestampWithObjectId(int objectId, Idea episodes, boolean isInitial) {
+        String timestampType = isInitial ? "initialTimestamp" : "currentTimestamp";
+
+        Stream<Integer> timestamps = episodes.getL().stream()
+                .filter(episode-> (int) episode.get("objectId").getValue()==objectId)
+                .filter(episode-> ((String)episode.get("eventCategory").getValue()).startsWith("Vector"))
+                .filter(episode -> !isZeroMagnitude((double[]) episode.get("categoryVector").getValue()))
+                .map(episode-> (int) episode.get(timestampType).getValue());
+
+        if(isInitial) {
+            // +1 because the object is static in the initial timestamp
+            return timestamps.min(Integer::compareTo).get() + 1;
+        } else {
+            return timestamps.max(Integer::compareTo).get();
+        }
+
+    }
+
+    private int getAppearanceTimestampWithObjectId(int objectId, Idea episodes, boolean disappear) {
+        String appearanceEventType = disappear ? "disappear" : "appear";
+
+        Optional<Idea> appearanceEpisode = episodes.getL().stream()
+                .filter(episode-> (int) episode.get("objectId").getValue()==objectId)
+                .filter(episode-> ((String)episode.get("eventCategory").getValue()).startsWith("Appearance"))
+                .filter(episode-> ((String)episode.get("appearanceEventType").getValue()).equals(appearanceEventType))
+                .findFirst();
+
+        if(appearanceEpisode.isPresent()) {
+            return (int) appearanceEpisode.get().get("currentTimestamp").getValue();
+        }
+        return -1;
+    }
+
+    private int getIthObjectTypeInstanceId(int ith, String objectType, Idea episodes) {
+        int objectId = episodes.getL().stream()
+                .map(episode-> episode.get("lastObjectState"))
+                .filter(object->((String)object.get("objectLabel").getValue()).equals(objectType))
+                .map(object-> (int) object.get("id").getValue())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList())
+                .get(ith-1);
+        return objectId;
+    }
+
+    private boolean isZeroMagnitude(double[] vector) {
+        for(int i=0; i<vector.length; i++) {
+            if(vector[i]!=0) {
+                return false;
+            }
+        }
+        return true;
     }
 }
