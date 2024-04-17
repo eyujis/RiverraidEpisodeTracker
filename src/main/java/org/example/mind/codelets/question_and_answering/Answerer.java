@@ -105,7 +105,8 @@ public class Answerer {
                 .map(episode-> (int) episode.get(timestampType).getValue());
 
         if(isInitial) {
-            return timestamps.min(Integer::compareTo).get();
+            // +1 because the object is static in the initial timestamp
+            return timestamps.min(Integer::compareTo).get() + 1;
         } else {
             return timestamps.max(Integer::compareTo).get();
         }
