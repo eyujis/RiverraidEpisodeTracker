@@ -105,7 +105,17 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
                 Point end = new Point(x_end, y_end);
                 Scalar color = category2Color.getColor(eventCategory);
                 int thickness = 1;
-                Imgproc.arrowedLine(frame, start, end, color, thickness, 8, 0, 5/Math.max(0.1, pointDistance(start, end)));
+                try {
+                    Imgproc.arrowedLine(frame, start, end, color, thickness, 8, 0, 5/Math.max(0.1, pointDistance(start, end)));
+                } catch (Exception e) {
+                    System.out.println(frame);
+                    System.out.println(start);
+                    System.out.println(end);
+                    System.out.println(color);
+                    System.out.println(thickness);
+                    System.out.println(5/Math.max(0.1, pointDistance(start, end)));
+                    e.printStackTrace();
+                }
 
                 addTextId(frame, eventIdea, new Point((x_start+x_end)/2, (y_start+y_end)/2), color);
 
