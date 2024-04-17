@@ -96,12 +96,13 @@ public class Answerer {
     }
 
     private int getMovementTimestampWithObjectId(int objectId, Idea episodes, boolean isInitial) {
+        String timestampType = isInitial ? "initialTimestamp" : "currentTimestamp";
 
         Stream<Integer> timestamps = episodes.getL().stream()
                 .filter(episode-> (int) episode.get("objectId").getValue()==objectId)
                 .filter(episode-> ((String)episode.get("eventCategory").getValue()).startsWith("Vector"))
                 .filter(episode -> !isZeroMagnitude((double[]) episode.get("categoryVector").getValue()))
-                .map(episode-> (int) episode.get("currentTimestamp").getValue());
+                .map(episode-> (int) episode.get(timestampType).getValue());
 
         if(isInitial) {
             return timestamps.min(Integer::compareTo).get();
