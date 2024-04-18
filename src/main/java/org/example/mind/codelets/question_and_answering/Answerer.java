@@ -42,8 +42,11 @@ public class Answerer {
                         && ((String) causeEpisode.get("lastObjectState.objectLabel").getValue()).equals("missile")) {
 
                     String disappearedObjectLabel = (String) disappearEpisode.get("lastObjectState.objectLabel").getValue();
-                    whichObjectsDestroyedByMissiles.get(disappearedObjectLabel)
-                            .setValue((int) whichObjectsDestroyedByMissiles.get(disappearedObjectLabel).getValue() + 1);
+
+                    if(disappearedObjectLabel!="null" && disappearedObjectLabel!=null) {
+                        whichObjectsDestroyedByMissiles.get(disappearedObjectLabel)
+                                .setValue((int) whichObjectsDestroyedByMissiles.get(disappearedObjectLabel).getValue() + 1);
+                    }
                 }
             }
         }

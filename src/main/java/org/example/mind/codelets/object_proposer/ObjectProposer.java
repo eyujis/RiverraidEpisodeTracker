@@ -5,6 +5,7 @@ import org.example.mind.codelets.object_cat_learner.entities.EntityCategoryFacto
 import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_proposer.entities.ObjectFactory;
 import org.example.mind.codelets.object_proposer.entity_trackers.ObjectTracker;
+import org.example.mind.codelets.object_proposer.object_label.FragmentRGB2ColorLabel;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -85,7 +86,15 @@ public class ObjectProposer {
                 Idea f1 = fragmentInstances.getL().get(i);
                 Idea f2 = fragmentInstances.getL().get(j);
 
-                if(i!=j && fragmentComparator.rectDistance(f1, f2)) {
+                FragmentRGB2ColorLabel fragmentRGB2ColorLabel = new FragmentRGB2ColorLabel();
+                String f1Color = fragmentRGB2ColorLabel.getColorLabel(f1.get("color"));
+                String f2Color = fragmentRGB2ColorLabel.getColorLabel(f2.get("color"));
+                boolean f1IsYellow = f1Color != null ? f1Color.equals("shipOrMissileYellow"): false;
+                boolean f2IsYellow = f2Color != null ? f2Color.equals("shipOrMissileYellow"): false;
+
+                if(i!=j && fragmentComparator.rectDistance(f1, f2)
+                        && !f1IsYellow
+                        && !f2IsYellow) {
                     borderMatrix[i][j] = true;
                 }
             }
