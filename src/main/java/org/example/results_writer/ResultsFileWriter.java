@@ -8,6 +8,7 @@ public class ResultsFileWriter {
     String csvHowManyFilePath = "src/main/python/how_many.csv";
     String csvWhichExplodedFilePath = "src/main/python/which_destroyed.csv";
     String csvWhenSecondFuel = "src/main/python/when_second_fuel.csv";
+    String csvWhenBridgeTarget = "src/main/python/when_bridge_target.csv";
 
     public void createHowManyResultsFile() {
         try {
@@ -72,6 +73,26 @@ public class ResultsFileWriter {
         }
     }
 
+    public void createWhenBridgeTargetResultsFile() {
+        try {
+            FileWriter writer = new FileWriter(csvWhenBridgeTarget);
+
+            String[] fields = {"bridge_appear", "missile_launch", "explosion"};
+
+            for(int i=0; i<fields.length; i++) {
+                writer.append(fields[i]);
+                if(i < fields.length - 1) {
+                    writer.append(",");
+                } else {
+                    writer.append("\n");
+                }
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error writing CSV file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public void writeLineHowMany(ArrayList<Integer> results) {
         try {
@@ -114,6 +135,25 @@ public class ResultsFileWriter {
     public void writeLineWhenSecondFuel(ArrayList<Integer> results) {
         try {
             FileWriter writer = new FileWriter(csvWhenSecondFuel, true);
+
+            for(int i=0; i<results.size(); i++) {
+                writer.append(results.get(i).toString());
+                if(i < results.size() - 1) {
+                    writer.append(",");
+                } else {
+                    writer.append("\n");
+                }
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error writing CSV file: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void writeLineWhenBridgeTarget(ArrayList<Integer> results) {
+        try {
+            FileWriter writer = new FileWriter(csvWhenBridgeTarget, true);
 
             for(int i=0; i<results.size(); i++) {
                 writer.append(results.get(i).toString());
