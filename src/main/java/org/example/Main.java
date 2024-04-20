@@ -23,6 +23,7 @@ public class Main {
             new ResultsFileWriter().createHowManyResultsFile();
             new ResultsFileWriter().createWhichDestroyedResultsFile();
             new ResultsFileWriter().createWhenSecondFuelResultsFile();
+            new ResultsFileWriter().createWhenBridgeTargetResultsFile();
         }
 
         FirstJFrame firstJFrame = new FirstJFrame();

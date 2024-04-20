@@ -2,6 +2,7 @@ package org.example.mind.codelets.question_and_answering;
 
 import br.unicamp.cst.representation.idea.Idea;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -15,6 +16,7 @@ public class Answerer {
         answerHowManyQuestions(questions.get("howMany"), episodes);
         answerWhichObjectsDestroyedByMissiles(questions.get("whichObjectsDestroyedByMissiles"), episodes);
         answerWhenSecondFuel(questions.get("whenSecondFuel"), episodes);
+        answerWhenBridgeTarget(questions.get("whenBridgeTarget"), episodes);
 
         return questions;
     }
@@ -150,5 +152,45 @@ public class Answerer {
             }
         }
         return true;
+    }
+
+    private void answerWhenBridgeTarget(Idea whenBridgeTarget, Idea episodes) {
+        int firstBridgeId = getIthObjectTypeInstanceId(1, "bridge", episodes);
+
+        int bridgeAppearTimestamp = -1;
+        int missileLaunchTimestamp = -1;
+        int bridgeDisappearTimestamp = -1;
+
+        Optional<Idea> disappearEpisode = episodes.getL().stream()
+                .filter(episode-> (int) episode.get("objectId").getValue()==firstBridgeId)
+                .filter(episode-> ((String)episode.get("eventCategory").getValue()).startsWith("Appearance"))
+                .filter(episode-> ((String)episode.get("appearanceEventType").getValue()).equals("disappear"))
+                .findFirst();
+
+        if(disappearEpisode.isPresent()) {
+            ArrayList<Integer> causeEpisodeIds = (ArrayList<Integer>) disappearEpisode.get().get("relations").getL().stream()
+                    .filter(relation -> ((String) relation.get("relationType").getValue()).equals("mi"))
+                    .map(relation -> (int) relation.get("eventId").getValue())
+                    .collect(Collectors.toList());
+
+            int disappearedObjectId = (int) disappearEpisode.get().get("objectId").getValue();
+
+            for(Integer causeEpisodeId : causeEpisodeIds) {
+                Idea causeEpisode = getEventById(causeEpisodeId, episodes);
+                int causeObjectId = (int) causeEpisode.get("objectId").getValue();
+
+                if(disappearedObjectId!=causeObjectId
+                        && ((String) causeEpisode.get("lastObjectState.objectLabel").getValue()).equals("missile")) {
+
+                    bridgeAppearTimestamp = getAppearanceTimestampWithObjectId(firstBridgeId, episodes, false);
+                    missileLaunchTimestamp = getAppearanceTimestampWithObjectId(causeObjectId, episodes, false);
+                    bridgeDisappearTimestamp = getAppearanceTimestampWithObjectId(firstBridgeId, episodes, true);
+                }
+            }
+        }
+
+        whenBridgeTarget.get("bridge_appear").setValue(bridgeAppearTimestamp);
+        whenBridgeTarget.get("missile_launch").setValue(missileLaunchTimestamp);
+        whenBridgeTarget.get("explosion").setValue(bridgeDisappearTimestamp);
     }
 }

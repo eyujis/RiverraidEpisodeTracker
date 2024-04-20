@@ -64,6 +64,11 @@ public class QuestionAndAnsweringCodelet extends Codelet {
             }
             new ResultsFileWriter().writeLineWhenSecondFuel(whenSecondFuelResults);
 
+            ArrayList<Integer> whenBridgeTargetResults = new ArrayList<>();
+            for(Idea answer : questions.get("whenBridgeTarget").getL()) {
+                whenBridgeTargetResults.add((int) answer.getValue());
+            }
+            new ResultsFileWriter().writeLineWhenBridgeTarget(whenBridgeTargetResults);
 
             System.out.println(questions.toStringFull());
 
