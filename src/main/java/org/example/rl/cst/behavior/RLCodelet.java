@@ -69,7 +69,7 @@ public class RLCodelet extends Codelet {
             // Updates RL
             if (trial.size() > 1) {
                 // The trial given at this point will not have the action for the current state defined
-                learner.rlStep(trial);
+                callStep();
             }
 
             // Gets action
@@ -81,6 +81,10 @@ public class RLCodelet extends Codelet {
             // Checks for end of episode
             endStep(percept.isTerminal());
         }
+    }
+
+    protected void callStep() {
+        learner.rlStep(trial);
     }
     
     // Does any processing that needs to be done at the end of the episode, such as resetting the episode
@@ -98,7 +102,7 @@ public class RLCodelet extends Codelet {
 
     // Saves the data graph. Can be extended in child classes if they want to generate differente graphs
     protected void saveGraphData() {
-        saveGraph(cumulativeRewardData, "C:\\Users\\morai\\OneDrive\\Documentos\\Git\\RiverraidEpisodeTracker\\graphs" + info + ".csv");
+        saveGraph(cumulativeRewardData, "C:\\Users\\morai\\OneDrive\\Documentos\\Git\\RiverraidEpisodeTracker\\graphs\\" + info + ".csv");
     }
 
     protected void saveGraph(ArrayList<String[]> data, String outputPath) {

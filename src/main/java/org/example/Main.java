@@ -4,6 +4,7 @@ import org.example.environment.RiverRaidEnv;
 import org.example.environment.RiverRaidPyGame;
 import org.example.mind.AgentMind;
 import org.example.mind.QLearningLFAAgentMind;
+import org.example.mind.TensorflowAgentMind;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
@@ -29,7 +30,7 @@ public class Main {
         }
 
         RiverRaidEnv riverRaidEnv = new RiverRaidPyGame();
-        AgentMind agentMind = new QLearningLFAAgentMind(riverRaidEnv, firstJFrame, secondJFrame);
+        AgentMind agentMind = new TensorflowAgentMind(riverRaidEnv, firstJFrame, secondJFrame);
     }
 
     public static void loadOpenCVLibraryFromCurrentPath()   {

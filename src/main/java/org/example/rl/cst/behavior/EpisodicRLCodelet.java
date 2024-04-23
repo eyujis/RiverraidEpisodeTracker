@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class EpisodicRLCodelet extends RLCodelet {
 
     private final int episodesPerSave = 2;
-    private int episodeCounter = 0;
+    protected int episodeCounter = 0;
 
     public EpisodicRLCodelet(RLLearner learner, ActionSpace actionSpace, MemoryObject perceptMO) {
         super(learner, actionSpace, perceptMO);
