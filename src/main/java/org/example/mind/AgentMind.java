@@ -120,14 +120,14 @@ public abstract class AgentMind extends Mind {
         objectProposerCodelet.setName("ObjectProposer");
         insertCodelet(objectProposerCodelet);
 
-        Codelet objectCategoryLearnerCodelet = new ObjectCategoryLearnerCodelet();
-        objectCategoryLearnerCodelet.addInput(detectedFragmentsMO);
-        objectCategoryLearnerCodelet.addOutput(fragmentCategoriesMO);
-        objectCategoryLearnerCodelet.addOutput(objectCategoriesMO);
-        objectCategoryLearnerCodelet.setIsMemoryObserver(true);
-        detectedFragmentsMO.addMemoryObserver(objectCategoryLearnerCodelet);
-        objectCategoryLearnerCodelet.setName("ObjectCategoryLearner");
-        insertCodelet(objectCategoryLearnerCodelet);
+//        Codelet objectCategoryLearnerCodelet = new ObjectCategoryLearnerCodelet();
+//        objectCategoryLearnerCodelet.addInput(detectedFragmentsMO);
+//        objectCategoryLearnerCodelet.addOutput(fragmentCategoriesMO);
+//        objectCategoryLearnerCodelet.addOutput(objectCategoriesMO);
+//        objectCategoryLearnerCodelet.setIsMemoryObserver(true);
+//        detectedFragmentsMO.addMemoryObserver(objectCategoryLearnerCodelet);
+//        objectCategoryLearnerCodelet.setName("ObjectCategoryLearner");
+//        insertCodelet(objectCategoryLearnerCodelet);
 
         Codelet objectsBufferizerCodelet = new ObjectsBufferizerCodelet();
         objectsBufferizerCodelet.addInput(detectedObjectsMO);
@@ -137,13 +137,13 @@ public abstract class AgentMind extends Mind {
         objectsBufferizerCodelet.setName("ObjectsBufferizer");
         insertCodelet(objectsBufferizerCodelet);
 
-        Codelet eventCategoryLearnerCodelet = new EventCategoryLearnerCodelet();
-        eventCategoryLearnerCodelet.addInput(objectsBufferMO);
-        eventCategoryLearnerCodelet.addOutput(eventCategoriesMO);
-        eventCategoryLearnerCodelet.setIsMemoryObserver(true);
-        objectsBufferMO.addMemoryObserver(eventCategoryLearnerCodelet);
-        eventCategoryLearnerCodelet.setName("EventCategoryLearner");
-        insertCodelet(eventCategoryLearnerCodelet);
+//        Codelet eventCategoryLearnerCodelet = new EventCategoryLearnerCodelet();
+//        eventCategoryLearnerCodelet.addInput(objectsBufferMO);
+//        eventCategoryLearnerCodelet.addOutput(eventCategoriesMO);
+//        eventCategoryLearnerCodelet.setIsMemoryObserver(true);
+//        objectsBufferMO.addMemoryObserver(eventCategoryLearnerCodelet);
+//        eventCategoryLearnerCodelet.setName("EventCategoryLearner");
+//        insertCodelet(eventCategoryLearnerCodelet);
 
         Codelet rlPerceptCreatorCodelet = new RLPerceptCreatorCodelet();
 
@@ -184,11 +184,11 @@ public abstract class AgentMind extends Mind {
 
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
-        registerCodelet(objectCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
+//        registerCodelet(objectCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectsBufferizerCodelet, "EpisodeTrackerCodeletGroup");
 //        registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
 //        registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
 //        registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
 

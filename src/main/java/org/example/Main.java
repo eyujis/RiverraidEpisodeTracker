@@ -5,6 +5,7 @@ import org.example.environment.RiverRaidPyGame;
 import org.example.mind.AgentMind;
 import org.example.mind.QLearningLFAAgentMind;
 import org.example.mind.TensorflowAgentMind;
+import org.example.mind.TensorforceAgentMind;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 

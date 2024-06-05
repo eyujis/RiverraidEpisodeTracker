@@ -41,7 +41,8 @@ public class SocketFrameCommunicator {
 
     public float receiveReward() throws IOException {
         DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-        float reward = inputStream.readFloat();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        float reward = Float.parseFloat(reader.readLine());
         inputStream.close();
         socket.close();
 

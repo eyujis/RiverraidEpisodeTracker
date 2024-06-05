@@ -12,6 +12,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TensorflowLearner extends EvalRLLearner {
     private final String INITIALIZE = "/initialize";
@@ -86,7 +87,7 @@ public class TensorflowLearner extends EvalRLLearner {
         }
 
         // Creates body
-        String body = "{\"state\": " + pastState.toString() + ", " +
+        String body = "{\"observation\": " + pastState.toString() + ", " +
                 "\"reward\": " + pastReward + ", " +
                 "\"terminal\": " + pastTerminal + "}";
 
@@ -106,12 +107,10 @@ public class TensorflowLearner extends EvalRLLearner {
 
         // Converts response to ArrayList
         JSONObject data = new JSONObject(response.body());
-        JSONArray actionData = data.getJSONArray("action");
+        int jsonAction = data.getInt("action"); // TODO: Make this work for arrays
 
-        ArrayList<Double> action = new ArrayList<Double>();
-        for (int i = 0; i < actionData.length(); i++){
-            action.add(actionData.getDouble(i));
-        }
+        ArrayList<Double> action = new ArrayList<>();
+        action.add((double) jsonAction);
 
         return actionSpace.translateAPIAction(action);
     }
@@ -123,6 +122,6 @@ public class TensorflowLearner extends EvalRLLearner {
 
     @Override
     public String toString() {
-        return "TensorforceLearner(configPath=" + configName + ")";
+        return "TensorflowLearner(configPath=" + configName + ")";
     }
 }

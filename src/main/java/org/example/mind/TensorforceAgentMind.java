@@ -8,23 +8,20 @@ import org.example.rl.cst.behavior.EpisodicEvalRLCodelet;
 import org.example.rl.cst.behavior.EpisodicRLCodelet;
 import org.example.rl.cst.behavior.RL.actionSpaces.ActionSpace;
 import org.example.rl.cst.behavior.RL.actionSpaces.DiscreteActionSpace;
-import org.example.rl.cst.behavior.RL.featureExtractors.FeatureExtractor;
-import org.example.rl.cst.behavior.RL.featureExtractors.NormalizingFeatureExtractor;
-import org.example.rl.cst.behavior.RL.learners.LFAQLearning;
 import org.example.rl.cst.behavior.RL.learners.TensorflowLearner;
+import org.example.rl.cst.behavior.RL.learners.TensorforceLearner;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class TensorflowAgentMind extends AgentMind {
-    final String configPath = "C:\\Users\\morai\\OneDrive\\Documentos\\Git\\RiverraidEpisodeTracker\\src\\main\\java\\org\\example\\rl\\cst\\behavior\\RL\\configs\\tf\\freeway.json";
+public class TensorforceAgentMind extends AgentMind {
+    final String configPath = "C:\\Users\\morai\\OneDrive\\Documentos\\Git\\RiverraidEpisodeTracker\\src\\main\\java\\org\\example\\rl\\cst\\behavior\\RL\\configs\\dqnFreeway.json";
     final String APIUrl = "http://localhost:5000";
 
-    public TensorflowAgentMind(RiverRaidEnv env, FirstJFrame firstJFrame, SecondJFrame secondJFrame) throws IOException {
+    public TensorforceAgentMind(RiverRaidEnv env, FirstJFrame firstJFrame, SecondJFrame secondJFrame) throws IOException {
         super(env, firstJFrame, secondJFrame);
     }
 
@@ -39,13 +36,13 @@ public class TensorflowAgentMind extends AgentMind {
         };
         ActionSpace actionSpace = new DiscreteActionSpace(actions);
 
-        TensorflowLearner tensorforceLearner;
+        TensorforceLearner tensorforceLearner;
         try {
-            tensorforceLearner = new TensorflowLearner(configPath, APIUrl);
+            tensorforceLearner = new TensorforceLearner(configPath, APIUrl);
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        return new EpisodicEvalRLCodelet(tensorforceLearner, actionSpace, (MemoryObject) rlPerceptMO, 1, 3);
+        return new EpisodicRLCodelet(tensorforceLearner, actionSpace, (MemoryObject) rlPerceptMO);
     }
 }

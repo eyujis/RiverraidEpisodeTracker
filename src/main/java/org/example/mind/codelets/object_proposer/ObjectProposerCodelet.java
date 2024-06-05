@@ -72,22 +72,25 @@ public class ObjectProposerCodelet extends Codelet {
         fragmentCategoriesMO.setI(fragmentCategories);
 
         detectedFragmentsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
-        if (objectCategoriesMO.getI() != "") {
-            Idea objectCategories = (Idea) objectCategoriesMO.getI();
 
-            objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
-
-            objectCategories.getL().addAll(objectProposer.getAssimilatedCategories().getL());
-            objectCategoriesMO.setI(objectCategories);
-
-            fragmentProposer.assignObjectCategories(objectCategories);
-
-            Idea detectedObjects = new Idea("detectedObjects", "", 0);
-            detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
-            detectedObjects.add(rawDataBufferIdea.getL().get(buffSize - 1).get("timestamp"));
-            detectedObjects.get("idObjsCF").setName("objects");
-            detectedObjectsMO.setI(detectedObjects);
+        if(objectCategoriesMO.getI()=="") {
+            objectCategoriesMO.setI(new Idea("ObjectCategories", "", 0));
         }
+
+        Idea objectCategories = (Idea) objectCategoriesMO.getI();
+
+        objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
+
+        objectCategories.getL().addAll(objectProposer.getAssimilatedCategories().getL());
+        objectCategoriesMO.setI(objectCategories);
+
+        fragmentProposer.assignObjectCategories(objectCategories);
+
+        Idea detectedObjects = new Idea("detectedObjects", "", 0);
+        detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
+        detectedObjects.add(rawDataBufferIdea.getL().get(buffSize - 1).get("timestamp"));
+        detectedObjects.get("idObjsCF").setName("objects");
+        detectedObjectsMO.setI(detectedObjects);
 
 //          ----------visualization----------
         if(this.objectsImgJLabel==null || this.mergedObjectsImgJLabel==null
