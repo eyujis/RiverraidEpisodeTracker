@@ -7,6 +7,7 @@ import br.unicamp.cst.representation.idea.Idea;
 import org.example.rl.util.RLPercept;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RLPerceptCreatorCodelet extends Codelet {
     private final int MAX_CARS = 12;
@@ -64,6 +65,12 @@ public class RLPerceptCreatorCodelet extends Codelet {
                     carPos += 3;
                 }
             }
+        }
+
+        // Normalization step
+        ArrayList<Double> max = new ArrayList<>(List.of(320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0, 420.0, 320.0, 16.0));
+        for (int i = 0; i < state.size(); i++) {
+            state.set(i, state.get(i) / max.get(i));
         }
 
         RLPercept percept = new RLPercept(state, (Double) rewardBufferMO.getI(), (boolean) terminalBufferMO.getI());

@@ -28,6 +28,7 @@ public class Main {
         }
 
         RiverRaidEnv riverRaidEnv = new RiverRaidPyGame();
+        //AgentMind agentMind = new QLearningLFAAgentMind(riverRaidEnv, firstJFrame, secondJFrame);
         AgentMind agentMind = new TorchBringerAgentMind(riverRaidEnv, firstJFrame, secondJFrame);
     }
 

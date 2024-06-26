@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.List;
 
 public class SocketFrameCommunicator {
-    int port = 1025;
+    int port = 1026;
     Socket socket;
 //    static int imageId = 0;
 

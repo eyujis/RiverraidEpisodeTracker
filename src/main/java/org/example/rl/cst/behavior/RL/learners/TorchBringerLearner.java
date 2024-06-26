@@ -9,6 +9,7 @@ import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TorchBringerLearner extends RLLearner {
     private String configName;
@@ -31,6 +32,9 @@ public class TorchBringerLearner extends RLLearner {
 
     @Override
     public ArrayList<Double> selectAction(ArrayList<Double> s) {
+        if (pastAction == null) {
+            return new ArrayList<>(List.of(0.0));
+        }
         return this.pastAction;
     }
 

@@ -35,7 +35,7 @@ public class TorchBringerAgentMind extends AgentMind {
         ActionSpace actionSpace = new DiscreteActionSpace(actions);
 
         TorchBringerLearner torchBringerLearner;
-        torchBringerLearner = new TorchBringerLearner(50051, configPath);
+        torchBringerLearner = new TorchBringerLearner(50052, configPath);
 
         return new EpisodicRLCodelet(torchBringerLearner, actionSpace, (MemoryObject) rlPerceptMO);
     }
