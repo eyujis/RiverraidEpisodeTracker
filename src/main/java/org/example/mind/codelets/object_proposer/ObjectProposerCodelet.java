@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class ObjectProposerCodelet extends Codelet {
-    Memory rawDataMO;
+    Memory imageBufferMO;
     Memory detectedFragmentsMO;
     Memory detectedObjectsMO;
     Memory fragmentCategoriesMO;
@@ -40,7 +40,7 @@ public class ObjectProposerCodelet extends Codelet {
 
     @Override
     public void accessMemoryObjects() {
-        rawDataMO=(MemoryObject)this.getInput("RAW_DATA_BUFFER");
+        imageBufferMO=(MemoryObject)this.getInput("IMAGE_BUFFER");
         fragmentCategoriesMO =(MemoryObject)this.getInput("FRAGMENT_CATEGORIES");
         objectCategoriesMO=(MemoryObject)this.getOutput("OBJECT_CATEGORIES");
         detectedFragmentsMO =(MemoryObject)this.getOutput("DETECTED_FRAGMENTS");
@@ -54,7 +54,7 @@ public class ObjectProposerCodelet extends Codelet {
 
     @Override
     public void proc() {
-        Idea rawDataBufferIdea = (Idea) rawDataMO.getI();
+        Idea rawDataBufferIdea = (Idea) imageBufferMO.getI();
         int buffSize = rawDataBufferIdea.getL().size();
         BufferedImage buffImgFrame = (BufferedImage) rawDataBufferIdea.getL().get(buffSize - 1).get("image").getValue();
 
@@ -72,22 +72,25 @@ public class ObjectProposerCodelet extends Codelet {
         fragmentCategoriesMO.setI(fragmentCategories);
 
         detectedFragmentsMO.setI(this.fragmentProposer.getDetectedFragmentsCF());
-        if (objectCategoriesMO.getI() != "") {
-            Idea objectCategories = (Idea) objectCategoriesMO.getI();
 
-            objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
-
-            objectCategories.getL().addAll(objectProposer.getAssimilatedCategories().getL());
-            objectCategoriesMO.setI(objectCategories);
-
-            fragmentProposer.assignObjectCategories(objectCategories);
-
-            Idea detectedObjects = new Idea("detectedObjects", "", 0);
-            detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
-            detectedObjects.add(rawDataBufferIdea.getL().get(buffSize - 1).get("timestamp"));
-            detectedObjects.get("idObjsCF").setName("objects");
-            detectedObjectsMO.setI(detectedObjects);
+        if(objectCategoriesMO.getI()=="") {
+            objectCategoriesMO.setI(new Idea("ObjectCategories", "", 0));
         }
+
+        Idea objectCategories = (Idea) objectCategoriesMO.getI();
+
+        objectProposer.update(fragmentProposer.getDetectedFragmentsCF(), objectCategories);
+
+        objectCategories.getL().addAll(objectProposer.getAssimilatedCategories().getL());
+        objectCategoriesMO.setI(objectCategories);
+
+        fragmentProposer.assignObjectCategories(objectCategories);
+
+        Idea detectedObjects = new Idea("detectedObjects", "", 0);
+        detectedObjects.add(this.objectProposer.getDetectedObjectsCF());
+        detectedObjects.add(rawDataBufferIdea.getL().get(buffSize - 1).get("timestamp"));
+        detectedObjects.get("idObjsCF").setName("objects");
+        detectedObjectsMO.setI(detectedObjects);
 
 //          ----------visualization----------
         if(this.objectsImgJLabel==null || this.mergedObjectsImgJLabel==null

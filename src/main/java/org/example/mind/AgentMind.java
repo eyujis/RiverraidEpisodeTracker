@@ -2,6 +2,7 @@ package org.example.mind;
 
 import br.unicamp.cst.core.entities.*;
 import org.example.environment.RiverRaidEnv;
+import org.example.mind.codelets.ActionCommunicatorCodelet;
 import org.example.mind.codelets.co_episode_cat_learner.COEpisodeCategoryLearnerCodelet;
 import org.example.mind.codelets.co_episode_tracker.COEpisodeTrackerCodelet;
 import org.example.mind.codelets.event_cat_learner.EventCategoryLearnerCodelet;
@@ -12,6 +13,7 @@ import org.example.mind.codelets.object_cat_learner.entities.ObjectCategory;
 import org.example.mind.codelets.object_proposer.ObjectProposerCodelet;
 import org.example.mind.codelets.RAWDataBufferizerCodelet;
 import org.example.mind.codelets.objects_bufferizer.ObjectsBufferizerCodelet;
+import org.example.mind.codelets.rl_communication.RLPerceptCreatorCodelet;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
@@ -19,7 +21,7 @@ import javax.swing.*;
 import java.io.IOException;
 
 
-public class AgentMind extends Mind {
+public abstract class AgentMind extends Mind {
     JLabel rawDataBufferImgJLabel = null;
     JLabel objectsImgJLabel = null;
     JLabel mergedObjectsImgJLabel = null;
@@ -41,7 +43,9 @@ public class AgentMind extends Mind {
             forgettingSOEpisodeImgJLabel = secondJFrame.getForgettingSOEpisodesImgJLabel();
         }
 
-        Memory rawDataBufferMO;
+        Memory imageBuffer;
+        Memory rewardBuffer;
+        Memory terminalBuffer;
         Memory detectedFragmentsMO;
         Memory detectedObjectsMO;
         Memory fragmentCategoriesMO;
@@ -53,11 +57,16 @@ public class AgentMind extends Mind {
         Memory detectedCOEpisodesMO;
         Memory cOEpisodeCategoriesTSMO;
         Memory cOEpisodeTrackerTSMO;
+        Memory rlPerceptMO;
+        Memory rlActionMO;
+        Memory actionTimestampMO;
 
         createMemoryGroup("EpisodeTrackerMemoryGroup");
         createCodeletGroup("EpisodeTrackerCodeletGroup");
 
-        rawDataBufferMO = createMemoryObject("RAW_DATA_BUFFER", "");
+        imageBuffer = createMemoryObject("IMAGE_BUFFER", "");
+        rewardBuffer = createMemoryObject("REWARD_BUFFER", "");
+        terminalBuffer = createMemoryObject("TERMINAL_BUFFER", "");
         detectedFragmentsMO = createMemoryObject("DETECTED_FRAGMENTS", "");
         detectedObjectsMO = createMemoryObject("DETECTED_OBJECTS", "");
         fragmentCategoriesMO = createMemoryObject("FRAGMENT_CATEGORIES", "");
@@ -69,8 +78,13 @@ public class AgentMind extends Mind {
         detectedCOEpisodesMO = createMemoryObject("DETECTED_CO_EPISODES", "");
         cOEpisodeCategoriesTSMO= createMemoryObject("CO_EPISODE_CATEGORIES_TS", "");
         cOEpisodeTrackerTSMO = createMemoryObject("CO_EPISODES_TS", "");
+        rlPerceptMO = createMemoryObject("RLPERCEPT");
+        rlActionMO = createMemoryObject("RLACTION");
+        actionTimestampMO = createMemoryObject("ACTION_TIMESTAMP", 0);
 
-        registerMemory(rawDataBufferMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(imageBuffer, "EpisodeTrackerMemoryGroup");
+        registerMemory(rewardBuffer, "EpisodeTrackerMemoryGroup");
+        registerMemory(terminalBuffer, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedFragmentsMO, "EpisodeTrackerMemoryGroup");
         registerMemory(detectedObjectsMO, "EpisodeTrackerMemoryGroup");
         registerMemory(fragmentCategoriesMO, "EpisodeTrackerMemoryGroup");
@@ -81,14 +95,20 @@ public class AgentMind extends Mind {
         registerMemory(cOEpisodeCategoriesMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeCategoriesTSMO, "EpisodeTrackerMemoryGroup");
         registerMemory(cOEpisodeTrackerTSMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(rlPerceptMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(rlActionMO, "EpisodeTrackerMemoryGroup");
+        registerMemory(actionTimestampMO, "EpisodeTrackerMemoryGroup");
 
         Codelet rawDataBufferizerCodelet = new RAWDataBufferizerCodelet(env, rawDataBufferImgJLabel);
-        rawDataBufferizerCodelet.addOutput(rawDataBufferMO);
+        rawDataBufferizerCodelet.addInput(actionTimestampMO);
+        rawDataBufferizerCodelet.addOutput(imageBuffer);
+        rawDataBufferizerCodelet.addOutput(rewardBuffer);
+        rawDataBufferizerCodelet.addOutput(terminalBuffer);
         rawDataBufferizerCodelet.setName("RAWDataBufferizer");
         insertCodelet(rawDataBufferizerCodelet);
 
         Codelet objectProposerCodelet = new ObjectProposerCodelet(objectsImgJLabel, mergedObjectsImgJLabel, categoriesImgJLabel);
-        objectProposerCodelet.addInput(rawDataBufferMO);
+        objectProposerCodelet.addInput(imageBuffer);
         objectProposerCodelet.addInput(fragmentCategoriesMO);
         objectProposerCodelet.addOutput(fragmentCategoriesMO);
         objectProposerCodelet.addInput(objectCategoriesMO);
@@ -96,7 +116,7 @@ public class AgentMind extends Mind {
         objectProposerCodelet.addOutput(detectedFragmentsMO);
         objectProposerCodelet.addOutput(detectedObjectsMO);
         objectProposerCodelet.setIsMemoryObserver(true);
-        rawDataBufferMO.addMemoryObserver(objectProposerCodelet);
+        imageBuffer.addMemoryObserver(objectProposerCodelet);
         objectProposerCodelet.setName("ObjectProposer");
         insertCodelet(objectProposerCodelet);
 
@@ -125,7 +145,9 @@ public class AgentMind extends Mind {
         eventCategoryLearnerCodelet.setName("EventCategoryLearner");
         insertCodelet(eventCategoryLearnerCodelet);
 
-        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel);
+        Codelet rlPerceptCreatorCodelet = new RLPerceptCreatorCodelet();
+
+        Codelet eventTrackerCodelet = new EventTrackerCodelet(eventImgJLabel, rlPerceptCreatorCodelet);
         eventTrackerCodelet.addInput(objectsBufferMO);
         eventTrackerCodelet.addInput(eventCategoriesMO);
         eventTrackerCodelet.addOutput(eventCategoriesMO);
@@ -141,13 +163,32 @@ public class AgentMind extends Mind {
         forgettingSOEpisodesCodelet.setName("ForgettingSOEpisodes");
         insertCodelet(forgettingSOEpisodesCodelet);
 
+        rlPerceptCreatorCodelet.addInput(detectedEventsMO);
+        rlPerceptCreatorCodelet.addInput(rewardBuffer);
+        rlPerceptCreatorCodelet.addInput(terminalBuffer);
+        rlPerceptCreatorCodelet.addOutput(rlPerceptMO);
+        rlPerceptCreatorCodelet.setIsMemoryObserver(true);
+        insertCodelet(rlPerceptCreatorCodelet);
+
+        Codelet rlCodelet = getRLCodelet(rlPerceptMO);
+        rlCodelet.addInput(rlPerceptMO);
+        rlCodelet.addOutput(rlActionMO);
+        insertCodelet(rlCodelet);
+
+        Codelet actionCommunicatorCodelet = new ActionCommunicatorCodelet(env);
+        actionCommunicatorCodelet.addInput(rlActionMO);
+        actionCommunicatorCodelet.addOutput(actionTimestampMO);
+        actionCommunicatorCodelet.setIsMemoryObserver(true);
+        rlActionMO.addMemoryObserver(actionCommunicatorCodelet);
+        insertCodelet(actionCommunicatorCodelet);
+
         registerCodelet(rawDataBufferizerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectProposerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
         registerCodelet(objectsBufferizerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
-//        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(eventCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(eventTrackerCodelet, "EpisodeTrackerCodeletGroup");
+        registerCodelet(forgettingSOEpisodesCodelet, "EpisodeTrackerCodeletGroup");
 //        registerCodelet(cOEpisodeCategoryLearnerCodelet, "EpisodeTrackerCodeletGroup");
 //        registerCodelet(cOEpisodeTrackerCodelet, "EpisodeTrackerCodeletGroup");
 
@@ -157,6 +198,7 @@ public class AgentMind extends Mind {
 
         // Start Cognitive Cycle
         start();
-
     }
+
+    protected abstract Codelet getRLCodelet(Memory rlPerceptMO);
 }

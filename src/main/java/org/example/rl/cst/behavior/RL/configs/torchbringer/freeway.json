@@ -1,0 +1,51 @@
+{
+    "type": "dqn",
+    "run_name": "Episode Tracker DQN",
+    "action_space": {
+        "type": "discrete",
+        "n": 3
+    },
+    "gamma": 0.99,
+    "tau": 0.005,
+    "epsilon": {
+        "type": "lin_decrease",
+        "start": 0.9,
+        "end": 0.1,
+        "steps_to_end": 200000
+    },
+    "batch_size": 64,
+    "grad_clip_value": 100,
+    "loss": "smooth_l1_loss",
+    "optimizer": {
+        "type": "adamw",
+        "lr": 0.0001,
+        "amsgrad": true
+    },
+    "replay_buffer_size": 100000,
+    "min_replay_size": 5000,
+    "network": [
+        {
+            "type": "linear",
+            "in_features": 38,
+            "out_features": 256
+        },
+        {"type": "relu"},
+        {
+            "type": "linear",
+            "in_features": 256,
+            "out_features": 512
+        },
+        {"type": "relu"},
+        {
+            "type": "linear",
+            "in_features": 512,
+            "out_features": 256
+        },
+        {"type": "relu"},
+        {
+            "type": "linear",
+            "in_features": 256,
+            "out_features": 3
+        }
+    ]
+}

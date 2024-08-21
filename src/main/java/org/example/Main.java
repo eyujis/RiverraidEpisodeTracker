@@ -2,7 +2,8 @@ package org.example;
 
 import org.example.environment.RiverRaidEnv;
 import org.example.environment.RiverRaidPyGame;
-import org.example.mind.AgentMind;
+import org.example.environment.RiverRaidPyGameFlask;
+import org.example.mind.*;
 import org.example.visualization.FirstJFrame;
 import org.example.visualization.SecondJFrame;
 
@@ -27,13 +28,14 @@ public class Main {
             secondJFrame.setVisible(true);
         }
 
-        RiverRaidEnv riverRaidEnv = new RiverRaidPyGame();
-        AgentMind agentMind = new AgentMind(riverRaidEnv, firstJFrame, secondJFrame);
+        RiverRaidEnv riverRaidEnv = new RiverRaidPyGameFlask("http://localhost:6000");
+        //AgentMind agentMind = new QLearningLFAAgentMind(riverRaidEnv, firstJFrame, secondJFrame);
+        AgentMind agentMind = new TorchBringerAgentMind(riverRaidEnv, firstJFrame, secondJFrame);
     }
 
     public static void loadOpenCVLibraryFromCurrentPath()   {
         Path currentRelativePath = Paths.get("");
         String s = currentRelativePath.toAbsolutePath().toString();
-        System.load(s+"/libs/libopencv_java455.so");
+        System.load(s+"\\libs\\OpenCVWindows\\java\\x64\\opencv_java455.dll");
     }
 }

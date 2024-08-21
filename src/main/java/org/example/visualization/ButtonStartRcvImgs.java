@@ -1,6 +1,6 @@
 package org.example.visualization;
 
-import org.example.environment.socket.SocketFrameRcvr;
+import org.example.environment.socket.SocketFrameCommunicator;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +24,7 @@ public class ButtonStartRcvImgs implements ActionListener {
         Runnable frameGrabber = new Runnable() {
             @Override public void run() {
                 try {
-                    BufferedImage imgFromSocket = new SocketFrameRcvr().receiveImage();
+                    BufferedImage imgFromSocket = new SocketFrameCommunicator().receiveImage();
                     setImgToSocketImgLbl(imgFromSocket);
                 } catch (IOException ex) {
                     System.out.println(ex);

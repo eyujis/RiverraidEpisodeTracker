@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class ForgettingSOEpisodesCodelet extends Codelet {
     // in timestamp units
-    int FORGETTING_THRESHOLD = 10;
+    int FORGETTING_THRESHOLD = 2;
 
     Memory sOEpisodesMO;
     int currentTimestamp;
@@ -57,10 +57,10 @@ public class ForgettingSOEpisodesCodelet extends Codelet {
                 filteredSOEpisodes.getL().addAll(filteredSOEpisodesList);
                 sOEpisodesMO.setI(filteredSOEpisodes);
 
-                System.out.println("============="+filteredSOEpisodes.getValue()+"=============");
-                for(Idea filteredSOEpisode : filteredSOEpisodes.getL()) {
-                    System.out.println(filteredSOEpisode.toStringFull());
-                }
+//                System.out.println("============="+filteredSOEpisodes.getValue()+"=============");
+//                for(Idea filteredSOEpisode : filteredSOEpisodes.getL()) {
+//                    System.out.println(filteredSOEpisode.toStringFull());
+//                }
 
                 if(forgettingSOEpisodesImgJLabel!=null) {
                     try {
